@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="yes">Yes</string>
+    <string name="ok">OK</string>
+    <string name="no">No</string>
+    <string name="empty"></string>
+    <string name="app_name">NetCap</string>
+    <string name="devicesTV">Device:</string>
+    <string name="any">Any</string>
+    <string name="browseBT">Browse</string>
+    <string name="refreshBT">Refresh</string>
+	<string name="outputCaptureTV">Output capture folder</string>
+</resources>

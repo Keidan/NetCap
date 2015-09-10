@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLL"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:elevation="24dp"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/titleTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+    	android:paddingTop="24dp"
+    	android:paddingRight="24dp"
+    	android:paddingLeft="24dp"
+    	android:paddingBottom="20dp"
+        android:text="@string/empty"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+    
+    <RelativeLayout
+        android:id="@+id/contentRL"
+        android:layout_width="wrap_content"
+    	android:layout_height="100dp"
+        android:layout_gravity="start"
+    	android:paddingRight="24dp"
+    	android:paddingLeft="24dp"
+    	android:paddingBottom="24dp">
+	</RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/noBT"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="36dp"
+            android:text="@string/no"
+	    	android:paddingTop="8dp"
+	    	android:paddingStart="0dp"
+	    	android:paddingEnd="4dp"
+	    	android:paddingBottom="8dp"/>
+
+        <Button
+            android:id="@+id/yesBT"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="100dp"
+            android:layout_height="36dp"
+            android:text="@string/yes"
+            android:textColor="@color/blue_pressed"
+	    	android:paddingTop="8dp"
+	    	android:paddingStart="0dp"
+	    	android:paddingEnd="4dp"
+	    	android:paddingBottom="8dp"/>
+    </LinearLayout>
+
+</LinearLayout>

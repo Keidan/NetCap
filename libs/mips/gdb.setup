@@ -1,0 +1,3 @@
+set solib-search-path ./obj/local/mips
+source D:/android/ndk-windows-x86/prebuilt/common/gdb/common.setup
+directory D:/android/ndk-windows-x86/platforms/android-21/arch-mips/usr/include jni D:/android/ndk-windows-x86/sources/cxx-stl/system

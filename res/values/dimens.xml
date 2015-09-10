@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="corner_radius">3dp</dimen>
+    <dimen name="layer_padding">2dp</dimen>
+</resources>
