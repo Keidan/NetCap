@@ -21,6 +21,8 @@ download the software :
 	git clone git://github.com/Keidan/NetCap.git
 	cd NetCap
  	Use with eclipse 
+ 	The Android NDK is required.
+ 	Note: You need to create a variable named NDK_BUILD that points to the Android Ndk builder file (ndk-build).
 
 License (like GPL)
 ==================
