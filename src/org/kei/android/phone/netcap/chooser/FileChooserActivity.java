@@ -101,8 +101,9 @@ public class FileChooserActivity extends FileChooser implements IProcessHandler 
     }
     Log.d(getClass().getSimpleName(), "Send result");
     setResult(result, returnIntent);
-    onBackPressed();
+    finish();
     opt = null;
+    Fx.updateTransition(this, false);
   }
 
   @Override

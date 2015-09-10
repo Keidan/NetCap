@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 
     devicesSp = (Spinner) findViewById(R.id.devicesSp);
     browseTV = (TextView) findViewById(R.id.browseTV);
-    
+    browseTV.setText(FileChooser.DEFAULT_ROOT.getAbsolutePath());
     // Create an ArrayAdapter using the string array and a default spinner layout
     adapter = new ArrayAdapter<NetworkInterface>(this, android.R.layout.simple_spinner_item);
     // Specify the layout to use when the list of choices appears

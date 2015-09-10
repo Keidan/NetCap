@@ -46,7 +46,7 @@ public class FileChooser extends ListActivity {
   public static final int               FILECHOOSER_TYPE_FILE_ONLY          = 0;
   public static final int               FILECHOOSER_TYPE_DIRECTORY_ONLY     = 1;
   public static final int               FILECHOOSER_TYPE_FILE_AND_DIRECTORY = 2;
-  protected static final File           DEFAULT_ROOT                        = Environment.getExternalStoragePublicDirectory(
+  public static final File              DEFAULT_ROOT                        = Environment.getExternalStoragePublicDirectory(
                                                                                       Environment.DIRECTORY_DOWNLOADS);
   protected File                        currentDir                          = null;
   private FileArrayAdapter              adapter                             = null;
