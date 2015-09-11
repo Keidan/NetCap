@@ -2,6 +2,7 @@ package org.kei.android.phone.netcap.chooser;
 
 import java.io.File;
 
+import org.kei.android.phone.netcap.R;
 import org.kei.android.phone.netcap.chooser.handler.ErrorStatus;
 import org.kei.android.phone.netcap.chooser.handler.IProcessHandler;
 import org.kei.android.phone.netcap.chooser.handler.ProcessHandler;
@@ -11,6 +12,8 @@ import org.kei.android.phone.netcap.utils.Tools;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  *******************************************************************************
@@ -35,18 +38,37 @@ import android.util.Log;
  *******************************************************************************
  */
 public class FileChooserActivity extends FileChooser implements IProcessHandler {
-
-  public static final String FILECHOOSER_RESULT_KEY                     = "file";
-  public static final int    FILECHOOSER_RESULT_TYPE_FILE_SELECTED      = 1;
-  public static final int    FILECHOOSER_RESULT_TYPE_DIRECTORY_SELECTED = 2;
-  private ProcessHandler     handler                                    = null;
-  private Option             opt                                        = null;
+  private static final String TAG                                  = FileChooserActivity.class.getSimpleName();
+  public static final String  FILECHOOSER_SELECTION_KEY            = "selection";
+  public static final int     FILECHOOSER_SELECTION_TYPE_FILE      = 1;
+  public static final int     FILECHOOSER_SELECTION_TYPE_DIRECTORY = 2;
+  private ProcessHandler      handler                              = null;
+  private Option              opt                                  = null;
 
   @Override
   public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     handler = new ProcessHandler(this);
     Fx.updateTransition(this, true);
+  }
+  
+
+  @Override
+  public boolean onOptionsItemSelected(final MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_cancel:
+        cancel();
+        break;
+    }
+    return false;
+  }
+  
+
+  @Override
+  public boolean onCreateOptionsMenu(final Menu menu) {
+      // Inflate the menu; this adds items to the action bar if it is present.
+      getMenuInflater().inflate(R.menu.filechooser_menu, menu);
+      return true;
   }
 
   @Override
@@ -59,18 +81,22 @@ public class FileChooserActivity extends FileChooser implements IProcessHandler 
     File parent = currentDir.getParentFile();
     if (parent == null || parent.equals(DEFAULT_ROOT.getParentFile())) {
       super.onBackPressed();
-      finish();
-      Fx.updateTransition(this, false);
+      cancel();
     } else {
       currentDir = parent;
       fill(currentDir);
     }
   }
+  
+  private void cancel() {
+    finish();
+    Fx.updateTransition(this, false);
+  }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    Fx.updateTransition(this, false);
+    cancel();
   }
 
   @Override
@@ -90,20 +116,19 @@ public class FileChooserActivity extends FileChooser implements IProcessHandler 
 
   @Override
   public void onSuccess() {
-    Log.d(getClass().getSimpleName(), "onSuccess: Rebuild the hmi");
+    Log.d(TAG, "onSuccess: Rebuild the hmi");
     final Intent returnIntent = new Intent();
     int result = RESULT_CANCELED;
     if (opt != null) {
       final File file = new File(new File(opt.getPath()).getParent(),
           opt.getName());
-      returnIntent.putExtra(FILECHOOSER_RESULT_KEY, file.getAbsolutePath());
+      returnIntent.putExtra(FILECHOOSER_SELECTION_KEY, file.getAbsolutePath());
       result = RESULT_OK;
     }
-    Log.d(getClass().getSimpleName(), "Send result");
+    Log.d(TAG, "Send result");
     setResult(result, returnIntent);
-    finish();
     opt = null;
-    Fx.updateTransition(this, false);
+    cancel();
   }
 
   @Override
@@ -114,9 +139,9 @@ public class FileChooserActivity extends FileChooser implements IProcessHandler 
   @Override
   public void onError() {
     opt = null;
-    Log.d(getClass().getSimpleName(), "onError: bye :(");
+    Log.d(TAG, "onError: bye :(");
     final Intent returnIntent = new Intent();
-    Log.d(getClass().getSimpleName(), "Send result");
+    Log.d(TAG, "Send result");
     setResult(RESULT_CANCELED, returnIntent);
     onBackPressed();
     Fx.updateTransition(this, false);

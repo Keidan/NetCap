@@ -72,8 +72,9 @@ public class MainActivity extends Activity {
     extra.put(FileChooser.FILECHOOSER_TYPE_KEY, "" + FileChooser.FILECHOOSER_TYPE_DIRECTORY_ONLY);
     extra.put(FileChooser.FILECHOOSER_TITLE_KEY, "Load");    
     extra.put(FileChooser.FILECHOOSER_MESSAGE_KEY, "Use this folder:? ");
+    extra.put(FileChooser.FILECHOOSER_SHOW_KEY, "" + FileChooser.FILECHOOSER_SHOW_DIRECTORY_ONLY);
     Tools.switchToForResult(this, FileChooserActivity.class,
-        extra, FileChooserActivity.FILECHOOSER_RESULT_TYPE_DIRECTORY_SELECTED);
+        extra, FileChooserActivity.FILECHOOSER_SELECTION_TYPE_DIRECTORY);
   }
   
   public void actionRefresh(final View v) {
@@ -92,10 +93,10 @@ public class MainActivity extends Activity {
   @Override
   protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     // Check which request we're responding to
-    if (requestCode == FileChooserActivity.FILECHOOSER_RESULT_TYPE_DIRECTORY_SELECTED) {
+    if (requestCode == FileChooserActivity.FILECHOOSER_SELECTION_TYPE_DIRECTORY) {
       if (resultCode == RESULT_OK) {
         final String file = data
-            .getStringExtra(FileChooserActivity.FILECHOOSER_RESULT_KEY);
+            .getStringExtra(FileChooserActivity.FILECHOOSER_SELECTION_KEY);
         browseTV.setText(file);
       }
     }

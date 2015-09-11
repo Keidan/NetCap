@@ -10,4 +10,5 @@
     <string name="browseBT">Browse</string>
     <string name="refreshBT">Refresh</string>
 	<string name="outputCaptureTV">Output capture folder</string>
+	<string name="action_cancel">Cancel</string>
 </resources>

@@ -40,20 +40,24 @@ import android.widget.ListView;
  *******************************************************************************
  */
 public class FileChooser extends ListActivity {
-  public static final String            FILECHOOSER_TYPE_KEY                = "type";
-  public static final String            FILECHOOSER_TITLE_KEY               = "title";
-  public static final String            FILECHOOSER_MESSAGE_KEY             = "message";
-  public static final int               FILECHOOSER_TYPE_FILE_ONLY          = 0;
-  public static final int               FILECHOOSER_TYPE_DIRECTORY_ONLY     = 1;
-  public static final int               FILECHOOSER_TYPE_FILE_AND_DIRECTORY = 2;
-  public static final File              DEFAULT_ROOT                        = Environment.getExternalStoragePublicDirectory(
-                                                                                      Environment.DIRECTORY_DOWNLOADS);
-  protected File                        currentDir                          = null;
-  private FileArrayAdapter              adapter                             = null;
-  private String                        confirmMessage                      = null;
-  private String                        confirmTitle                      = null;
-  private int                           type                                = FILECHOOSER_TYPE_FILE_AND_DIRECTORY;
-  private final OnItemLongClickListener longClick                           = new OnItemLongClickListener() {
+  public static final String            FILECHOOSER_TYPE_KEY                 = "type";
+  public static final String            FILECHOOSER_TITLE_KEY                = "title";
+  public static final String            FILECHOOSER_MESSAGE_KEY              = "message";
+
+  public static final String            FILECHOOSER_SHOW_KEY                 = "show";
+  public static final int               FILECHOOSER_TYPE_FILE_ONLY           = 0;
+  public static final int               FILECHOOSER_TYPE_DIRECTORY_ONLY      = 1;
+  public static final int               FILECHOOSER_TYPE_FILE_AND_DIRECTORY  = 2;
+  public static final int               FILECHOOSER_SHOW_DIRECTORY_ONLY      = 1;
+  public static final int               FILECHOOSER_SHOW_FILE_AND_DIRECTORY  = 2; 
+  public static final File              DEFAULT_ROOT                         = Environment.getExternalStorageDirectory();
+  protected File                        currentDir                           = null;
+  private FileArrayAdapter              adapter                              = null;
+  private String                        confirmMessage                       = null;
+  private String                        confirmTitle                         = null;
+  private int                           type                                 = FILECHOOSER_TYPE_FILE_AND_DIRECTORY;
+  private int                           show                                 = FILECHOOSER_SHOW_FILE_AND_DIRECTORY;
+  private final OnItemLongClickListener longClick                            = new OnItemLongClickListener() {
     @Override
     public boolean onItemLongClick(
         final AdapterView<?> parent, final View v, final int position, final long id) {
@@ -103,6 +107,8 @@ public class FileChooser extends ListActivity {
       confirmTitle = b.getString(FILECHOOSER_TITLE_KEY);
     if (b != null && b.containsKey(FILECHOOSER_MESSAGE_KEY))
       confirmMessage = b.getString(FILECHOOSER_MESSAGE_KEY);
+    if (b != null && b.containsKey(FILECHOOSER_SHOW_KEY))
+      show = Integer.parseInt(b.getString(FILECHOOSER_SHOW_KEY));
     
     if(confirmTitle == null) confirmTitle = "title";
     if(confirmMessage == null) confirmMessage = "message";
@@ -121,7 +127,7 @@ public class FileChooser extends ListActivity {
       for (final File ff : dirs) {
         if (ff.isDirectory())
           dir.add(new Option(ff.getName(), "Folder", ff.getAbsolutePath(), Fx.getDrawable(this, R.drawable.folder)));
-        else {
+        else if(show != FILECHOOSER_SHOW_DIRECTORY_ONLY) {
           fls.add(new Option(ff.getName(), "File Size: " + ff.length(), ff
               .getAbsolutePath(), Fx.getDrawable(this, R.drawable.file)));
         }
@@ -130,8 +136,10 @@ public class FileChooser extends ListActivity {
 
     }
     Collections.sort(dir);
-    Collections.sort(fls);
-    dir.addAll(fls);
+    if(!fls.isEmpty()){
+      Collections.sort(fls);
+      dir.addAll(fls);
+    }
     dir.add(
         0,
         new Option("..", "Parent Directory", f.getParent(), Fx.getDrawable(this, R.drawable.folder)));
