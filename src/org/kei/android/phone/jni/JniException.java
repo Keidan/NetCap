@@ -8,8 +8,8 @@ package org.kei.android.phone.jni;
  * @par Project
  * NetCap
  *
- * @par Copyright
- * Copyright 2011-2013 Keidan, all right reserved
+ * @par 
+ * Copyright 2015 Keidan, all right reserved
  *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY.

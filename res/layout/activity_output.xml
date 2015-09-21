@@ -4,7 +4,7 @@
 	    android:fillViewport="true" >
 	    
     
-
+	<!-- Devices -->
     <LinearLayout
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
@@ -34,19 +34,19 @@
 			<Button
 		            android:id="@+id/refreshBT"
 		            android:layout_width="0sp"
-		            android:layout_height="26dp"
+		            android:layout_height="30dp"
 		            android:background="@drawable/flat_selector"
 		            android:text="@string/refreshBT"
 			    	android:onClick="actionRefresh"
 				    android:layout_weight="1"
 		            android:textColor="@android:color/white" />
-
    		</LinearLayout>
 	    
+	    <!-- Output -->
 	    <LinearLayout
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-	            android:layout_marginTop="15sp"
+	            android:layout_marginTop="45sp"
 	            android:layout_marginBottom="5sp"
 		        android:orientation="horizontal"
 		        android:weightSum="3"  >
@@ -61,25 +61,34 @@
 				    android:text="@string/outputCaptureTV"/>
 			
 			<Button
-		            android:id="@+id/browseBT"
+		            android:id="@+id/browseOutputCaptureBT"
 		            android:layout_width="wrap_content"
-		            android:layout_height="26dp"
+		            android:layout_height="30dp"
 			    	android:layout_gravity="end"
 		            android:background="@drawable/flat_selector"
 		            android:text="@string/browseBT"
-			    	android:onClick="actionBrowse"
+			    	android:onClick="actionBrowseOutputCapture"
 				    android:layout_weight="1"
 		            android:textColor="@android:color/white" />
 	    </LinearLayout>
-		
 		<TextView
-			    android:id="@+id/browseTV"
+			    android:id="@+id/browseOutputCaptureTV"
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
 			    android:textSize="18sp"
 			    android:text="@string/empty"
 			    android:background="@drawable/back" />
-			
+		<Button
+	            android:id="@+id/startCaptureBT"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/flat_selector"
+	            android:text="@string/startCaptureBT"
+		    	android:onClick="actionStartCapture"
+	            android:textColor="@android:color/white"
+	            android:layout_marginTop="5sp"
+	            android:layout_marginBottom="15sp" />
+		
     </LinearLayout>
     
 </ScrollView>

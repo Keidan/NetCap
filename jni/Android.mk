@@ -21,3 +21,11 @@ LOCAL_SRC_FILES := net-jni.c net.c
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog 
 
 include $(BUILD_SHARED_LIBRARY)
+
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES:= netcap.c net.c
+LOCAL_MODULE := gdbserver
+include $(BUILD_EXECUTABLE)
+include $(CLEAR_VARS)
+

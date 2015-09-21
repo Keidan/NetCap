@@ -6,8 +6,8 @@ import org.kei.android.phone.netcap.R;
 import org.kei.android.phone.netcap.chooser.handler.ErrorStatus;
 import org.kei.android.phone.netcap.chooser.handler.IProcessHandler;
 import org.kei.android.phone.netcap.chooser.handler.ProcessHandler;
-import org.kei.android.phone.netcap.utils.Fx;
 import org.kei.android.phone.netcap.utils.Tools;
+import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +23,8 @@ import android.view.MenuItem;
  * @par Project
  * NetCap
  *
- * @par Copyright
- * Copyright 2011-2013 Keidan, all right reserved
+ * @par 
+ * Copyright 2015 Keidan, all right reserved
  *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY.
@@ -79,7 +79,7 @@ public class FileChooserActivity extends FileChooser implements IProcessHandler 
   @Override
   public void onBackPressed() {
     File parent = currentDir.getParentFile();
-    if (parent == null || parent.equals(DEFAULT_ROOT.getParentFile())) {
+    if (parent == null || parent.equals(Tools.DEFAULT_ROOT.getParentFile())) {
       super.onBackPressed();
       cancel();
     } else {

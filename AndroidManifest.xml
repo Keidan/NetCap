@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".MainTabActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +28,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".chooser.FileChooserActivity"/>
+        <activity android:name=".CaptureViewerActivity"/>
+        <activity android:name=".InputTabActivity"/>
+        <activity android:name=".OutputTabActivity"/>
         
     </application>
 

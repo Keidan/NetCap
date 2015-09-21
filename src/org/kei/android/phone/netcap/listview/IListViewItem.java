@@ -1,12 +1,12 @@
-package org.kei.android.phone.jni.net.layer.transport;
+package org.kei.android.phone.netcap.listview;
 
-import org.kei.android.phone.jni.net.layer.Layer;
+import android.widget.LinearLayout;
 
 /**
  *******************************************************************************
- * @file TCP.java
+ * @file IListViewItem.java
  * @author Keidan
- * @date 07/09/2015
+ * @date 20/09/2015
  * @par Project
  * NetCap
  *
@@ -24,10 +24,6 @@ import org.kei.android.phone.jni.net.layer.Layer;
  *
  *******************************************************************************
  */
-public class TCP extends Layer {
-
-  public TCP() {
-    super(TYPE_TCP);
-  }
-
+public interface IListViewItem {
+  public void updateItem(final LinearLayout layoutItem, final Object object);
 }

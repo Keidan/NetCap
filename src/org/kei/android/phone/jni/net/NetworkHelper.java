@@ -3,6 +3,7 @@ package org.kei.android.phone.jni.net;
 import java.util.List;
 
 import org.kei.android.phone.jni.JniException;
+import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.application.DHCPv4;
 import org.kei.android.phone.jni.net.layer.application.DHCPv6;
@@ -24,7 +25,7 @@ import org.kei.android.phone.jni.net.layer.transport.UDP;
  * @date 07/09/2015
  * @par Project NetCap
  *
- * @par Copyright Copyright 2011-2013 Keidan, all right reserved
+ * @par Copyright 2015 Keidan, all right reserved
  *
  *      This software is distributed in the hope that it will be useful, but
  *      WITHOUT ANY WARRANTY.
@@ -54,16 +55,6 @@ public class NetworkHelper {
   public static native NetworkInterface getInterface(String name) throws JniException;
 
   /**
-   * Save Network interface changes to the system
-   * 
-   * @param iface
-   *          The interface.
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static native void setInterface(final NetworkInterface iface) throws JniException;
-
-  /**
    * Load Network interfaces from the system.
    * 
    * @return java.util.List<
@@ -72,6 +63,24 @@ public class NetworkHelper {
    *           If an exception has occurred.
    */
   public static native List<NetworkInterface> getInterfaces() throws JniException;
+  
+  /**
+   * Test if the current file is a PCAP file.
+   * 
+   * @return boolean
+   * @throws JniException
+   *           If an exception has occurred.
+   */
+  public static native boolean isPCAP(final String filename) throws JniException;
+  
+  /**
+   * Get the PCAP header from the file.
+   * 
+   * @return {@link org.kei.android.phone.jni.net.captrue.PCAPHeader}
+   * @throws JniException
+   *           If an exception has occurred.
+   */
+  public static native PCAPHeader getPCAPHeader(final String filename) throws JniException;
 
   /**
    * Decode the buffer in accordance to the layer type.
@@ -80,40 +89,38 @@ public class NetworkHelper {
    *          The layer type.
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return The layer.
    * @throws JniException
    *           If an exception has occurred.
    */
-  private static native Layer decodeLayer(int type, byte[] buffer, int offset) throws JniException;
+  private static native Layer decodeLayer(int type, byte[] buffer) throws JniException;
 
   /**
    * Convert the input buffer to an Hex string.
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
-   * @return {@link java.lang.StringBuilder}
+   * @return List<String>
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static native StringBuilder formatToHex(byte[] buffer, int offset) throws JniException;
+  public static native List<String> formatToHex(byte[] buffer, int offset) throws JniException;
+  
+  public static List<String> formatToHex(byte[] buffer) throws JniException {
+    return formatToHex(buffer, 0);
+  }
 
   /**
    * Extract the Ethernet layer of the input buffer.
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.link.Ethernet}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static Ethernet decodeEthernet(final byte[] buffer, final int offset) throws JniException {
-    return (Ethernet) decodeLayer(Layer.TYPE_ETHERNET, buffer, offset);
+  public static Ethernet decodeEthernet(final byte[] buffer) throws JniException {
+    return (Ethernet) decodeLayer(Layer.TYPE_ETHERNET, buffer);
   }
 
   /**
@@ -121,14 +128,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.internet.IPv4}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static IPv4 decodeIPv4(final byte[] buffer, final int offset) throws JniException {
-    return (IPv4) decodeLayer(Layer.TYPE_IPv4, buffer, offset);
+  public static IPv4 decodeIPv4(final byte[] buffer) throws JniException {
+    return (IPv4) decodeLayer(Layer.TYPE_IPv4, buffer);
   }
 
   /**
@@ -136,14 +141,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.internet.IPv6}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static IPv6 decodeIPv6(final byte[] buffer, final int offset) throws JniException {
-    return (IPv6) decodeLayer(Layer.TYPE_IPv6, buffer, offset);
+  public static IPv6 decodeIPv6(final byte[] buffer) throws JniException {
+    return (IPv6) decodeLayer(Layer.TYPE_IPv6, buffer);
   }
 
   /**
@@ -151,14 +154,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.internet.ICMPv4}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static ICMPv4 decodeICMPv4(final byte[] buffer, final int offset) throws JniException {
-    return (ICMPv4) decodeLayer(Layer.TYPE_ICMPv4, buffer, offset);
+  public static ICMPv4 decodeICMPv4(final byte[] buffer) throws JniException {
+    return (ICMPv4) decodeLayer(Layer.TYPE_ICMPv4, buffer);
   }
 
   /**
@@ -166,14 +167,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.internet.ICMPv6}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static ICMPv6 decodeICMPv6(final byte[] buffer, final int offset) throws JniException {
-    return (ICMPv6) decodeLayer(Layer.TYPE_ICMPv6, buffer, offset);
+  public static ICMPv6 decodeICMPv6(final byte[] buffer) throws JniException {
+    return (ICMPv6) decodeLayer(Layer.TYPE_ICMPv6, buffer);
   }
 
   /**
@@ -181,14 +180,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.transport.TCP}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static TCP decodeTCP(final byte[] buffer, final int offset) throws JniException {
-    return (TCP) decodeLayer(Layer.TYPE_TCP, buffer, offset);
+  public static TCP decodeTCP(final byte[] buffer) throws JniException {
+    return (TCP) decodeLayer(Layer.TYPE_TCP, buffer);
   }
 
   /**
@@ -196,14 +193,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.transport.UDP}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static UDP decodeUDP(final byte[] buffer, final int offset) throws JniException {
-    return (UDP) decodeLayer(Layer.TYPE_UDP, buffer, offset);
+  public static UDP decodeUDP(final byte[] buffer) throws JniException {
+    return (UDP) decodeLayer(Layer.TYPE_UDP, buffer);
   }
 
   /**
@@ -211,14 +206,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.transport.TCP}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static ARP decodeARP(final byte[] buffer, final int offset) throws JniException {
-    return (ARP) decodeLayer(Layer.TYPE_ARP, buffer, offset);
+  public static ARP decodeARP(final byte[] buffer) throws JniException {
+    return (ARP) decodeLayer(Layer.TYPE_ARP, buffer);
   }
 
   /**
@@ -226,14 +219,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.application.DHCPv4}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static DHCPv4 decodeDHCPv4(final byte[] buffer, final int offset) throws JniException {
-    return (DHCPv4) decodeLayer(Layer.TYPE_DHCPv4, buffer, offset);
+  public static DHCPv4 decodeDHCPv4(final byte[] buffer) throws JniException {
+    return (DHCPv4) decodeLayer(Layer.TYPE_DHCPv4, buffer);
   }
 
   /**
@@ -241,15 +232,13 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.application.DHCPv6
 }
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static DHCPv6 decodeDHCPv6(final byte[] buffer, final int offset) throws JniException {
-    return (DHCPv6) decodeLayer(Layer.TYPE_DHCPv6, buffer, offset);
+  public static DHCPv6 decodeDHCPv6(final byte[] buffer) throws JniException {
+    return (DHCPv6) decodeLayer(Layer.TYPE_DHCPv6, buffer);
   }
 
   /**
@@ -257,14 +246,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.link.NDP}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static NDP decodeNDP(final byte[] buffer, final int offset) throws JniException {
-    return (NDP) decodeLayer(Layer.TYPE_NDP, buffer, offset);
+  public static NDP decodeNDP(final byte[] buffer) throws JniException {
+    return (NDP) decodeLayer(Layer.TYPE_NDP, buffer);
   }
 
   /**
@@ -272,14 +259,12 @@ public class NetworkHelper {
    * 
    * @param buffer
    *          The buffer.
-   * @param offset
-   *          The start offset.
    * @return {@link org.kei.android.phone.jni.net.layer.application.DNS}
    * @throws JniException
    *           If an exception has occurred.
    */
-  public static DNS decodeDNS(final byte[] buffer, final int offset) throws JniException {
-    return (DNS) decodeLayer(Layer.TYPE_DNS, buffer, offset);
+  public static DNS decodeDNS(final byte[] buffer) throws JniException {
+    return (DNS) decodeLayer(Layer.TYPE_DNS, buffer);
   }
 
 }

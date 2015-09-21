@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+		android:orientation="horizontal"
+		android:layout_margin="30dp">
+	    
+    
+
+	<Button
+            android:id="@+id/loadCaptureBT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/flat_selector"
+            android:text="@string/loadCaptureBT"
+            android:textColor="@android:color/white"
+		    android:onClick="actionBrowseInputCapture"/>
+		
+    
+</LinearLayout>

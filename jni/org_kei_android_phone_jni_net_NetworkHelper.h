@@ -17,14 +17,6 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getIn
 
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper
- * Method:    setInterface
- * Signature: (Lorg/kei/android/phone/jni/net/NetworkInterface;)V
- */
-JNIEXPORT void JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_setInterface
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     org_kei_android_phone_jni_net_NetworkHelper
  * Method:    getInterfaces
  * Signature: ()Ljava/util/List;
  */
@@ -33,16 +25,32 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getIn
 
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper
+ * Method:    isPCAP
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_isPCAP
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_kei_android_phone_jni_net_NetworkHelper
+ * Method:    getPCAPHeader
+ * Signature: (Ljava/lang/String;)Lorg/kei/android/phone/jni/net/capture/PCAPHeader;
+ */
+JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getPCAPHeader
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     org_kei_android_phone_jni_net_NetworkHelper
  * Method:    decodeLayer
- * Signature: (I[BI)Lorg/kei/android/phone/jni/net/layer/Layer;
+ * Signature: (I[B)Lorg/kei/android/phone/jni/net/layer/Layer;
  */
 JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer
-  (JNIEnv *, jclass, jint, jbyteArray, jint);
+  (JNIEnv *, jclass, jint, jbyteArray);
 
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper
  * Method:    formatToHex
- * Signature: ([BI)Ljava/lang/StringBuilder;
+ * Signature: ([BI)Ljava/util/List;
  */
 JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_formatToHex
   (JNIEnv *, jclass, jbyteArray, jint);

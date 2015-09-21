@@ -1,15 +1,19 @@
 package org.kei.android.phone.netcap.utils;
 
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.kei.android.phone.netcap.dialog.CustomDialog;
+import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,8 +25,8 @@ import android.widget.TextView;
  * @par Project
  * NetCap
  *
- * @par Copyright
- * Copyright 2011-2013 Keidan, all right reserved
+ * @par 
+ * Copyright 2015 Keidan, all right reserved
  *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY.
@@ -36,6 +40,9 @@ import android.widget.TextView;
  *******************************************************************************
  */
 public class Tools {
+  public static final String TAG          = Tools.class.getSimpleName();
+  public static final File   DEFAULT_ROOT = Environment
+                                              .getExternalStorageDirectory();
 
   public static void showAlertDialog(final Activity a, final String title,
       final String message) {
@@ -97,19 +104,19 @@ public class Tools {
   }
 
   public static void switchTo(final Activity activity, final Class<?> c) {
-    switchTo(activity, c, null, null);
+    switchTo(activity, c, null);
   }
 
   public static void switchTo(final Activity activity, final Class<?> c,
-      final String extraKey, final String extraValue) {
+      final Map<String, String> extra) {
     final Intent i = new Intent(activity.getApplicationContext(), c);
-    if (extraKey != null && extraValue != null)
-      i.putExtra(extraKey, extraValue);
-    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-      i.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK which is
-                          // only available from API level 11
+    if (extra != null) {
+      Set<String> keysSet = extra.keySet();
+      for(Iterator<String> keys = keysSet.iterator(); keys.hasNext();) {
+        String key = keys.next();
+        i.putExtra(key, extra.get(key));
+      }
+    }
     activity.startActivity(i);
     Fx.updateTransition(activity, true);
   }
@@ -132,5 +139,46 @@ public class Tools {
     }
     activity.startActivityForResult(i, requestCode);
     Fx.updateTransition(activity, true);
+  }
+  
+  public static boolean gainRoot() {
+    Process p;
+    try {
+      // Preform su to get root privledges
+      p = Runtime.getRuntime().exec("su");
+      
+      // Attempt to write a file to a root-only
+      DataOutputStream os = new DataOutputStream(p.getOutputStream());
+      os.writeBytes("echo \"\" >/system/sd/.root.test\n");
+      // Close the terminal
+      os.writeBytes("exit\n");
+      os.flush();
+      try {
+        p.waitFor();
+        int ex = p.exitValue();
+        if (ex != 255) {
+          try {
+            p = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(p.getOutputStream());
+            os.writeBytes("rm -f /system/sd/.root.test\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            p.waitFor();
+          } catch (IOException e) {
+          }
+          return true;
+        } else {
+          Log.e(TAG, "Errno: " + ex);
+          return false;
+        }
+      } catch (InterruptedException e) {
+        Log.e(TAG, "Exception: " + e.getMessage(), e);
+        return false;
+      }
+    } catch (IOException e) {
+      Log.e(TAG, "Exception: " + e.getMessage(), e);
+      return false;
+    }
+    
   }
 }
