@@ -12,24 +12,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-    	android:paddingTop="24dp"
-    	android:paddingRight="24dp"
-    	android:paddingLeft="24dp"
-    	android:paddingBottom="20dp"
+        android:drawableStart="@drawable/ic_launcher"
+        android:paddingBottom="20dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="24dp"
         android:text="@string/empty"
         android:textColor="@android:color/black"
         android:textSize="15sp"
-        android:textStyle="bold"/>
-    
+        android:textStyle="bold" />
+
     <RelativeLayout
         android:id="@+id/contentRL"
         android:layout_width="wrap_content"
-    	android:layout_height="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="start"
-    	android:paddingRight="24dp"
-    	android:paddingLeft="24dp"
-    	android:paddingBottom="24dp">
-	</RelativeLayout>
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp" >
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -42,23 +43,23 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="100dp"
             android:layout_height="36dp"
-            android:text="@string/no"
-	    	android:paddingTop="8dp"
-	    	android:paddingStart="0dp"
-	    	android:paddingEnd="4dp"
-	    	android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp"
+            android:paddingEnd="4dp"
+            android:paddingStart="0dp"
+            android:paddingTop="8dp"
+            android:text="@string/no" />
 
         <Button
             android:id="@+id/yesBT"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="100dp"
             android:layout_height="36dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="4dp"
+            android:paddingStart="0dp"
+            android:paddingTop="8dp"
             android:text="@string/yes"
-            android:textColor="@color/blue_pressed"
-	    	android:paddingTop="8dp"
-	    	android:paddingStart="0dp"
-	    	android:paddingEnd="4dp"
-	    	android:paddingBottom="8dp"/>
+            android:textColor="@color/blue_pressed" />
     </LinearLayout>
 
 </LinearLayout>

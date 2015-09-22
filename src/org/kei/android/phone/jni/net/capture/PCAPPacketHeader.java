@@ -1,8 +1,8 @@
 package org.kei.android.phone.jni.net.capture;
 
+import android.annotation.SuppressLint;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.util.Log;
 
 /**
  *******************************************************************************
@@ -27,13 +27,16 @@ import android.util.Log;
  *******************************************************************************
  */
 public class PCAPPacketHeader {
-  private long   tsSec   = 0;
-  private long   tsUsec  = 0;
-  private long   inclLen = 0;
-  private long   origLen = 0;
+  @SuppressLint("SimpleDateFormat")
+  private static final SimpleDateFormat SDF     = new SimpleDateFormat(
+                                                    "yyyy.MM.dd HH:mm:ss");
+  private long                          tsSec   = 0;
+  private long                          tsUsec  = 0;
+  private long                          inclLen = 0;
+  private long                          origLen = 0;
   
   public String getTime() {
-    return tsSec + "." + tsUsec;
+    return SDF.format(new Date(tsSec * 1000)) + "." + tsUsec;
   }
   
   /**

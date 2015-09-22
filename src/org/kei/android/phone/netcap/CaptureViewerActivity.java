@@ -1,5 +1,6 @@
 package org.kei.android.phone.netcap;
 
+import org.kei.android.phone.netcap.fab.FabHelper;
 import org.kei.android.phone.netcap.listview.ListViewAdapter;
 import org.kei.android.phone.netcap.listview.CaptureListViewItem;
 import org.kei.android.phone.netcap.listview.CaptureListViewLoader;
@@ -9,6 +10,8 @@ import org.kei.android.phone.netcap.utils.fx.Fx;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 
 /**
@@ -36,7 +39,9 @@ import android.widget.ListView;
 public class CaptureViewerActivity extends Activity  {
   public static final String KEY_FILE         = "capture_file";
   private String             file             = Tools.DEFAULT_ROOT
-                                                  .getAbsolutePath();
+      .getAbsolutePath();
+  private ListView           captureLV        = null;
+  private ListViewAdapter<CaptureListViewItem>           adapter        = null;
   
 
   @Override
@@ -44,14 +49,15 @@ public class CaptureViewerActivity extends Activity  {
     super.onCreate(savedInstanceState);
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     setContentView(R.layout.activity_captureviewer);
+    FabHelper.getInstance().install(this);
     Fx.updateTransition(this, true);
     Bundle b = getIntent().getExtras();
     if(b != null) {
       if (b.containsKey(KEY_FILE))
         file = b.getString(KEY_FILE);
     }
-    ListView captureLV = (ListView)findViewById(R.id.captureLV);
-    ListViewAdapter<CaptureListViewItem> adapter = new ListViewAdapter<CaptureListViewItem>(this, R.layout.rowlayout_capture);
+    captureLV = (ListView)findViewById(R.id.captureLV);
+    adapter = new ListViewAdapter<CaptureListViewItem>(this, R.layout.rowlayout_capture);
     CaptureListViewLoader loader = new CaptureListViewLoader(this, adapter, file);
     captureLV.setAdapter(adapter);
     loader.execute();
@@ -67,5 +73,28 @@ public class CaptureViewerActivity extends Activity  {
     super.onBackPressed();
     Fx.updateTransition(this, false);
     finish();
+  }
+  
+
+  public void fabAction1(View view) {
+    captureLV.post(new Runnable() {
+      @Override
+      public void run() {
+        captureLV.setSelection(adapter.getCount() - 1);
+      }
+    });
+  }
+
+  public void fabAction2(View view) {
+    captureLV.post(new Runnable() {
+      @Override
+      public void run() {
+        captureLV.setSelection(0);
+      }
+    });
+  }
+
+  public void fabAction3(View view) {
+      Log.d("RRRR", "Action 3");
   }
 }

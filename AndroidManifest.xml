@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="22"
-        android:targetSdkVersion="23" />
+        android:targetSdkVersion="22" />
     <!--  sockets -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--  filechooser + write dump -->

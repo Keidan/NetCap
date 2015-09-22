@@ -4,6 +4,7 @@ import org.kei.android.phone.netcap.R;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -49,6 +50,14 @@ public class CustomDialog extends Dialog {
     noBT = (Button) findViewById(R.id.noBT);
     titleTV = (TextView) findViewById(R.id.titleTV);
     contentRL = (RelativeLayout) findViewById(R.id.contentRL);
+
+    final int size = 24;
+    final float density = a.getResources().getDisplayMetrics().density;
+    final Drawable drawable = a.getResources().getDrawable(R.drawable.ic_launcher, null);
+    final int width = Math.round(size * density);
+    final int height = Math.round(size * density);
+    drawable.setBounds(0, 0, width, height);
+    titleTV.setCompoundDrawables(drawable, null, null, null);
   }
 
   public void hideNegativeButton() {
