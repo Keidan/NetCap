@@ -1,5 +1,6 @@
 package org.kei.android.phone.netcap;
 
+import org.kei.android.phone.netcap.dialog.CustomDialog;
 import org.kei.android.phone.netcap.fab.FabHelper;
 import org.kei.android.phone.netcap.listview.ListViewAdapter;
 import org.kei.android.phone.netcap.listview.CaptureListViewItem;
@@ -12,11 +13,13 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 
 /**
  *******************************************************************************
- * @file CaptureActivity.java
+ * @file CaptureViewerActivity.java
  * @author Keidan
  * @date 11/09/2015
  * @par Project
@@ -37,12 +40,11 @@ import android.widget.ListView;
  *******************************************************************************
  */
 public class CaptureViewerActivity extends Activity  {
-  public static final String KEY_FILE         = "capture_file";
-  private String             file             = Tools.DEFAULT_ROOT
-      .getAbsolutePath();
-  private ListView           captureLV        = null;
-  private ListViewAdapter<CaptureListViewItem>           adapter        = null;
-  
+  public static final String                   KEY_FILE       = "capture_file";
+  private String                               file           = Tools.DEFAULT_ROOT
+                                                                  .getAbsolutePath();
+  private ListView                             captureLV      = null;
+  private ListViewAdapter<CaptureListViewItem> adapter        = null;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class CaptureViewerActivity extends Activity  {
     }
     captureLV = (ListView)findViewById(R.id.captureLV);
     adapter = new ListViewAdapter<CaptureListViewItem>(this, R.layout.rowlayout_capture);
+    adapter.setFilterId(CaptureListViewItem.FILTER_BY_ALL);
     CaptureListViewLoader loader = new CaptureListViewLoader(this, adapter, file);
     captureLV.setAdapter(adapter);
     loader.execute();
@@ -95,6 +98,39 @@ public class CaptureViewerActivity extends Activity  {
   }
 
   public void fabAction3(View view) {
-      Log.d("RRRR", "Action 3");
+    Log.d("RRRR", "Action 3");
+    final CustomDialog cd = new CustomDialog(this);
+    cd.setTitle("Search");
+    cd.setHeigth(500);
+    cd.setContentHeigth(300);
+    final View content = cd.setViewFromRes(R.layout.search_dialog);
+    content.invalidate();
+    final EditText searchET = (EditText) content.findViewById(R.id.searchET);
+    cd.setCancelable(false);
+    cd.setPositiveOnClickListener(new android.view.View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        final String search = searchET.getText().toString();
+        final boolean idCB = ((CheckBox) content.findViewById(R.id.idCB)).isChecked();
+        final boolean timeCB = ((CheckBox) content.findViewById(R.id.timeCB)).isChecked();
+        final boolean protocolCB = ((CheckBox) content.findViewById(R.id.protocolCB)).isChecked();
+        final boolean infoCB = ((CheckBox) content.findViewById(R.id.infoCB)).isChecked();
+        int flags = 0;
+        if(idCB) flags |= CaptureListViewItem.FILTER_BY_ID;
+        if(timeCB) flags |= CaptureListViewItem.FILTER_BY_TIME;
+        if(protocolCB) flags |= CaptureListViewItem.FILTER_BY_PROTOCOL;
+        if(infoCB) flags |= CaptureListViewItem.FILTER_BY_INFO;
+        adapter.setFilterId(flags);
+        adapter.filter(search);
+        cd.cancel();
+      }
+    });
+    cd.setNegativeOnClickListener(new android.view.View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        cd.cancel();
+      }
+    });
+    cd.show();
   }
 }

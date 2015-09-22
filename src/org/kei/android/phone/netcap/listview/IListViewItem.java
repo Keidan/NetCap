@@ -26,4 +26,6 @@ import android.widget.LinearLayout;
  */
 public interface IListViewItem {
   public void updateItem(final LinearLayout layoutItem, final Object object);
+  
+  public boolean isFilterable(final Object o, final int filterId, final String text);
 }

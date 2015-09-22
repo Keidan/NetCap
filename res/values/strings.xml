@@ -13,4 +13,9 @@
     <string name="loadCaptureBT">Load capture from file</string>
 	<string name="outputCaptureTV">Save capture into</string>
 	<string name="action_cancel">Cancel</string>
+	<string name="search">Search</string>
+    <string name="search_id">ID</string>
+    <string name="search_time">Time</string>
+    <string name="search_protocol">Protocol</string>
+    <string name="search_info">Info</string>
 </resources>

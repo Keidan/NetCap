@@ -1,5 +1,7 @@
 package org.kei.android.phone.netcap.listview;
 
+import java.util.Locale;
+
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
 import org.kei.android.phone.netcap.R;
 
@@ -26,14 +28,18 @@ import android.widget.TextView;
  *******************************************************************************
  */
 public class CaptureListViewItem implements IListViewItem {
-  private PCAPPacketHeader pheader   = null;
-  private byte[]           layer     = null;
-  private String           id        = "(null)";
-  private String           time      = "(null)";
-  private String           protocol  = "(null)";
-  private String           info      = "(null)";
+  public static final int  FILTER_BY_ID       = 1;
+  public static final int  FILTER_BY_TIME     = 2;
+  public static final int  FILTER_BY_PROTOCOL = 4;
+  public static final int  FILTER_BY_INFO     = 8;
+  public static final int  FILTER_BY_ALL      = 15;
+  private PCAPPacketHeader pheader            = null;
+  private byte[]           layer              = null;
+  private String           id                 = "(null)";
+  private String           time               = "(null)";
+  private String           protocol           = "(null)";
+  private String           info               = "(null)";
   
-
   @Override
   public void updateItem(final LinearLayout layoutItem, final Object object) {
     final CaptureListViewItem me = (CaptureListViewItem)object;
@@ -93,6 +99,23 @@ public class CaptureListViewItem implements IListViewItem {
 
   public void setInfo(String info) {
     this.info = info;
+  }
+  
+  @Override
+  public boolean isFilterable(Object o, final int filterId, final String text) {
+    CaptureListViewItem clvi = (CaptureListViewItem)o;
+    Locale l = Locale.US;
+    String t = text.toLowerCase(l);
+    boolean b = false;
+    if((filterId & FILTER_BY_ID) == FILTER_BY_ID)
+      b = clvi.id.toLowerCase(l).contains(t);
+    if(!b && (filterId & FILTER_BY_TIME) == FILTER_BY_TIME)
+      b = clvi.time.toLowerCase(l).contains(t);
+    if(!b && (filterId & FILTER_BY_PROTOCOL) == FILTER_BY_PROTOCOL)
+      b = clvi.protocol.toLowerCase(l).contains(t);
+    if(!b && (filterId & FILTER_BY_INFO) == FILTER_BY_INFO)
+      b = clvi.info.toLowerCase(l).contains(t);
+    return b;
   }
   
 }
