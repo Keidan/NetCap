@@ -6,12 +6,14 @@
       android:padding="10dp"
       android:orientation="horizontal">
     <TextView android:id="@+id/idTV"
+        android:textSize="12sp"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textIsSelectable="false"/>
     <TextView android:id="@+id/timeTV"
+        android:textSize="12sp"
       	android:paddingEnd="5sp"
       	android:paddingStart="0sp"
         android:layout_weight="4"
@@ -19,6 +21,7 @@
         android:layout_height="wrap_content"
         android:textIsSelectable="false"/>
     <TextView android:id="@+id/protocolTV"
+        android:textSize="12sp"
       	android:paddingEnd="5sp"
       	android:paddingStart="0sp"
         android:layout_weight="1"
@@ -26,6 +29,7 @@
         android:layout_height="wrap_content"
         android:textIsSelectable="false"/>
     <TextView android:id="@+id/infoTV"
+        android:textSize="12sp"
         android:layout_weight="5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
