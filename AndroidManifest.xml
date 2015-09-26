@@ -28,7 +28,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".chooser.FileChooserActivity"/>
-        <activity android:name=".CaptureViewerActivity" android:configChanges="orientation|screenSize"/>
+        <activity android:name=".CaptureViewerActivity" android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            	<data android:mimeType="application/cap" />
+            </intent-filter>
+        </activity>
         <activity android:name=".InputTabActivity"/>
         <activity android:name=".OutputTabActivity"/>
         

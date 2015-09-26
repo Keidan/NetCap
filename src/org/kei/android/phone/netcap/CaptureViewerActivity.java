@@ -39,8 +39,7 @@ import android.widget.ListView;
  */
 public class CaptureViewerActivity extends Activity  {
   public static final String                   KEY_FILE       = "capture_file";
-  private String                               file           = Tools.DEFAULT_ROOT
-                                                                  .getAbsolutePath();
+  private String                               file           = null;
   private ListView                             captureLV      = null;
   private ListViewAdapter<CaptureListViewItem> adapter        = null;
 
@@ -56,6 +55,7 @@ public class CaptureViewerActivity extends Activity  {
       if (b.containsKey(KEY_FILE))
         file = b.getString(KEY_FILE);
     }
+    if(file == null) file = getIntent().getData().getEncodedPath();
     captureLV = (ListView)findViewById(R.id.captureLV);
     adapter = new ListViewAdapter<CaptureListViewItem>(this, R.layout.rowlayout_capture);
     adapter.setFilterId(CaptureListViewItem.FILTER_BY_ALL);
@@ -63,7 +63,7 @@ public class CaptureViewerActivity extends Activity  {
     captureLV.setAdapter(adapter);
     loader.execute();
   }
-  
+
   @Override
   public void onDestroy() {
     super.onDestroy();
