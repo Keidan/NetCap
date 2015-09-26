@@ -31,6 +31,8 @@ extern "C" {
 #define org_kei_android_phone_jni_net_layer_Layer_TYPE_NDP 10L
 #undef org_kei_android_phone_jni_net_layer_Layer_TYPE_DNS
 #define org_kei_android_phone_jni_net_layer_Layer_TYPE_DNS 11L
+#undef org_kei_android_phone_jni_net_layer_Layer_TYPE_PAYLOAD
+#define org_kei_android_phone_jni_net_layer_Layer_TYPE_PAYLOAD -1L
 #ifdef __cplusplus
 }
 #endif

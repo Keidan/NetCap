@@ -5,20 +5,17 @@ package org.kei.android.phone.jni.net.layer;
  * @file Layer.java
  * @author Keidan
  * @date 07/09/2015
- * @par Project
- * NetCap
+ * @par Project NetCap
  *
- * @par 
- * Copyright 2015 Keidan, all right reserved
+ * @par Copyright 2015 Keidan, all right reserved
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY.
+ *      This software is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY.
  *
- * License summary : 
- *    You can modify and redistribute the sources code and binaries.
- *    You can send me the bug-fix
+ *      License summary : You can modify and redistribute the sources code and
+ *      binaries. You can send me the bug-fix
  *
- * Term of the license in in the file license.txt.
+ *      Term of the license in in the file license.txt.
  *
  *******************************************************************************
  */
@@ -35,8 +32,11 @@ public abstract class Layer {
   public static final int TYPE_DHCPv6   = 0x09;
   public static final int TYPE_NDP      = 0x0A;
   public static final int TYPE_DNS      = 0x0B;
+  public static final int TYPE_PAYLOAD  = -1;
   private int             type          = TYPE_ETHERNET;
-
+  private int             length        = 0;
+  private Layer           next          = null;
+  
   /**
    * Allocate the object with the layer type.
    *
@@ -46,7 +46,7 @@ public abstract class Layer {
   public Layer(final int type) {
     this.type = type;
   }
-
+  
   /**
    * Get the packet type.
    *
@@ -55,4 +55,43 @@ public abstract class Layer {
   public int getType() {
     return type;
   }
+  
+  /**
+   * Get the data length.
+   * 
+   * @return int
+   */
+  public int getLength() {
+    return length;
+  }
+  
+  /**
+   * Set the data length.
+   * 
+   * @param length
+   *          The length.
+   */
+  public void setLength(final int length) {
+    this.length = length;
+  }
+  
+  /**
+   * Get the next layer.
+   * 
+   * @return {@link org.kei.android.phone.jni.net.layer.Layer}
+   */
+  public Layer getNext() {
+    return next;
+  }
+  
+  /**
+   * Set the next layer
+   * 
+   * @param next
+   *          the Layer.
+   */
+  public void setNext(final Layer next) {
+    this.next = next;
+  }
+
 }

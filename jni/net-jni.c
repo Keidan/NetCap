@@ -31,61 +31,12 @@
 #include <jni.h>
 #include "net.h"
 #include "org_kei_android_phone_jni_net_capture_PCAPHeader.h"
+#include "net-jni-type.h"
 
 #define LOG_E(TAG, fmt, ...) __android_log_print(ANDROID_LOG_ERROR, TAG, fmt, ##__VA_ARGS__);
 #define GET_STRING(str) (str == NULL ? "(null)" : str)
 #define TOJLONG(value) (jlong)(unsigned long long)value
 
-struct JniException{
-    jclass clazz;
-    jmethodID constructor;
-    jmethodID setLocation;
-};
-
-struct ArrayList {
-    jclass clazz;
-    jmethodID constructor;
-    jmethodID add;
-};
-
-struct NetworkInterface {
-    jclass clazz;
-    jmethodID constructor;
-    jmethodID setName;
-    jmethodID setIPv4;
-    jmethodID setMac;
-    jmethodID setBroadcast;
-    jmethodID setMask;
-    jmethodID setFamily;
-    jmethodID setMetric;
-    jmethodID setMTU;
-    jmethodID setFlags;
-    jmethodID setIndex;
-};
-struct PCAPHeader {
-    jclass clazz;
-    jmethodID constructor;
-    jmethodID setMagicNumber;
-    jmethodID setVersionMajor;
-    jmethodID setVersionMinor;
-    jmethodID setThiszone;
-    jmethodID setSigfigs;
-    jmethodID setSnapLength;
-    jmethodID setNetwork;
-};
-struct PCAPPacketHeader {
-    jclass clazz;
-    jmethodID constructor;
-    jmethodID setTsSec;
-    jmethodID setTsUsec;
-    jmethodID setInclLen;
-    jmethodID setOrigLen;
-};
-struct ICapture {
-    jclass clazz;
-    jmethodID captureProcess;
-    jmethodID captureEnd;
-};
 
 /**
  * Throw a JniException.
@@ -111,6 +62,10 @@ static struct NetworkInterface networkInterface = { NULL, NULL, NULL, NULL, NULL
 static struct PCAPHeader pcapHeader = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static struct PCAPPacketHeader pcapPacketHeader = { NULL, NULL, NULL, NULL, NULL, NULL };
 static struct ICapture icapture = { NULL, NULL, NULL };
+static struct ILayer layer = { NULL, NULL, NULL };
+static struct Ethernet ethernet = { NULL, NULL, NULL, NULL, NULL };
+static struct IPv4 ip4 = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static struct IPv6 ip6 = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static JavaVM *java_vm = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
@@ -178,6 +133,53 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   (*env)->DeleteLocalRef(env, tmpC);
   icapture.captureProcess = (*env)->GetMethodID (env, icapture.clazz, "captureProcess", "(Lorg/kei/android/phone/jni/net/capture/CaptureFile;Lorg/kei/android/phone/jni/net/capture/PCAPPacketHeader;[B)V");
   icapture.captureEnd = (*env)->GetMethodID (env, icapture.clazz, "captureEnd", "(Lorg/kei/android/phone/jni/net/capture/CaptureFile;)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/Layer");
+  layer.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  layer.setLength = (*env)->GetMethodID (env, layer.clazz, "setLength", "(I)V");
+  layer.setNext = (*env)->GetMethodID (env, layer.clazz, "setNext", "(Lorg/kei/android/phone/jni/net/layer/Layer;)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/link/Ethernet");
+  ethernet.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  ethernet.constructor = (*env)->GetMethodID (env, ethernet.clazz, "<init>", "()V");
+  ethernet.setSource = (*env)->GetMethodID (env, ethernet.clazz, "setSource", "(Ljava/lang/String;)V");
+  ethernet.setDestination = (*env)->GetMethodID (env, ethernet.clazz, "setDestination", "(Ljava/lang/String;)V");
+  ethernet.setProto = (*env)->GetMethodID (env, ethernet.clazz, "setProto", "(I)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/internet/IPv4");
+  ip4.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  ip4.constructor = (*env)->GetMethodID (env, ip4.clazz, "<init>", "()V");
+  ip4.setSource = (*env)->GetMethodID (env, ip4.clazz, "setSource", "(Ljava/lang/String;)V");
+  ip4.setDestination = (*env)->GetMethodID (env, ip4.clazz, "setDestination", "(Ljava/lang/String;)V");
+  ip4.setTOS = (*env)->GetMethodID (env, ip4.clazz, "setTOS", "(I)V");
+  ip4.setTotLength = (*env)->GetMethodID (env, ip4.clazz, "setTotLength", "(I)V");
+  ip4.setID = (*env)->GetMethodID (env, ip4.clazz, "setID", "(I)V");
+  ip4.setFragOff = (*env)->GetMethodID (env, ip4.clazz, "setFragOff", "(I)V");
+  ip4.setTTL = (*env)->GetMethodID (env, ip4.clazz, "setTTL", "(I)V");
+  ip4.setProtocol = (*env)->GetMethodID (env, ip4.clazz, "setProtocol", "(I)V");
+  ip4.setChecksum = (*env)->GetMethodID (env, ip4.clazz, "setChecksum", "(I)V");
+  ip4.setReservedBit = (*env)->GetMethodID (env, ip4.clazz, "setReservedBit", "(Z)V");
+  ip4.setDontFragment = (*env)->GetMethodID (env, ip4.clazz, "setDontFragment", "(Z)V");
+  ip4.setMoreFragments = (*env)->GetMethodID (env, ip4.clazz, "setMoreFragments", "(Z)V");
+  ip4.setHeaderLength = (*env)->GetMethodID (env, ip4.clazz, "setHeaderLength", "(I)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/internet/IPv6");
+  ip6.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  ip6.constructor = (*env)->GetMethodID (env, ip6.clazz, "<init>", "()V");
+  ip6.setSource = (*env)->GetMethodID (env, ip6.clazz, "setSource", "(Ljava/lang/String;)V");
+  ip6.setDestination = (*env)->GetMethodID (env, ip6.clazz, "setDestination", "(Ljava/lang/String;)V");
+  ip6.setPriority = (*env)->GetMethodID (env, ip6.clazz, "setPriority", "(I)V");
+  ip6.setVersion = (*env)->GetMethodID (env, ip6.clazz, "setVersion", "(I)V");
+  ip6.setFlowLbl_1 = (*env)->GetMethodID (env, ip6.clazz, "setFlowLbl_1", "(I)V");
+  ip6.setFlowLbl_2 = (*env)->GetMethodID (env, ip6.clazz, "setFlowLbl_2", "(I)V");
+  ip6.setFlowLbl_3 = (*env)->GetMethodID (env, ip6.clazz, "setFlowLbl_3", "(I)V");
+  ip6.setPayloadLen = (*env)->GetMethodID (env, ip6.clazz, "setPayloadLen", "(I)V");
+  ip6.setNexthdr = (*env)->GetMethodID (env, ip6.clazz, "setNexthdr", "(I)V");
+  ip6.setHopLimit = (*env)->GetMethodID (env, ip6.clazz, "setHopLimit", "(I)V");
 
   if(attached)
     (*java_vm)->DetachCurrentThread(java_vm);
@@ -392,15 +394,6 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getIn
 
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper
- * Method:    decodeLayer
- * Signature: (I[B)Lorg/kei/android/phone/jni/net/layer/Layer;
- */
-JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer(JNIEnv *env, jclass clazz, jint type, jbyteArray buffer) {
-  return NULL;
-}
-
-/*
- * Class:     org_kei_android_phone_jni_net_NetworkHelper
  * Method:    formatToHex
  * Signature: ([BI)Ljava/util/List;
  */
@@ -475,3 +468,84 @@ jobject initializeNetworkInterface(JNIEnv *env, struct net_iface_s *nd) {
   (*env)->CallVoidMethod(env, ni, networkInterface.setIndex, nd->index);
   return ni;
 }
+
+/*
+ * Class:     org_kei_android_phone_jni_net_NetworkHelper
+ * Method:    decodeLayer
+ * Signature: ([B)Lorg/kei/android/phone/jni/net/layer/Layer;
+ */
+JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer(JNIEnv *env, jclass clazz, jbyteArray buffer) {
+	/*struct iphdr;
+	union tcp_word_hdr *utcp;// = 	(union tcp_word_hdr*)(buffer + offset);
+	struct tcphdr *tcp;// = &utcp->hdr;
+	struct udphdr *udp;
+	struct icmphdr *icmp4;
+	struct arphdrs *arps;*/
+
+  char cbuffer_64[64];
+  int buff_len = (*env)->GetArrayLength(env, buffer);
+  jbyte* rawjBytes = (*env)->GetByteArrayElements(env, buffer, NULL);
+  unsigned char *p = (unsigned char *)rawjBytes;
+
+  struct ethhdr *eth = (struct ethhdr *)p;
+  int size = sizeof(struct ethhdr);
+  int offset = size;
+
+  jobject jeth = (*env)->NewObject(env, ethernet.clazz, ethernet.constructor);
+  (*env)->CallVoidMethod(env, jeth, layer.setLength, size);
+  (*env)->CallVoidMethod(env, jeth, ethernet.setProto, ntohs(eth->h_proto));
+  sprintf(cbuffer_64, "%02x:%02x:%02x:%02x:%02x:%02x", eth->h_source[0], eth->h_source[1], eth->h_source[2], eth->h_source[3], eth->h_source[4], eth->h_source[5]);
+  (*env)->CallVoidMethod(env, jeth, ethernet.setSource, (*env)->NewStringUTF (env, cbuffer_64));
+  sprintf(cbuffer_64, "%02x:%02x:%02x:%02x:%02x:%02x", eth->h_dest[0], eth->h_dest[1], eth->h_dest[2], eth->h_dest[3], eth->h_dest[4], eth->h_dest[5]);
+  (*env)->CallVoidMethod(env, jeth, ethernet.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
+
+  if(ntohs(eth->h_proto) == ETH_P_IP || ntohs(eth->h_proto) == ETH_P_IPV6) {
+    jobject jip;
+    struct iphdr *ipv4 = (struct iphdr*)(p + offset);
+    unsigned char protocol = 0;
+    if(ipv4->version == 4) {
+      size = sizeof(struct iphdr);
+      offset = size;
+      jip = (*env)->NewObject(env, ip4.clazz, ip4.constructor);
+      (*env)->CallVoidMethod(env, jip, layer.setLength, size);
+      inet_ntop(AF_INET, &ipv4->saddr, cbuffer_64, INET_ADDRSTRLEN);
+      (*env)->CallVoidMethod(env, jip, ip4.setSource, (*env)->NewStringUTF (env, cbuffer_64));
+      inet_ntop(AF_INET, &ipv4->daddr, cbuffer_64, INET_ADDRSTRLEN);
+      (*env)->CallVoidMethod(env, jip, ip4.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
+      (*env)->CallVoidMethod(env, jip, ip4.setTOS, ntohs(ipv4->tos));
+      (*env)->CallVoidMethod(env, jip, ip4.setTotLength, ntohs(ipv4->tot_len));
+      (*env)->CallVoidMethod(env, jip, ip4.setID, ipv4->id);
+      (*env)->CallVoidMethod(env, jip, ip4.setFragOff, ntohs(ipv4->frag_off));
+      (*env)->CallVoidMethod(env, jip, ip4.setTTL, ipv4->ttl);
+      (*env)->CallVoidMethod(env, jip, ip4.setProtocol, ipv4->protocol);
+      (*env)->CallVoidMethod(env, jip, ip4.setChecksum, ipv4->check);
+      (*env)->CallVoidMethod(env, jip, ip4.setReservedBit, !!(ipv4->id&IP_RF));
+      (*env)->CallVoidMethod(env, jip, ip4.setDontFragment, !!(ipv4->id&IP_DF));
+      (*env)->CallVoidMethod(env, jip, ip4.setMoreFragments, !!(ipv4->id&IP_MF));
+      (*env)->CallVoidMethod(env, jip, ip4.setHeaderLength, (int)(ipv4->ihl + sizeof(struct iphdr)));
+      protocol = ipv4->protocol;
+    } else {
+      struct ipv6hdr *ipv6 = (struct ipv6hdr*)(p + offset);
+	  size = sizeof(struct ipv6hdr);
+	  offset = size;
+	  jip = (*env)->NewObject(env, ip6.clazz, ip6.constructor);
+      (*env)->CallVoidMethod(env, jip, layer.setLength, size);
+      inet_ntop(AF_INET6, &ipv6->saddr, cbuffer_64, INET6_ADDRSTRLEN);
+      (*env)->CallVoidMethod(env, jip, ip6.setSource, (*env)->NewStringUTF (env, cbuffer_64));
+      inet_ntop(AF_INET6, &ipv6->daddr, cbuffer_64, INET6_ADDRSTRLEN);
+      (*env)->CallVoidMethod(env, jip, ip6.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
+      (*env)->CallVoidMethod(env, jip, ip6.setPriority, ipv6->priority);
+      (*env)->CallVoidMethod(env, jip, ip6.setVersion, ipv6->version);
+      (*env)->CallVoidMethod(env, jip, ip6.setFlowLbl_1, ipv6->flow_lbl[0]);
+      (*env)->CallVoidMethod(env, jip, ip6.setFlowLbl_2, ipv6->flow_lbl[1]);
+      (*env)->CallVoidMethod(env, jip, ip6.setFlowLbl_3, ipv6->flow_lbl[2]);
+      (*env)->CallVoidMethod(env, jip, ip6.setPayloadLen, ipv6->payload_len);
+      (*env)->CallVoidMethod(env, jip, ip6.setNexthdr, ipv6->nexthdr);
+      (*env)->CallVoidMethod(env, jip, ip6.setHopLimit, ipv6->hop_limit);
+      protocol = ipv6->hop_limit;
+    }
+    (*env)->CallVoidMethod(env, jeth, layer.setNext, jip);
+  }
+  return jeth;
+}
+

@@ -5,18 +5,6 @@ import java.util.List;
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
-import org.kei.android.phone.jni.net.layer.application.DHCPv4;
-import org.kei.android.phone.jni.net.layer.application.DHCPv6;
-import org.kei.android.phone.jni.net.layer.application.DNS;
-import org.kei.android.phone.jni.net.layer.internet.ICMPv4;
-import org.kei.android.phone.jni.net.layer.internet.ICMPv6;
-import org.kei.android.phone.jni.net.layer.internet.IPv4;
-import org.kei.android.phone.jni.net.layer.internet.IPv6;
-import org.kei.android.phone.jni.net.layer.link.ARP;
-import org.kei.android.phone.jni.net.layer.link.Ethernet;
-import org.kei.android.phone.jni.net.layer.link.NDP;
-import org.kei.android.phone.jni.net.layer.transport.TCP;
-import org.kei.android.phone.jni.net.layer.transport.UDP;
 
 /**
  *******************************************************************************
@@ -83,17 +71,15 @@ public class NetworkHelper {
   public static native PCAPHeader getPCAPHeader(final String filename) throws JniException;
 
   /**
-   * Decode the buffer in accordance to the layer type.
+   * Decode the buffer.
    * 
-   * @param type
-   *          The layer type.
    * @param buffer
    *          The buffer.
    * @return The layer.
    * @throws JniException
    *           If an exception has occurred.
    */
-  private static native Layer decodeLayer(int type, byte[] buffer) throws JniException;
+  public static native Layer decodeLayer(byte[] buffer) throws JniException;
 
   /**
    * Convert the input buffer to an Hex string.
@@ -110,161 +96,35 @@ public class NetworkHelper {
     return formatToHex(buffer, 0);
   }
 
-  /**
-   * Extract the Ethernet layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.link.Ethernet}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static Ethernet decodeEthernet(final byte[] buffer) throws JniException {
-    return (Ethernet) decodeLayer(Layer.TYPE_ETHERNET, buffer);
+  public static String getProtocol(final byte[] buffer) {
+    String prot = "ERR";
+    try {
+      Layer layer = NetworkHelper.decodeLayer(buffer);
+      Layer last;
+      do {
+        last = layer;
+      } while((layer = layer.getNext()) != null);
+      if(last != null) {
+        switch (last.getType()) {
+          case Layer.TYPE_ETHERNET: prot = ("ETH"); break;
+          case Layer.TYPE_IPv4: prot = ("IPv4"); break;
+          case Layer.TYPE_IPv6: prot = ("IPv6"); break;
+          case Layer.TYPE_ICMPv4: prot = ("ICMPv4"); break;
+          case Layer.TYPE_ICMPv6: prot = ("ICMPv6"); break;
+          case Layer.TYPE_TCP: prot = ("TCP"); break;
+          case Layer.TYPE_UDP: prot = ("UDP"); break;
+          case Layer.TYPE_ARP: prot = ("ARP"); break;
+          case Layer.TYPE_DHCPv4: prot = ("DHCPv4"); break;
+          case Layer.TYPE_DHCPv6: prot = ("DHCPv6"); break;
+          case Layer.TYPE_NDP: prot = ("NDP"); break;
+          case Layer.TYPE_DNS: prot = ("DNS"); break;
+          case Layer.TYPE_PAYLOAD: prot = ("PAYLOAD"); break;
+          default: prot = ("UNKNOWN"); break;
+        }
+      }
+    } catch (JniException e) {
+      e.printStackTrace();
+    }
+    return prot;
   }
-
-  /**
-   * Extract the IPv4 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.internet.IPv4}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static IPv4 decodeIPv4(final byte[] buffer) throws JniException {
-    return (IPv4) decodeLayer(Layer.TYPE_IPv4, buffer);
-  }
-
-  /**
-   * Extract the IPv6 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.internet.IPv6}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static IPv6 decodeIPv6(final byte[] buffer) throws JniException {
-    return (IPv6) decodeLayer(Layer.TYPE_IPv6, buffer);
-  }
-
-  /**
-   * Extract the ICMPv4 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.internet.ICMPv4}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static ICMPv4 decodeICMPv4(final byte[] buffer) throws JniException {
-    return (ICMPv4) decodeLayer(Layer.TYPE_ICMPv4, buffer);
-  }
-
-  /**
-   * Extract the ICMPv6 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.internet.ICMPv6}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static ICMPv6 decodeICMPv6(final byte[] buffer) throws JniException {
-    return (ICMPv6) decodeLayer(Layer.TYPE_ICMPv6, buffer);
-  }
-
-  /**
-   * Extract the TCP layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.transport.TCP}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static TCP decodeTCP(final byte[] buffer) throws JniException {
-    return (TCP) decodeLayer(Layer.TYPE_TCP, buffer);
-  }
-
-  /**
-   * Extract the UDP layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.transport.UDP}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static UDP decodeUDP(final byte[] buffer) throws JniException {
-    return (UDP) decodeLayer(Layer.TYPE_UDP, buffer);
-  }
-
-  /**
-   * Extract the ARP layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.transport.TCP}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static ARP decodeARP(final byte[] buffer) throws JniException {
-    return (ARP) decodeLayer(Layer.TYPE_ARP, buffer);
-  }
-
-  /**
-   * Extract the DHCPv4 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.application.DHCPv4}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static DHCPv4 decodeDHCPv4(final byte[] buffer) throws JniException {
-    return (DHCPv4) decodeLayer(Layer.TYPE_DHCPv4, buffer);
-  }
-
-  /**
-   * Extract the DHCPv6 layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.application.DHCPv6
-}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static DHCPv6 decodeDHCPv6(final byte[] buffer) throws JniException {
-    return (DHCPv6) decodeLayer(Layer.TYPE_DHCPv6, buffer);
-  }
-
-  /**
-   * Extract the NDP layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.link.NDP}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static NDP decodeNDP(final byte[] buffer) throws JniException {
-    return (NDP) decodeLayer(Layer.TYPE_NDP, buffer);
-  }
-
-  /**
-   * Extract the DNS layer of the input buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return {@link org.kei.android.phone.jni.net.layer.application.DNS}
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static DNS decodeDNS(final byte[] buffer) throws JniException {
-    return (DNS) decodeLayer(Layer.TYPE_DNS, buffer);
-  }
-
 }

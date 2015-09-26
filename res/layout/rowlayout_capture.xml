@@ -14,7 +14,7 @@
     <TextView android:id="@+id/timeTV"
       	android:paddingEnd="5sp"
       	android:paddingStart="0sp"
-        android:layout_weight="3"
+        android:layout_weight="4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"/>
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:textIsSelectable="false"/>
     <TextView android:id="@+id/infoTV"
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"/>

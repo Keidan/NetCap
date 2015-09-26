@@ -42,10 +42,10 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getPC
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper
  * Method:    decodeLayer
- * Signature: (I[B)Lorg/kei/android/phone/jni/net/layer/Layer;
+ * Signature: ([B)Lorg/kei/android/phone/jni/net/layer/Layer;
  */
 JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer
-  (JNIEnv *, jclass, jint, jbyteArray);
+  (JNIEnv *, jclass, jbyteArray);
 
 /*
  * Class:     org_kei_android_phone_jni_net_NetworkHelper

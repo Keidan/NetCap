@@ -23,6 +23,30 @@
 #ifndef __NET_H__
   #define __NET_H__
 
+  #include <arpa/inet.h>
+  #include <linux/tcp.h>
+  #include <linux/udp.h>
+  #include <linux/ip.h>
+  #include <linux/ipv6.h>
+  #include <linux/if_ether.h>
+
+  struct arphdr2 {
+    unsigned char sha[ETH_ALEN];
+    unsigned char sip[4];
+    unsigned char tha[ETH_ALEN];
+    unsigned char tip[4];
+  };
+
+  struct arphdrs{
+    struct arphdr *arp1;
+    struct arphdr2 *arp2;
+  };
+
+  #define IP_RF 0x8000        /* reserved fragment flag */
+  #define IP_DF 0x4000        /* dont fragment flag */
+  #define IP_MF 0x2000        /* more fragments flag */
+  #define IP_OFFMASK 0x1fff   /* mask for fragmenting bits */
+
   #define NET_IP4_LEN 16
   #define NET_MAC_LEN 18
 

@@ -3,9 +3,12 @@ package org.kei.android.phone.netcap.listview;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kei.android.phone.jni.JniException;
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.capture.CaptureFile;
 import org.kei.android.phone.jni.net.capture.ICapture;
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
+import org.kei.android.phone.jni.net.layer.Layer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -79,18 +82,14 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
 
   @Override
   public void captureProcess(final CaptureFile capture,
-      final PCAPPacketHeader pheader, final byte[] layer) {
+      final PCAPPacketHeader pheader, final byte[] buffer) {
     final CaptureListViewItem item = new CaptureListViewItem();
     ++captureCount;
-    
     item.setId(""+captureCount);
     item.setTime(pheader.getTime());
-    /*
-     * item.setDescription(description);; item.setIcon(icon);
-     * item.setName(name); item.setNetwork(network);
-     */
+    item.setProtocol(NetworkHelper.getProtocol(buffer));
     item.setPheader(pheader);
-    item.setLayer(layer);
+    item.setLayer(buffer);
     items.add(item);
     /*if ((captureCount % 1000) == 0)
       handler.sendEmptyMessage(0);*/

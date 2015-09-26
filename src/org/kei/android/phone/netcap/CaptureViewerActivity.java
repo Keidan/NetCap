@@ -9,9 +9,7 @@ import org.kei.android.phone.netcap.utils.Tools;
 import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -49,7 +47,7 @@ public class CaptureViewerActivity extends Activity  {
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     setContentView(R.layout.activity_captureviewer);
     FabHelper.getInstance().install(this);
     Fx.updateTransition(this, true);
@@ -98,7 +96,6 @@ public class CaptureViewerActivity extends Activity  {
   }
 
   public void fabAction3(View view) {
-    Log.d("RRRR", "Action 3");
     final CustomDialog cd = new CustomDialog(this);
     cd.setTitle("Search");
     cd.setHeigth(500);
