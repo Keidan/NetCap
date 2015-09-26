@@ -43,6 +43,49 @@
   #define IP_MF 0x2000        /* more fragments flag */
   #define IP_OFFMASK 0x1fff   /* mask for fragmenting bits */
 
+  //DNS header structure
+  struct dns_header_s {
+      unsigned short                 id;         // identification number
+      unsigned char                  rd:1;       // recursion desired
+      unsigned char                  tc:1;       // truncated message
+      unsigned char                  aa:1;       // authoritive answer
+      unsigned char                  opcode:4;   // purpose of message
+      unsigned char                  qr:1;       // query/response flag
+      unsigned char                  rcode:4;    // response code
+      unsigned char                  cd:1;       // checking disabled
+      unsigned char                  ad:1;       // authenticated data
+      unsigned char                  z:1;        // its z! reserved
+      unsigned char                  ra:1;       // recursion availables
+      unsigned short                 q_count;    // number of question entries
+      unsigned short                 ans_count;  // number of answer entries
+      unsigned short                 auth_count; // number of authority entries
+      unsigned short                 add_count;  // number of resource entries
+  };
+
+  //Constant sized fields of query structure
+  struct dns_question_s {
+      unsigned short                 qtype;
+      unsigned short                 qclass;
+  };
+
+  //Constant sized fields of the resource record structure
+  #pragma pack(push, 1)
+  struct dns_r_data_s {
+      unsigned short                 type;
+      unsigned short                 _class;
+      unsigned int                   ttl;
+      unsigned short                 data_len;
+  };
+  #pragma pack(pop)
+
+  //Pointers to resource record contents
+  struct dns_r_record_s {
+      unsigned char         *name;
+      struct dns_r_data_s   *resource;
+      unsigned char         *rdata;
+  };
+
+
   #define NET_IP4_LEN 16
   #define NET_MAC_LEN 18
 

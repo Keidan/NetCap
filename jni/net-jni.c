@@ -71,6 +71,7 @@ static struct UDP udp = { NULL, NULL, NULL, NULL, NULL, NULL };
 static struct TCP tcp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static struct Payload payload = { NULL, NULL, NULL };
 static struct ARP arp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static struct DNS dns = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static JavaVM *java_vm = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
@@ -195,7 +196,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   udp.setLength = (*env)->GetMethodID (env, udp.clazz, "setLength", "(I)V");
   udp.setChecksum = (*env)->GetMethodID (env, udp.clazz, "setChecksum", "(I)V");
 
-
   tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/transport/TCP");
   tcp.clazz = (*env)->NewGlobalRef(env, tmpC);
   (*env)->DeleteLocalRef(env, tmpC);
@@ -222,9 +222,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   payload.constructor = (*env)->GetMethodID (env, payload.clazz, "<init>", "()V");
   payload.setDatas = (*env)->GetMethodID (env, payload.clazz, "setDatas", "([B)V");
 
-
-
-
   tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/link/ARP");
   arp.clazz = (*env)->NewGlobalRef(env, tmpC);
   (*env)->DeleteLocalRef(env, tmpC);
@@ -239,6 +236,25 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   arp.setTargetHardwareAddress = (*env)->GetMethodID (env, arp.clazz, "setTargetHardwareAddress", "(Ljava/lang/String;)V");
   arp.setTargetIPAddress = (*env)->GetMethodID (env, arp.clazz, "setTargetIPAddress", "(Ljava/lang/String;)V");
 
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/application/DNS");
+  dns.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  dns.constructor = (*env)->GetMethodID (env, dns.clazz, "<init>", "()V");
+  dns.setID = (*env)->GetMethodID (env, dns.clazz, "setID", "(I)V");
+  dns.setRD = (*env)->GetMethodID (env, dns.clazz, "setRD", "(Z)V");
+  dns.setTC = (*env)->GetMethodID (env, dns.clazz, "setTC", "(Z)V");
+  dns.setAA = (*env)->GetMethodID (env, dns.clazz, "setAA", "(Z)V");
+  dns.setOpcode = (*env)->GetMethodID (env, dns.clazz, "setOpcode", "(I)V");
+  dns.setQR = (*env)->GetMethodID (env, dns.clazz, "setQR", "(Z)V");
+  dns.setRCode = (*env)->GetMethodID (env, dns.clazz, "setRCode", "(I)V");
+  dns.setCD = (*env)->GetMethodID (env, dns.clazz, "setCD", "(Z)V");
+  dns.setAD = (*env)->GetMethodID (env, dns.clazz, "setAD", "(Z)V");
+  dns.setZ = (*env)->GetMethodID (env, dns.clazz, "setZ", "(Z)V");
+  dns.setRA = (*env)->GetMethodID (env, dns.clazz, "setRA", "(Z)V");
+  dns.setQCount = (*env)->GetMethodID (env, dns.clazz, "setQCount", "(I)V");
+  dns.setAnsCount = (*env)->GetMethodID (env, dns.clazz, "setAnsCount", "(I)V");
+  dns.setAuthCount = (*env)->GetMethodID (env, dns.clazz, "setAuthCount", "(I)V");
+  dns.setAddCount = (*env)->GetMethodID (env, dns.clazz, "setAddCount", "(I)V");
   if(attached)
     (*java_vm)->DetachCurrentThread(java_vm);
   return JNI_VERSION_1_6;
@@ -606,16 +622,44 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       (*env)->CallVoidMethod(env, judp, udp.setDestination, ntohs(udph->dest));
       (*env)->CallVoidMethod(env, judp, udp.setLength, ntohs(udph->len));
       (*env)->CallVoidMethod(env, judp, udp.setChecksum, ntohs(udph->check));
-      (*env)->CallVoidMethod(env, jip, layer.setNext, judp);
+      jobject prev;
       if((buff_len - offset) > 0) {
-    	int l = (buff_len - offset);
-    	jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-    	jbyteArray bytes = (*env)->NewByteArray(env, l);
-    	(*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-        (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-  	    (*env)->CallVoidMethod(env, judp, layer.setNext, jpayload);
-      	offset += (buff_len - offset);
+    	if(ntohs(udph->source) == 53 || ntohs(udph->dest) == 53) {
+          struct dns_header_s *dnsh = (struct dns_header_s*)(p + offset);
+	      jobject jdns = (*env)->NewObject(env, dns.clazz, dns.constructor);
+	      (*env)->CallVoidMethod(env, jdns, dns.setID, ntohs(dnsh->id));
+	      (*env)->CallVoidMethod(env, jdns, dns.setRD, !!dnsh->rd);
+	      (*env)->CallVoidMethod(env, jdns, dns.setTC, !!dnsh->tc);
+	      (*env)->CallVoidMethod(env, jdns, dns.setAA, !!dnsh->aa);
+	      (*env)->CallVoidMethod(env, jdns, dns.setOpcode, ntohs(dnsh->opcode));
+	      (*env)->CallVoidMethod(env, jdns, dns.setQR, !!dnsh->qr);
+	      (*env)->CallVoidMethod(env, jdns, dns.setRCode, ntohs(dnsh->rcode));
+	      (*env)->CallVoidMethod(env, jdns, dns.setCD, !!dnsh->cd);
+	      (*env)->CallVoidMethod(env, jdns, dns.setAD, !!dnsh->ad);
+	      (*env)->CallVoidMethod(env, jdns, dns.setZ, !!dnsh->z);
+	      (*env)->CallVoidMethod(env, jdns, dns.setRA, !!dnsh->ra);
+	      (*env)->CallVoidMethod(env, jdns, dns.setQCount, ntohs(dnsh->q_count));
+	      (*env)->CallVoidMethod(env, jdns, dns.setAnsCount, ntohs(dnsh->ans_count));
+	      (*env)->CallVoidMethod(env, jdns, dns.setAuthCount, ntohs(dnsh->auth_count));
+	      (*env)->CallVoidMethod(env, jdns, dns.setAddCount, ntohs(dnsh->add_count));
+          size = sizeof(struct dns_header_s);
+          offset += size;
+          (*env)->CallVoidMethod(env, jdns, layer.setLayerLength, size);
+          (*env)->CallVoidMethod(env, judp, layer.setNext, jdns);
+          prev = jdns;
+    	} else
+    		prev = judp;
+        if((buff_len - offset) > 0) {
+          int l = (buff_len - offset);
+          jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
+          jbyteArray bytes = (*env)->NewByteArray(env, l);
+          (*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
+          (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
+          (*env)->CallVoidMethod(env, prev, layer.setNext, jpayload);
+          offset += (buff_len - offset);
+        }
       }
+      (*env)->CallVoidMethod(env, jip, layer.setNext, judp);
     } else if(protocol == IPPROTO_TCP) {
       union tcp_word_hdr *utcp = (union tcp_word_hdr*)(p + offset);
       struct tcphdr *tcph = &utcp->hdr;

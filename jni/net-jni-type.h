@@ -173,4 +173,24 @@ struct ARP {
     jmethodID setTargetIPAddress;
 };
 
+struct DNS {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setID;
+    jmethodID setRD;
+    jmethodID setTC;
+    jmethodID setAA;
+    jmethodID setOpcode;
+    jmethodID setQR;
+    jmethodID setRCode;
+    jmethodID setCD;
+    jmethodID setAD;
+    jmethodID setZ;
+    jmethodID setRA;
+    jmethodID setQCount;
+    jmethodID setAnsCount;
+    jmethodID setAuthCount;
+    jmethodID setAddCount;
+};
+
 #endif /* __NET_JNI_TYPE_H__ */

@@ -5,11 +5,10 @@ import java.util.List;
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.application.DNS;
 import org.kei.android.phone.jni.net.layer.link.ARP;
 import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
-
-import android.util.Log;
 
 /**
  *******************************************************************************
@@ -111,6 +110,7 @@ public class NetworkHelper {
         if(layer != null && layer.getType() != Layer.TYPE_PAYLOAD) {
           last = layer;
           if(last != null && (last.getType() == Layer.TYPE_UDP || last.getType() == Layer.TYPE_TCP)) {
+            desc = "";
             int s = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
             int d = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
             Service srv = Service.findByPort(s);
@@ -135,6 +135,7 @@ public class NetworkHelper {
               desc += "]";
             }
           } else if(last != null && last.getType() == Layer.TYPE_ARP) {
+            desc = "";
             ARP arp = (ARP)last;
             if(arp.getOpcode() == ARP.REQUEST)
               desc += "Who is " + arp.getTargetIPAddress() + "?";
@@ -142,6 +143,13 @@ public class NetworkHelper {
               desc += arp.getSenderIPAddress() + " is " + arp.getSenderHardwareAddress();
             else
               desc += "Unknown";
+          } else if(last != null && last.getType() == Layer.TYPE_DNS) {
+            desc = "";
+            DNS dns = (DNS) last;
+            if(!dns.isQR()) {
+              desc += "Standard query 0x" + String.format("%04x", dns.getID());
+            } else
+              desc += "Standard query response 0x" + String.format("%04x", dns.getID());
           }
         }
       } while((layer = layer.getNext()) != null);
