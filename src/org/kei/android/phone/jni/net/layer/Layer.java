@@ -34,7 +34,7 @@ public abstract class Layer {
   public static final int TYPE_DNS      = 0x0B;
   public static final int TYPE_PAYLOAD  = -1;
   private int             type          = TYPE_ETHERNET;
-  private int             length        = 0;
+  private int             llength       = 0;
   private Layer           next          = null;
   
   /**
@@ -61,18 +61,18 @@ public abstract class Layer {
    * 
    * @return int
    */
-  public int getLength() {
-    return length;
+  public int getLayerLength() {
+    return llength;
   }
   
   /**
    * Set the data length.
    * 
-   * @param length
+   * @param llength
    *          The length.
    */
-  public void setLength(final int length) {
-    this.length = length;
+  public void setLayerLength(final int llength) {
+    this.llength = llength;
   }
   
   /**

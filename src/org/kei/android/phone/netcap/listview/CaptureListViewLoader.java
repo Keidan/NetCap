@@ -13,6 +13,7 @@ import org.kei.android.phone.jni.net.layer.Layer;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  *******************************************************************************
@@ -87,7 +88,13 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     ++captureCount;
     item.setId(""+captureCount);
     item.setTime(pheader.getTime());
-    item.setProtocol(NetworkHelper.getProtocol(buffer));
+    String info = NetworkHelper.getProtocolAndDesc(buffer, '|');
+    int idx = info.indexOf('|');
+    if(idx != -1) {
+      item.setProtocol(info.substring(0, idx));
+      info = info.substring(idx + 1);
+    }
+    item.setInfo(info);
     item.setPheader(pheader);
     item.setLayer(buffer);
     items.add(item);

@@ -78,7 +78,7 @@ struct ICapture {
 
 struct ILayer {
     jclass clazz;
-    jmethodID setLength;
+    jmethodID setLayerLength;
     jmethodID setNext;
 };
 
@@ -123,4 +123,34 @@ struct IPv6 {
     jmethodID setNexthdr;
     jmethodID setHopLimit;
 };
+
+struct UDP {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setSource;
+    jmethodID setDestination;
+    jmethodID setLength;
+    jmethodID setChecksum;
+};
+
+struct TCP {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setSource;
+    jmethodID setDestination;
+	jmethodID setCWR;
+	jmethodID setECE;
+	jmethodID setURG;
+	jmethodID setACK;
+	jmethodID setPSH;
+	jmethodID setRST;
+	jmethodID setSYN;
+	jmethodID setFIN;
+	jmethodID setSeq;
+	jmethodID setAckSeq;
+	jmethodID setWindow;
+	jmethodID setCheck;
+	jmethodID setUrgPtr;
+};
+
 #endif /* __NET_JNI_TYPE_H__ */
