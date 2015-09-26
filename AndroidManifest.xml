@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".chooser.FileChooserActivity"/>
-        <activity android:name=".CaptureViewerActivity"/>
+        <activity android:name=".CaptureViewerActivity" android:configChanges="orientation|screenSize"/>
         <activity android:name=".InputTabActivity"/>
         <activity android:name=".OutputTabActivity"/>
         
