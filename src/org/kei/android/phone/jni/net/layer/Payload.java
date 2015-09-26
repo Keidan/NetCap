@@ -42,7 +42,7 @@ public class Payload extends Layer {
    * @param datas
    *          The datas
    */
-  public void setData(final byte[] datas) {
+  public void setDatas(final byte[] datas) {
     this.datas = datas;
   }
 }

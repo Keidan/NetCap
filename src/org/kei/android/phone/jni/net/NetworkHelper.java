@@ -5,8 +5,11 @@ import java.util.List;
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.link.ARP;
 import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
+
+import android.util.Log;
 
 /**
  *******************************************************************************
@@ -103,35 +106,42 @@ public class NetworkHelper {
     String desc = "";
     try {
       Layer layer = NetworkHelper.decodeLayer(buffer);
-      Layer last;
+      Layer last = null;
       do {
-        last = layer;
-        if(last != null && (last.getType() == Layer.TYPE_UDP || last.getType() == Layer.TYPE_TCP)) {
-          int s = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
-          int d = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
-          Service srv = Service.findByPort(s);
-          if(srv ==Service.NOT_FOUND) desc += s;
-          else desc += srv.getName();
-          desc += " > ";
-          srv = Service.findByPort(d);
-          if(srv ==Service.NOT_FOUND) desc += d;
-          else desc += srv.getName();
-          
-          if(last.getType() == Layer.TYPE_UDP) {
-            desc += " src: " + ((UDP)last).getSource() + ", dest: " + ((UDP)last).getDestination();
-          } else {
-            TCP tcp = (TCP)last;
-            desc += " [";
-            if(tcp.isSYN()) desc += "SYN, ";
-            if(tcp.isPSH()) desc += "PSH, ";
-            if(tcp.isACK()) desc += "ACK, ";
-            if(tcp.isCWR()) desc += "CWR, ";
-            if(tcp.isECE()) desc += "ECE, ";
-            if(tcp.isRST()) desc += "RST, ";
-            if(tcp.isURG()) desc += "URG, ";
-            if(tcp.isFIN()) desc += "FIN, ";
-            if(desc.endsWith(", ")) desc = desc.substring(0, desc.length() - 2);
-            desc += "]";
+        if(layer != null && layer.getType() != Layer.TYPE_PAYLOAD) {
+          last = layer;
+          if(last != null && (last.getType() == Layer.TYPE_UDP || last.getType() == Layer.TYPE_TCP)) {
+            int s = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
+            int d = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
+            Service srv = Service.findByPort(s);
+            if(srv ==Service.NOT_FOUND) desc += s;
+            else desc += srv.getName() + "(" + srv.getPort() + ")";
+            desc += " > ";
+            srv = Service.findByPort(d);
+            if(srv ==Service.NOT_FOUND) desc += d;
+            else desc += srv.getName() + "(" + srv.getPort() + ")";
+            if(last.getType() == Layer.TYPE_TCP) {
+              TCP tcp = (TCP)last;
+              desc += " [";
+              if(tcp.isSYN()) desc += "SYN, ";
+              if(tcp.isPSH()) desc += "PSH, ";
+              if(tcp.isACK()) desc += "ACK, ";
+              if(tcp.isCWR()) desc += "CWR, ";
+              if(tcp.isECE()) desc += "ECE, ";
+              if(tcp.isRST()) desc += "RST, ";
+              if(tcp.isURG()) desc += "URG, ";
+              if(tcp.isFIN()) desc += "FIN, ";
+              if(desc.endsWith(", ")) desc = desc.substring(0, desc.length() - 2);
+              desc += "]";
+            }
+          } else if(last != null && last.getType() == Layer.TYPE_ARP) {
+            ARP arp = (ARP)last;
+            if(arp.getOpcode() == ARP.REQUEST)
+              desc += "Who is " + arp.getTargetIPAddress() + "?";
+            else if(arp.getOpcode() == ARP.REPLY)
+              desc += arp.getSenderIPAddress() + " is " + arp.getSenderHardwareAddress();
+            else
+              desc += "Unknown";
           }
         }
       } while((layer = layer.getNext()) != null);

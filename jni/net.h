@@ -29,17 +29,13 @@
   #include <linux/ip.h>
   #include <linux/ipv6.h>
   #include <linux/if_ether.h>
+  #include <linux/if_arp.h>
 
   struct arphdr2 {
     unsigned char sha[ETH_ALEN];
     unsigned char sip[4];
     unsigned char tha[ETH_ALEN];
     unsigned char tip[4];
-  };
-
-  struct arphdrs{
-    struct arphdr *arp1;
-    struct arphdr2 *arp2;
   };
 
   #define IP_RF 0x8000        /* reserved fragment flag */

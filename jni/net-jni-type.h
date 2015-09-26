@@ -153,4 +153,24 @@ struct TCP {
 	jmethodID setUrgPtr;
 };
 
+struct Payload {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setDatas;
+};
+
+struct ARP {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setFormatOfHardwareAddress;
+    jmethodID setFormatOfProtocolAddress;
+    jmethodID setLengthOfHardwareAddress;
+    jmethodID setLengthOfProtocolAddress;
+    jmethodID setOpcode;
+    jmethodID setSenderHardwareAddress;
+    jmethodID setSenderIPAddress;
+    jmethodID setTargetHardwareAddress;
+    jmethodID setTargetIPAddress;
+};
+
 #endif /* __NET_JNI_TYPE_H__ */
