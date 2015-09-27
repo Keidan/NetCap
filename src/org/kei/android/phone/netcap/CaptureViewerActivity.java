@@ -5,7 +5,6 @@ import org.kei.android.phone.netcap.fab.FabHelper;
 import org.kei.android.phone.netcap.listview.ListViewAdapter;
 import org.kei.android.phone.netcap.listview.CaptureListViewItem;
 import org.kei.android.phone.netcap.listview.CaptureListViewLoader;
-import org.kei.android.phone.netcap.utils.Tools;
 import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.app.Activity;

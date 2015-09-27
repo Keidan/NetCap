@@ -15,7 +15,10 @@ import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -81,6 +84,18 @@ public class OutputTabActivity extends Activity {
       Tools.showAlertDialog(this, "Error", "Unable to write into the destination folder!");
       return;
     }
+    PackageManager m = getPackageManager();
+    String s = getPackageName();
+    try {
+        PackageInfo p = m.getPackageInfo(s, 0);
+        s = p.applicationInfo.dataDir;
+    } catch (PackageManager.NameNotFoundException e) {
+    }
+    File netcap = new File(s, "netcap");
+    if(!netcap.exists()) {
+      Tools.showAlertDialog(this, "Error", "'" + netcap.getAbsolutePath() + "' was not found!");
+      return;
+    }
     String ifaces = "";
     NetworkInterface ni = (NetworkInterface)devicesSp.getSelectedItem();
     if(ni.isAny()) {
@@ -92,6 +107,7 @@ public class OutputTabActivity extends Activity {
       }
     } else
       ifaces = ni.getName();
+    Log.i(getClass().getSimpleName(), "ifaces:"+ifaces);
   }
   
   public void actionBrowseOutputCapture(final View v) {
