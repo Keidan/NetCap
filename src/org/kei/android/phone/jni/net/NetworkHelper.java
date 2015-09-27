@@ -12,7 +12,6 @@ import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
 
 import android.graphics.Color;
-import android.util.Log;
 
 /**
  *******************************************************************************
@@ -123,22 +122,34 @@ public class NetworkHelper {
             if(srv ==Service.NOT_FOUND) desc += s;
             else {
               desc += srv.getName() + "(" + srv.getPort() + ")";
-              if(srv.getName().toLowerCase(Locale.US).contains("http"))
+              if(srv.getName().toLowerCase(Locale.US).contains("https")) {
+                bcolor = Color.parseColor("#A40000");
+                tcolor = Color.parseColor("#FFFC9C");
+              } else if(srv.getName().toLowerCase(Locale.US).contains("http")) {
                 bcolor = Color.parseColor("#E4FFC7");
+                tcolor = Color.BLACK;
+              }
             }
             desc += " > ";
             srv = Service.findByPort(d);
             if(srv ==Service.NOT_FOUND) desc += d;
             else {
               desc += srv.getName() + "(" + srv.getPort() + ")";
-              if(srv.getName().toLowerCase(Locale.US).contains("http"))
+              if(srv.getName().toLowerCase(Locale.US).contains("https")) {
+                bcolor = Color.parseColor("#A40000");
+                tcolor = Color.parseColor("#FFFC9C");
+              } else if(srv.getName().toLowerCase(Locale.US).contains("http")) {
                 bcolor = Color.parseColor("#E4FFC7");
+                tcolor = Color.BLACK;
+              }
             }
             if(last.getType() == Layer.TYPE_TCP) {
               TCP tcp = (TCP)last;
               desc += " [";
-              if(bcolor == dbcolor)
+              if(bcolor == dbcolor) {
                 bcolor = Color.parseColor("#E7E6FF");
+                tcolor = Color.BLACK;
+              }
               if(tcp.isSYN()) desc += "SYN, ";
               if(tcp.isPSH()) desc += "PSH, ";
               if(tcp.isACK()) desc += "ACK, ";
