@@ -3,17 +3,15 @@ package org.kei.android.phone.netcap.listview;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.capture.CaptureFile;
 import org.kei.android.phone.jni.net.capture.ICapture;
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
-import org.kei.android.phone.jni.net.layer.Layer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
-import android.util.Log;
 
 /**
  *******************************************************************************
@@ -81,6 +79,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     return null;
   }
 
+  
   @Override
   public void captureProcess(final CaptureFile capture,
       final PCAPPacketHeader pheader, final byte[] buffer) {
@@ -88,12 +87,25 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     ++captureCount;
     item.setId(""+captureCount);
     item.setTime(pheader.getTime());
-    String info = NetworkHelper.getProtocolAndDesc(buffer, '|');
+    String info = NetworkHelper.getColorsProtocolAndDesc(buffer, '|');
+    int tcolor = Color.BLACK, bcolor = Color.WHITE;
     int idx = info.indexOf('|');
     if(idx != -1) {
-      item.setProtocol(info.substring(0, idx));
+      tcolor = Integer.parseInt(info.substring(0, idx));
       info = info.substring(idx + 1);
+      idx = info.indexOf('|');
+      if(idx != -1) {
+        bcolor = Integer.parseInt(info.substring(0, idx));
+        info = info.substring(idx + 1);
+        idx = info.indexOf('|');
+        if(idx != -1) {
+          item.setProtocol(info.substring(0, idx));
+          info = info.substring(idx + 1);
+        }
+      }
     }
+    item.setTColor(tcolor);
+    item.setBColor(bcolor);
     item.setInfo(info);
     item.setPheader(pheader);
     item.setLayer(buffer);

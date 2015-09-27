@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
 import org.kei.android.phone.netcap.R;
 
+import android.graphics.Color;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 /**
@@ -39,6 +40,9 @@ public class CaptureListViewItem implements IListViewItem {
   private String           time               = "(null)";
   private String           protocol           = "(null)";
   private String           info               = "(null)";
+  private int              bcolor             = Color.WHITE;
+  private int              tcolor             = Color.BLACK;
+  
   
   @Override
   public void updateItem(final LinearLayout layoutItem, final Object object) {
@@ -51,6 +55,11 @@ public class CaptureListViewItem implements IListViewItem {
     timeTV.setText(me.getTime());
     protocolTV.setText(me.getProtocol());
     infoTV.setText(me.getInfo());
+    layoutItem.setBackgroundColor(bcolor);
+    idTV.setTextColor(tcolor);
+    timeTV.setTextColor(tcolor);
+    protocolTV.setTextColor(tcolor);
+    infoTV.setTextColor(tcolor);
   }
   
   public PCAPPacketHeader getPheader() {
@@ -101,6 +110,22 @@ public class CaptureListViewItem implements IListViewItem {
     this.info = info;
   }
   
+  public int getBColor() {
+    return bcolor;
+  }
+
+  public void setBColor(int bcolor) {
+    this.bcolor = bcolor;
+  }
+
+  public int getTColor() {
+    return tcolor;
+  }
+
+  public void setTColor(int tcolor) {
+    this.tcolor = tcolor;
+  }
+
   @Override
   public boolean isFilterable(Object o, final int filterId, final String text) {
     CaptureListViewItem clvi = (CaptureListViewItem)o;

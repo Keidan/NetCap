@@ -1,6 +1,7 @@
 package org.kei.android.phone.jni.net;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
@@ -9,6 +10,9 @@ import org.kei.android.phone.jni.net.layer.application.DNS;
 import org.kei.android.phone.jni.net.layer.link.ARP;
 import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
+
+import android.graphics.Color;
+import android.util.Log;
 
 /**
  *******************************************************************************
@@ -100,9 +104,11 @@ public class NetworkHelper {
     return formatToHex(buffer, 0);
   }
   
-  public static String getProtocolAndDesc(final byte[] buffer, char split) {
+  public static String getColorsProtocolAndDesc(final byte[] buffer, char split) {
     String prot = "ERR";
     String desc = "";
+    int dbcolor = Color.parseColor("#DAEEFF");
+    int tcolor = Color.BLACK, bcolor = dbcolor;
     try {
       Layer layer = NetworkHelper.decodeLayer(buffer);
       Layer last = null;
@@ -115,14 +121,24 @@ public class NetworkHelper {
             int d = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
             Service srv = Service.findByPort(s);
             if(srv ==Service.NOT_FOUND) desc += s;
-            else desc += srv.getName() + "(" + srv.getPort() + ")";
+            else {
+              desc += srv.getName() + "(" + srv.getPort() + ")";
+              if(srv.getName().toLowerCase(Locale.US).contains("http"))
+                bcolor = Color.parseColor("#E4FFC7");
+            }
             desc += " > ";
             srv = Service.findByPort(d);
             if(srv ==Service.NOT_FOUND) desc += d;
-            else desc += srv.getName() + "(" + srv.getPort() + ")";
+            else {
+              desc += srv.getName() + "(" + srv.getPort() + ")";
+              if(srv.getName().toLowerCase(Locale.US).contains("http"))
+                bcolor = Color.parseColor("#E4FFC7");
+            }
             if(last.getType() == Layer.TYPE_TCP) {
               TCP tcp = (TCP)last;
               desc += " [";
+              if(bcolor == dbcolor)
+                bcolor = Color.parseColor("#E7E6FF");
               if(tcp.isSYN()) desc += "SYN, ";
               if(tcp.isPSH()) desc += "PSH, ";
               if(tcp.isACK()) desc += "ACK, ";
@@ -175,6 +191,6 @@ public class NetworkHelper {
       e.printStackTrace();
     }
     if(desc.isEmpty()) desc = "ERR";
-    return prot + split + desc;
+    return String.valueOf(tcolor) + split + String.valueOf(bcolor) + split + prot + split + desc;
   }
 }
