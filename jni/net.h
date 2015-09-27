@@ -214,7 +214,7 @@
    * @param iface The iface name.
    * @return the FD else -1 on error.
    */
-  int net_capture_open(const char* iface);
+  int net_capture_open(const char* iface, int promisc);
 
   /**
    * Capture the interfaces packets.

@@ -256,7 +256,7 @@ int net_is_pcap(const char* filename) {
  * @param iface The iface name.
  * @return the FD else -1 on error.
  */
-int net_capture_open(const char* iface) {
+int net_capture_open(const char* iface, int promisc) {
   struct sockaddr_ll sll;
   int sockopt;
   struct ifreq ifr;	/* set promiscuous mode */
@@ -274,9 +274,11 @@ int net_capture_open(const char* iface) {
 
   /* Set interface to promiscuous mode - do we need to do this every time? */
   strncpy(ifr.ifr_name, iface, IFNAMSIZ-1);
-  ioctl(fd, SIOCGIFFLAGS, &ifr);
-  ifr.ifr_flags |= IFF_PROMISC;
-  ioctl(fd, SIOCSIFFLAGS, &ifr);
+  if(promisc) {
+    ioctl(fd, SIOCGIFFLAGS, &ifr);
+    ifr.ifr_flags |= IFF_PROMISC;
+    ioctl(fd, SIOCSIFFLAGS, &ifr);
+  }
   /* Allow the socket to be reused - incase connection is closed prematurely */
   if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof sockopt) == -1) {
     sprintf(n_errno, "setsockopt: (%d) %s", errno, strerror(errno));
