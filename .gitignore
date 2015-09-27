@@ -20,7 +20,7 @@ libs/arm64*
 libs/armeabi*
 libs/mips*
 libs/x86*
-jni/org_kei_android_phone_jni_net_capture*.h
+jni/org_kei_android_phone_jni_net_*.h
 
 # Gradle files
 .gradle/
