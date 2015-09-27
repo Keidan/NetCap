@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context=".CaptureViewerActivity"
-    android:padding="16dp" >
+    android:padding="1dp" >
     
     <ListView
         android:id="@+id/captureLV"
