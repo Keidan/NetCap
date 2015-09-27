@@ -12,6 +12,7 @@
     <string name="startCaptureBT">Start capture</string>
     <string name="loadCaptureBT">Load capture from file</string>
 	<string name="outputCaptureTV">Save capture into</string>
+	<string name="promiscuousCB">Use promiscuous mode</string>
 	<string name="action_cancel">Cancel</string>
 	<string name="search">Search</string>
     <string name="search_id">ID</string>
