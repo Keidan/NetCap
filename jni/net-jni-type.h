@@ -25,6 +25,18 @@
 
 #include <jni.h>
 
+#define addPayload(buff_len, offset, p, owner) ({										\
+  if((buff_len - offset) > 0) {															\
+	  int l = (buff_len - offset);														\
+	  jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);	\
+	  jbyteArray bytes = (*env)->NewByteArray(env, l);									\
+	  (*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));		\
+	  (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);					\
+	  (*env)->CallVoidMethod(env, owner, layer.setNext, jpayload);						\
+	  offset += (buff_len - offset);													\
+  }																						\
+})
+
 struct JniException{
     jclass clazz;
     jmethodID constructor;

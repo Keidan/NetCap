@@ -184,7 +184,7 @@ public class NetworkHelper {
             IGMP igmp = (IGMP)last;
             switch(igmp.getType()) {
               case IGMP.QUERY: 
-                last.setLabelProto("q");
+                last.setLabelProto("v2");
                 desc += "Membership Query";
                 break;
               case IGMP.REPORT_V1: last.setLabelProto("v1"); break;

@@ -93,8 +93,35 @@
 	  unsigned char		max_resp_time;	/* subtype for routing msgs        */
 	  unsigned short	cksum;	/* IP-style checksum               */
 	  struct in_addr	group;	/* group address being reported    */
-  };					/*  (zero for queries)             */
+  };							/*  (zero for queries)             */
+  /*
+   * IGMP v3 query format.
+   */
+  struct igmp3hdr_query {
+	  unsigned char		type;	/* version & type of IGMP message  */
+	  unsigned char		max_resp_time;	/* subtype for routing msgs        */
+	  unsigned short	cksum;	/* IP-style checksum               */
+	  struct in_addr	group;	/* group address being reported    */
+  								/*  (zero for queries)             */
 
+	  unsigned char     resv:4;
+	  unsigned char     s:1;
+	  unsigned char     qrv:3;
+	  unsigned char     qqic;
+	  unsigned short	numsrc;	/* number of sources               */
+  	/*struct in_addr	sources[1];*/ /* source addresses */
+  };
+  /*
+   * IGMP v3 report format.
+   */
+  struct igmp3hdr_report {
+	  unsigned char		type;
+	  unsigned char		reserved0;
+	  unsigned short	cksum;
+	  unsigned short	reserved1;
+	  unsigned short	numgrp;
+      /*struct in_addr	sources[1];*/ /* source addresses */
+  };
 
   #define NET_IP4_LEN 16
   #define NET_MAC_LEN 18

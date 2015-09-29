@@ -588,16 +588,18 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
     jobject jip;
     struct iphdr *ipv4 = (struct iphdr*)(p + offset);
     unsigned char protocol = 0;
+    unsigned char tos = 0;
     if(ipv4->version == 4) {
       size = sizeof(struct iphdr);
       offset += size;
+      tos = ntohs(ipv4->tos);
       jip = (*env)->NewObject(env, ip4.clazz, ip4.constructor);
       (*env)->CallVoidMethod(env, jip, layer.setLayerLength, size);
       inet_ntop(AF_INET, &ipv4->saddr, cbuffer_64, INET_ADDRSTRLEN);
       (*env)->CallVoidMethod(env, jip, ip4.setSource, (*env)->NewStringUTF (env, cbuffer_64));
       inet_ntop(AF_INET, &ipv4->daddr, cbuffer_64, INET_ADDRSTRLEN);
       (*env)->CallVoidMethod(env, jip, ip4.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
-      (*env)->CallVoidMethod(env, jip, ip4.setTOS, ntohs(ipv4->tos));
+      (*env)->CallVoidMethod(env, jip, ip4.setTOS, tos);
       (*env)->CallVoidMethod(env, jip, ip4.setTotLength, ntohs(ipv4->tot_len));
       (*env)->CallVoidMethod(env, jip, ip4.setID, ipv4->id);
       (*env)->CallVoidMethod(env, jip, ip4.setFragOff, ntohs(ipv4->frag_off));
@@ -613,6 +615,7 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       struct ipv6hdr *ipv6 = (struct ipv6hdr*)(p + offset);
 	  size = sizeof(struct ipv6hdr);
       offset += size;
+      tos = ipv6->flow_lbl[0];
 	  jip = (*env)->NewObject(env, ip6.clazz, ip6.constructor);
       (*env)->CallVoidMethod(env, jip, layer.setLayerLength, size);
       inet_ntop(AF_INET6, &ipv6->saddr, cbuffer_64, INET6_ADDRSTRLEN);
@@ -666,15 +669,8 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
           prev = jdns;
     	} else
     		prev = judp;
-        if((buff_len - offset) > 0) {
-          int l = (buff_len - offset);
-          jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-          jbyteArray bytes = (*env)->NewByteArray(env, l);
-          (*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-          (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-          (*env)->CallVoidMethod(env, prev, layer.setNext, jpayload);
-          offset += (buff_len - offset);
-        }
+
+    	addPayload(buff_len, offset, p, prev);
       }
       (*env)->CallVoidMethod(env, jip, layer.setNext, judp);
     } else if(protocol == IPPROTO_TCP) {
@@ -699,50 +695,60 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       (*env)->CallVoidMethod(env, jtcp, tcp.setCheck, ntohs(tcph->check));
       (*env)->CallVoidMethod(env, jtcp, tcp.setUrgPtr, tcph->urg_ptr);
       (*env)->CallVoidMethod(env, jip, layer.setNext, jtcp);
-      if((buff_len - offset) > 0) {
-    	int l = (buff_len - offset);
-    	jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-    	jbyteArray bytes = (*env)->NewByteArray(env, l);
-    	(*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-        (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-  	    (*env)->CallVoidMethod(env, jtcp, layer.setNext, jpayload);
-      	offset += (buff_len - offset);
-      }
+      addPayload(buff_len, offset, p, jtcp);
     } else if(protocol == IPPROTO_IGMP) {
+        jobject jigmp = (*env)->NewObject(env, igmp.clazz, igmp.constructor);
     	offset += 4; // ip options
     	struct igmphdr *igmph = (struct igmphdr*)(p + offset);
-    	if(igmph->type != 0x22)
+    	if(tos == 0xc0 && igmph->type != 0x11) {
+    		size = sizeof(struct igmp3hdr_query) + sizeof(struct in_addr) * (((struct igmp3hdr_query*)(p + offset))->numsrc);
+			inet_ntop(AF_INET, &igmph->group, cbuffer_64, INET_ADDRSTRLEN);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setType, igmph->type);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setMaxRespTime, igmph->max_resp_time);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setChecksum, ntohs(igmph->cksum));
+			(*env)->CallVoidMethod(env, jigmp, igmp.setGroupAdress, (*env)->NewStringUTF (env, cbuffer_64));
+			struct igmp3hdr_query *igmp3h = (struct igmp3hdr_query*)(p + offset);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setResv, igmp3h->resv);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setS, igmp3h->s);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setQRV, igmp3h->qrv);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setQQIC, ntohs(igmp3h->qqic));
+			(*env)->CallVoidMethod(env, jigmp, igmp.setNumberOfSources, ntohs(igmp3h->numsrc));
+			int n;
+			for(n = 0; n < ntohs(igmp3h->numsrc); n++) {
+              struct in_addr *a = (struct in_addr *)(p + offset) + sizeof(struct igmp3hdr_query);
+              inet_ntop(AF_INET, a, cbuffer_64, INET_ADDRSTRLEN);
+              (*env)->CallVoidMethod(env, jigmp, igmp.addSourceAdress, (*env)->NewStringUTF (env, cbuffer_64));
+               a++;
+			}
+    	}
+    	else if(igmph->type == 0x22) {
+    		struct igmp3hdr_report *igmp3h = (struct igmp3hdr_report*)(p + offset);
+    		size = sizeof(struct igmp3hdr_report) + sizeof(struct in_addr) * (((struct igmp3hdr_report*)(p + offset))->numgrp);
+			inet_ntop(AF_INET, &igmph->group, cbuffer_64, INET_ADDRSTRLEN);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setType, igmp3h->type);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setChecksum, ntohs(igmp3h->cksum));
+			(*env)->CallVoidMethod(env, jigmp, igmp.setNumberOfSources, ntohs(igmp3h->numgrp));
+			int n;
+			for(n = 0; n < ntohs(igmp3h->numgrp); n++) {
+              struct in_addr *a = (struct in_addr *)(p + offset) + sizeof(struct igmp3hdr_report);
+              inet_ntop(AF_INET, a, cbuffer_64, INET_ADDRSTRLEN);
+              (*env)->CallVoidMethod(env, jigmp, igmp.addSourceAdress, (*env)->NewStringUTF (env, cbuffer_64));
+               a++;
+			}
+    	}
+    	else {
     		size = sizeof(struct igmphdr);
-    	else
-    		size = sizeof(struct igmphdr); // V3
+			inet_ntop(AF_INET, &igmph->group, cbuffer_64, INET_ADDRSTRLEN);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setType, igmph->type);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setMaxRespTime, igmph->max_resp_time);
+			(*env)->CallVoidMethod(env, jigmp, igmp.setChecksum, ntohs(igmph->cksum));
+			(*env)->CallVoidMethod(env, jigmp, igmp.setGroupAdress, (*env)->NewStringUTF (env, cbuffer_64));
+    	}
+		(*env)->CallVoidMethod(env, jip, layer.setNext, jigmp);
         offset += size;
-        jobject jigmp = (*env)->NewObject(env, igmp.clazz, igmp.constructor);
-        inet_ntop(AF_INET, &igmph->group, cbuffer_64, INET_ADDRSTRLEN);
-        (*env)->CallVoidMethod(env, jigmp, igmp.setType, igmph->type);
-        (*env)->CallVoidMethod(env, jigmp, igmp.setMaxRespTime, igmph->max_resp_time);
-        (*env)->CallVoidMethod(env, jigmp, igmp.setChecksum, ntohs(igmph->cksum));
-        (*env)->CallVoidMethod(env, jigmp, igmp.setGroupAdress, (*env)->NewStringUTF (env, cbuffer_64));
-        (*env)->CallVoidMethod(env, jip, layer.setNext, jigmp);
-
-        if((buff_len - offset) > 0) {
-        	int l = (buff_len - offset);
-        	jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-        	jbyteArray bytes = (*env)->NewByteArray(env, l);
-        	(*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-          (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-    	    (*env)->CallVoidMethod(env, jip, layer.setNext, jpayload);
-          offset += (buff_len - offset);
-        }
+        addPayload(buff_len, offset, p, jigmp);
     } else { // protocol == IPPROTO_
-      if((buff_len - offset) > 0) {
-      	int l = (buff_len - offset);
-      	jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-      	jbyteArray bytes = (*env)->NewByteArray(env, l);
-      	(*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-        (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-  	    (*env)->CallVoidMethod(env, jip, layer.setNext, jpayload);
-        offset += (buff_len - offset);
-      }
+      addPayload(buff_len, offset, p, jip);
     }
     (*env)->CallVoidMethod(env, jeth, layer.setNext, jip);
   } else if(ntohs(eth->h_proto) == ETH_P_ARP) {
@@ -780,26 +786,10 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
 	  (*env)->CallVoidMethod(env, jarp, arp.setTargetIPAddress, (*env)->NewStringUTF (env, cbuffer_64));
     }
     (*env)->CallVoidMethod(env, jarp, layer.setLayerLength, size);
-    if((buff_len - offset) > 0) {
-	  int l = (buff_len - offset);
-	  jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-	  jbyteArray bytes = (*env)->NewByteArray(env, l);
-	  (*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-	  (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-	  (*env)->CallVoidMethod(env, jarp, layer.setNext, jpayload);
-	  offset += (buff_len - offset);
-    }
+    addPayload(buff_len, offset, p, jarp);
     (*env)->CallVoidMethod(env, jeth, layer.setNext, jarp);
   } else { // eth->h_proto
-    if((buff_len - offset) > 0) {
-	  int l = (buff_len - offset);
-	  jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
-	  jbyteArray bytes = (*env)->NewByteArray(env, l);
-	  (*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
-	  (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
-	  (*env)->CallVoidMethod(env, jeth, layer.setNext, jpayload);
-	  offset += (buff_len - offset);
-    }
+    addPayload(buff_len, offset, p, jeth);
   }
   return jeth;
 }
