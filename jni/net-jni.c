@@ -72,6 +72,7 @@ static struct TCP tcp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
 static struct Payload payload = { NULL, NULL, NULL };
 static struct ARP arp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static struct DNS dns = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static struct IGMP igmp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static JavaVM *java_vm = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
@@ -255,6 +256,22 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   dns.setAnsCount = (*env)->GetMethodID (env, dns.clazz, "setAnsCount", "(I)V");
   dns.setAuthCount = (*env)->GetMethodID (env, dns.clazz, "setAuthCount", "(I)V");
   dns.setAddCount = (*env)->GetMethodID (env, dns.clazz, "setAddCount", "(I)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/internet/IGMP");
+  igmp.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  igmp.constructor = (*env)->GetMethodID (env, igmp.clazz, "<init>", "()V");
+  igmp.setType = (*env)->GetMethodID (env, igmp.clazz, "setType", "(I)V");
+  igmp.setMaxRespTime = (*env)->GetMethodID (env, igmp.clazz, "setMaxRespTime", "(I)V");
+  igmp.setChecksum = (*env)->GetMethodID (env, igmp.clazz, "setChecksum", "(I)V");
+  igmp.setGroupAdress = (*env)->GetMethodID (env, igmp.clazz, "setGroupAdress", "(Ljava/lang/String;)V");
+  igmp.setResv = (*env)->GetMethodID (env, igmp.clazz, "setResv", "(I)V");
+  igmp.setS = (*env)->GetMethodID (env, igmp.clazz, "setS", "(I)V");
+  igmp.setQRV = (*env)->GetMethodID (env, igmp.clazz, "setQRV", "(I)V");
+  igmp.setQQIC = (*env)->GetMethodID (env, igmp.clazz, "setQQIC", "(I)V");
+  igmp.setNumberOfSources = (*env)->GetMethodID (env, igmp.clazz, "setNumberOfSources", "(I)V");
+  igmp.addSourceAdress = (*env)->GetMethodID (env, igmp.clazz, "addSourceAdress", "(Ljava/lang/String;)V");
+
   if(attached)
     (*java_vm)->DetachCurrentThread(java_vm);
   return JNI_VERSION_1_6;
@@ -691,6 +708,31 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
   	    (*env)->CallVoidMethod(env, jtcp, layer.setNext, jpayload);
       	offset += (buff_len - offset);
       }
+    } else if(protocol == IPPROTO_IGMP) {
+    	offset += 4; // ip options
+    	struct igmphdr *igmph = (struct igmphdr*)(p + offset);
+    	if(igmph->type != 0x22)
+    		size = sizeof(struct igmphdr);
+    	else
+    		size = sizeof(struct igmphdr); // V3
+        offset += size;
+        jobject jigmp = (*env)->NewObject(env, igmp.clazz, igmp.constructor);
+        inet_ntop(AF_INET, &igmph->group, cbuffer_64, INET_ADDRSTRLEN);
+        (*env)->CallVoidMethod(env, jigmp, igmp.setType, igmph->type);
+        (*env)->CallVoidMethod(env, jigmp, igmp.setMaxRespTime, igmph->max_resp_time);
+        (*env)->CallVoidMethod(env, jigmp, igmp.setChecksum, ntohs(igmph->cksum));
+        (*env)->CallVoidMethod(env, jigmp, igmp.setGroupAdress, (*env)->NewStringUTF (env, cbuffer_64));
+        (*env)->CallVoidMethod(env, jip, layer.setNext, jigmp);
+
+        if((buff_len - offset) > 0) {
+        	int l = (buff_len - offset);
+        	jobject jpayload = (*env)->NewObject(env, payload.clazz, payload.constructor);
+        	jbyteArray bytes = (*env)->NewByteArray(env, l);
+        	(*env)->SetByteArrayRegion (env, bytes, 0, l, (const jbyte *)(p + offset));
+          (*env)->CallVoidMethod(env, jpayload, payload.setDatas, bytes);
+    	    (*env)->CallVoidMethod(env, jip, layer.setNext, jpayload);
+          offset += (buff_len - offset);
+        }
     } else { // protocol == IPPROTO_
       if((buff_len - offset) > 0) {
       	int l = (buff_len - offset);

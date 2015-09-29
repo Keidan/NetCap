@@ -32,10 +32,12 @@ public abstract class Layer {
   public static final int TYPE_DHCPv6   = 0x09;
   public static final int TYPE_NDP      = 0x0A;
   public static final int TYPE_DNS      = 0x0B;
+  public static final int TYPE_IGMP     = 0x0C;
   public static final int TYPE_PAYLOAD  = -1;
-  private int             type          = TYPE_ETHERNET;
+  private int             layerType     = TYPE_ETHERNET;
   private int             llength       = 0;
   private Layer           next          = null;
+  private String          labelProto    = "";
   
   /**
    * Allocate the object with the layer type.
@@ -44,7 +46,7 @@ public abstract class Layer {
    *          The type.
    */
   public Layer(final int type) {
-    this.type = type;
+    this.layerType = type;
   }
   
   /**
@@ -52,8 +54,8 @@ public abstract class Layer {
    *
    * @return int
    */
-  public int getType() {
-    return type;
+  public int getLayerType() {
+    return layerType;
   }
   
   /**
@@ -92,6 +94,14 @@ public abstract class Layer {
    */
   public void setNext(final Layer next) {
     this.next = next;
+  }
+
+  public String getLabelProto() {
+    return labelProto;
+  }
+
+  public void setLabelProto(String labelProto) {
+    this.labelProto = labelProto;
   }
 
 }

@@ -7,6 +7,7 @@ import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.application.DNS;
+import org.kei.android.phone.jni.net.layer.internet.IGMP;
 import org.kei.android.phone.jni.net.layer.link.ARP;
 import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
@@ -112,12 +113,12 @@ public class NetworkHelper {
       Layer layer = NetworkHelper.decodeLayer(buffer);
       Layer last = null;
       do {
-        if(layer != null && layer.getType() != Layer.TYPE_PAYLOAD) {
+        if(layer != null && layer.getLayerType() != Layer.TYPE_PAYLOAD) {
           last = layer;
-          if(last != null && (last.getType() == Layer.TYPE_UDP || last.getType() == Layer.TYPE_TCP)) {
+          if(last != null && (last.getLayerType() == Layer.TYPE_UDP || last.getLayerType() == Layer.TYPE_TCP)) {
             desc = "";
-            int s = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
-            int d = (last.getType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
+            int s = (last.getLayerType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
+            int d = (last.getLayerType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
             Service srv = Service.findByPort(s);
             if(srv ==Service.NOT_FOUND) desc += s;
             else {
@@ -143,7 +144,7 @@ public class NetworkHelper {
                 tcolor = Color.BLACK;
               }
             }
-            if(last.getType() == Layer.TYPE_TCP) {
+            if(last.getLayerType() == Layer.TYPE_TCP) {
               TCP tcp = (TCP)last;
               desc += " [";
               if(bcolor == dbcolor) {
@@ -161,7 +162,7 @@ public class NetworkHelper {
               if(desc.endsWith(", ")) desc = desc.substring(0, desc.length() - 2);
               desc += "]";
             }
-          } else if(last != null && last.getType() == Layer.TYPE_ARP) {
+          } else if(last != null && last.getLayerType() == Layer.TYPE_ARP) {
             desc = "";
             ARP arp = (ARP)last;
             if(arp.getOpcode() == ARP.REQUEST)
@@ -170,18 +171,34 @@ public class NetworkHelper {
               desc += arp.getSenderIPAddress() + " is " + arp.getSenderHardwareAddress();
             else
               desc += "Unknown";
-          } else if(last != null && last.getType() == Layer.TYPE_DNS) {
+          } else if(last != null && last.getLayerType() == Layer.TYPE_DNS) {
             desc = "";
             DNS dns = (DNS) last;
             if(!dns.isQR()) {
               desc += "Standard query 0x" + String.format("%04x", dns.getID());
             } else
               desc += "Standard query response 0x" + String.format("%04x", dns.getID());
+          } else if(last != null && last.getLayerType() == Layer.TYPE_IGMP) {
+            bcolor = Color.parseColor("#FFF3D6");
+            tcolor = Color.BLACK;
+            IGMP igmp = (IGMP)last;
+            switch(igmp.getType()) {
+              case IGMP.QUERY: 
+                last.setLabelProto("q");
+                desc += "Membership Query";
+                break;
+              case IGMP.REPORT_V1: last.setLabelProto("v1"); break;
+              case IGMP.REPORT_V2: 
+                last.setLabelProto("v2");
+                desc += "Membership Report group " + igmp.getGroupAdress();
+                break;
+              case IGMP.REPORT_V3: last.setLabelProto("v3"); break;
+            }
           }
         }
       } while((layer = layer.getNext()) != null);
       if(last != null) {
-        switch (last.getType()) {
+        switch (last.getLayerType()) {
           case Layer.TYPE_ETHERNET: prot = ("ETH"); break;
           case Layer.TYPE_IPv4: prot = ("IPv4"); break;
           case Layer.TYPE_IPv6: prot = ("IPv6"); break;
@@ -194,6 +211,7 @@ public class NetworkHelper {
           case Layer.TYPE_DHCPv6: prot = ("DHCPv6"); break;
           case Layer.TYPE_NDP: prot = ("NDP"); break;
           case Layer.TYPE_DNS: prot = ("DNS"); break;
+          case Layer.TYPE_IGMP: prot = ("IGMP" + last.getLabelProto()); break;
           case Layer.TYPE_PAYLOAD: prot = ("PAYLOAD"); break;
           default: prot = ("UNKNOWN"); break;
         }

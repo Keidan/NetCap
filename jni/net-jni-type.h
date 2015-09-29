@@ -193,4 +193,19 @@ struct DNS {
     jmethodID setAddCount;
 };
 
+
+struct IGMP {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setType;
+	jmethodID setMaxRespTime;
+	jmethodID setChecksum;
+	jmethodID setGroupAdress;
+	jmethodID setResv;
+	jmethodID setS;
+	jmethodID setQRV;
+	jmethodID setQQIC;
+	jmethodID setNumberOfSources;
+	jmethodID addSourceAdress;
+};
 #endif /* __NET_JNI_TYPE_H__ */

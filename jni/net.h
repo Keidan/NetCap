@@ -85,6 +85,16 @@
       unsigned char         *rdata;
   };
 
+  /*
+   * IGMPv1/v2 query and host report format.
+   */
+  struct igmphdr {
+	  unsigned char		type;	/* version & type of IGMP message  */
+	  unsigned char		max_resp_time;	/* subtype for routing msgs        */
+	  unsigned short	cksum;	/* IP-style checksum               */
+	  struct in_addr	group;	/* group address being reported    */
+  };					/*  (zero for queries)             */
+
 
   #define NET_IP4_LEN 16
   #define NET_MAC_LEN 18
