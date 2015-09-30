@@ -36,7 +36,7 @@ public class IGMP extends Layer {
   private int             type            = 0;
   private int             maxRespTime     = 0;
   private int             checksum        = 0;
-  private String          groupAdress     = null;
+  private String          groupAdress     = "0.0.0.0";
   private int             resv            = 0;
   private int             s               = 0;
   private int             qrv             = 0;
@@ -70,7 +70,7 @@ public class IGMP extends Layer {
   @Override
   public String getDescriptionText() {
     switch(getType()) {
-      case IGMP.QUERY: return "Membership Query";
+      case IGMP.QUERY: return "Membership Query, general";
       case IGMP.REPORT_V2: return "Membership Report group " + getGroupAdress();
       case IGMP.REPORT_V3: return "Membership Report groups " + getNumberOfSources();
       default: return "Membership Unknown";

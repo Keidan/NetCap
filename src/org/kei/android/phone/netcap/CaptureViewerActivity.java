@@ -80,7 +80,7 @@ public class CaptureViewerActivity extends Activity implements OnItemClickListen
 
   public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
     final CaptureListViewItem item = (CaptureListViewItem)captureLV.getItemAtPosition(pos);
-    ApplicationCtx.startActivity(this, item.getLayer(), CaptureDetailsActivity.class);
+    ApplicationCtx.startActivity(this, item.getLayer(), item.getId(), CaptureDetailsActivity.class);
   }
 
   public void fabAction1(View view) {

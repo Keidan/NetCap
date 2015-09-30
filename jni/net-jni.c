@@ -483,43 +483,6 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getIn
   return alist;
 }
 
-/*
- * Class:     org_kei_android_phone_jni_net_NetworkHelper
- * Method:    formatToHex
- * Signature: ([BI)Ljava/util/List;
- */
-JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_formatToHex(JNIEnv *env, jclass clazz, jbyteArray buffer, jint offset) {
-  jobject alist = (*env)->NewObject(env, arrayList.clazz, arrayList.constructor);
-  if(alist == NULL) {
-    ThrowJniException(env, "Unable to allocate the new java.util.ArrayList");
-    return alist;
-  }
-  jbyte* rawjBytes = (*env)->GetByteArrayElements(env, buffer, NULL) + offset;
-  //do stuff to raw bytes*
-  int len = (*env)->GetArrayLength(env, buffer) - offset;
-  int i = 0, max = 16, dlen = max*4 + 3, loop = len;
-  unsigned char *p = (unsigned char *)rawjBytes;
-  char datas [dlen]; /* spaces + \0 */
-  memset(datas, 0, dlen);
-  while(loop--) {
-    unsigned char c = *(p++);
-    sprintf(datas, "%s%02x ", datas, c);
-    /* next line */
-    if(i == max) {
-      // add
-      (*env)->CallBooleanMethod(env, alist, arrayList.add, (*env)->NewStringUTF (env, datas));
-      /* re init */
-      i = 0;
-      memset(datas, 0, dlen);
-    }
-    /* next */
-    else i++;
-  }
-  (*env)->ReleaseByteArrayElements(env, buffer, rawjBytes, 0);
-  return alist;
-}
-
-
 /**
  * Throw a JniException.
  * @param env The JNI env.
@@ -589,9 +552,11 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
     struct iphdr *ipv4 = (struct iphdr*)(p + offset);
     unsigned char protocol = 0;
     unsigned char tos = 0;
+    unsigned short flgs = 0;
     if(ipv4->version == 4) {
       size = sizeof(struct iphdr);
       offset += size;
+      flgs = ntohs(ipv4->id);
       tos = ntohs(ipv4->tos);
       jip = (*env)->NewObject(env, ip4.clazz, ip4.constructor);
       (*env)->CallVoidMethod(env, jip, layer.setLayerLength, size);
@@ -601,15 +566,15 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       (*env)->CallVoidMethod(env, jip, ip4.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
       (*env)->CallVoidMethod(env, jip, ip4.setTOS, tos);
       (*env)->CallVoidMethod(env, jip, ip4.setTotLength, ntohs(ipv4->tot_len));
-      (*env)->CallVoidMethod(env, jip, ip4.setID, ipv4->id);
+      (*env)->CallVoidMethod(env, jip, ip4.setID, flgs);
       (*env)->CallVoidMethod(env, jip, ip4.setFragOff, ntohs(ipv4->frag_off));
       (*env)->CallVoidMethod(env, jip, ip4.setTTL, ipv4->ttl);
       (*env)->CallVoidMethod(env, jip, ip4.setProtocol, ipv4->protocol);
-      (*env)->CallVoidMethod(env, jip, ip4.setChecksum, ipv4->check);
-      (*env)->CallVoidMethod(env, jip, ip4.setReservedBit, !!(ipv4->id&IP_RF));
-      (*env)->CallVoidMethod(env, jip, ip4.setDontFragment, !!(ipv4->id&IP_DF));
-      (*env)->CallVoidMethod(env, jip, ip4.setMoreFragments, !!(ipv4->id&IP_MF));
-      (*env)->CallVoidMethod(env, jip, ip4.setHeaderLength, (int)(ipv4->ihl + sizeof(struct iphdr)));
+      (*env)->CallVoidMethod(env, jip, ip4.setChecksum, ntohs(ipv4->check));
+      (*env)->CallVoidMethod(env, jip, ip4.setReservedBit, !!(flgs&IP_RF));
+      (*env)->CallVoidMethod(env, jip, ip4.setDontFragment, !!(flgs&IP_DF));
+      (*env)->CallVoidMethod(env, jip, ip4.setMoreFragments, !!(flgs&IP_MF));
+      (*env)->CallVoidMethod(env, jip, ip4.setHeaderLength, (int)ipv4->ihl * 4);
       protocol = ipv4->protocol;
     } else { // ipv4->version
       struct ipv6hdr *ipv6 = (struct ipv6hdr*)(p + offset);

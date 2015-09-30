@@ -27,6 +27,7 @@ import android.app.Application;
  */
 public class ApplicationCtx extends Application {
   private Layer currentLayer;
+  private String id;
 
   public Layer getLayer() {
     return currentLayer;
@@ -35,16 +36,36 @@ public class ApplicationCtx extends Application {
   public void setLayer(final Layer currentLayer) {
     this.currentLayer = currentLayer;
   }
+  
+  /**
+   * @return the id
+   */
+  public String getId() {
+    return id;
+  }
 
-  public static void startActivity(final Activity a, final Layer currentLayer,
+  /**
+   * @param id the id to set
+   */
+  public void setId(final String id) {
+    this.id = id;
+  }
+
+  public static void startActivity(final Activity a, final Layer currentLayer, final String id, 
       final Class<?> clazz) {
     final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
     app.setLayer(currentLayer);
+    app.setId(id);
     Tools.switchTo(a, clazz);
   }
 
   public static Layer getAppLayer(final Activity a) {
     final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
     return app.getLayer();
+  }
+
+  public static String getAppId(final Activity a) {
+    final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
+    return app.getId();
   }
 }

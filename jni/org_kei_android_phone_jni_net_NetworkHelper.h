@@ -47,14 +47,6 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getPC
 JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer
   (JNIEnv *, jclass, jbyteArray);
 
-/*
- * Class:     org_kei_android_phone_jni_net_NetworkHelper
- * Method:    formatToHex
- * Signature: ([BI)Ljava/util/List;
- */
-JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_formatToHex
-  (JNIEnv *, jclass, jbyteArray, jint);
-
 #ifdef __cplusplus
 }
 #endif
