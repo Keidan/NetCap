@@ -29,6 +29,11 @@ public class Ethernet extends Layer {
   public Ethernet() {
     super(TYPE_ETHERNET);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Ethernet";
+  }
 
   @Override
   public String getProtocolText() {

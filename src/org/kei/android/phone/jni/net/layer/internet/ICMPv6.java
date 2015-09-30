@@ -30,6 +30,11 @@ public class ICMPv6 extends Layer {
     super(TYPE_ICMPv6);
   }
 
+  
+  @Override
+  public String getFullName() {
+    return "Internet Control Message Protocol v6";
+  }
 
   @Override
   public String getProtocolText() {

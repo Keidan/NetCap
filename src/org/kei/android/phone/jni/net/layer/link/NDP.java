@@ -29,6 +29,11 @@ public class NDP extends Layer {
   public NDP() {
     super(TYPE_NDP);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Neighbor Discovery Protocol";
+  }
 
   @Override
   public String getProtocolText() {

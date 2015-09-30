@@ -6,8 +6,6 @@ import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
 
-import android.graphics.Color;
-
 /**
  *******************************************************************************
  * @file NetworkHelper.java
@@ -98,20 +96,22 @@ public class NetworkHelper {
     return formatToHex(buffer, 0);
   }
   
-  public static String getColorsProtocolAndDesc(final byte[] buffer, char split) {
-    String empty = Color.parseColor("#FFFFFF") + "|" + Color.parseColor("#000000") + "|" + "ERR|ERR";
+  public static Layer getLayer(final byte[] buffer) {
     try {
-      Layer layer = NetworkHelper.decodeLayer(buffer);
-      Layer last = null;
-      do {
-        if(layer != null && layer.getLayerType() != Layer.TYPE_PAYLOAD) {
-          last = layer;
-        }
-      } while((layer = layer.getNext()) != null);
-      return last == null ? empty : last.compute("|");
+      return NetworkHelper.decodeLayer(buffer);
     } catch (JniException e) {
       e.printStackTrace();
     }
-    return empty;
+    return null;
+  }
+
+  public static Layer getLastLayer(Layer layer) {
+    Layer last = null;
+    do {
+      if (layer != null && layer.getLayerType() != Layer.TYPE_PAYLOAD) {
+        last = layer;
+      }
+    } while ((layer = layer.getNext()) != null);
+    return last;
   }
 }

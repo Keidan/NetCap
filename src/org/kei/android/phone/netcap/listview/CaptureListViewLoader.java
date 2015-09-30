@@ -7,6 +7,7 @@ import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.capture.CaptureFile;
 import org.kei.android.phone.jni.net.capture.ICapture;
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
+import org.kei.android.phone.jni.net.layer.Layer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -33,6 +34,7 @@ import android.os.AsyncTask;
  *******************************************************************************
  */
 public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implements ICapture {
+  private static final String                  DEFAULT_LINE = Color.parseColor("#FFFFFF") + "|" + Color.parseColor("#000000") + "|" + "ERR|ERR";
   private final CaptureFile                    capture      = new CaptureFile();
   private String                               file         = null;
   private int                                  captureCount = 0;
@@ -87,7 +89,9 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     ++captureCount;
     item.setId(""+captureCount);
     item.setTime(pheader.getTime());
-    String info = NetworkHelper.getColorsProtocolAndDesc(buffer, '|');
+    Layer layer = NetworkHelper.getLayer(buffer);
+    Layer last = NetworkHelper.getLastLayer(layer);
+    String info = last == null ? DEFAULT_LINE : last.compute("|");
     int tcolor = Color.BLACK, bcolor = Color.WHITE;
     int idx = info.indexOf('|');
     if(idx != -1) {
@@ -108,7 +112,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     item.setBColor(bcolor);
     item.setInfo(info);
     item.setPheader(pheader);
-    item.setLayer(buffer);
+    item.setLayer(layer);
     items.add(item);
     /*if ((captureCount % 1000) == 0)
       handler.sendEmptyMessage(0);*/

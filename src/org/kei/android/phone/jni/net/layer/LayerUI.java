@@ -28,6 +28,8 @@ public abstract class LayerUI {
   public abstract String getProtocolText();
 
   public abstract String getDescriptionText();
+  
+  public abstract String getFullName();
 
   public String compute(final String sep) {
     String preloadProto = getProtocolText();

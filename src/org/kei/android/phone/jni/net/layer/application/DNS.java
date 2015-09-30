@@ -48,6 +48,11 @@ public class DNS extends Layer {
   public DNS() {
     super(TYPE_DNS);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Domain Name System";
+  }
 
   @Override
   public String getProtocolText() {

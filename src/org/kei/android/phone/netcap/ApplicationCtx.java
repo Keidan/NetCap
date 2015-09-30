@@ -1,0 +1,50 @@
+package org.kei.android.phone.netcap;
+
+import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.netcap.utils.Tools;
+
+import android.app.Activity;
+import android.app.Application;
+
+/**
+ *******************************************************************************
+ * @file ApplicationCtx.java
+ * @author Keidan
+ * @date 30/09/2015
+ * @par Project NetCap
+ *
+ * @par Copyright 2015 Keidan, all right reserved
+ *
+ *      This software is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY.
+ *
+ *      License summary : You can modify and redistribute the sources code and
+ *      binaries. You can send me the bug-fix
+ *
+ *      Term of the license in in the file license.txt.
+ *
+ *******************************************************************************
+ */
+public class ApplicationCtx extends Application {
+  private Layer currentLayer;
+
+  public Layer getLayer() {
+    return currentLayer;
+  }
+
+  public void setLayer(final Layer currentLayer) {
+    this.currentLayer = currentLayer;
+  }
+
+  public static void startActivity(final Activity a, final Layer currentLayer,
+      final Class<?> clazz) {
+    final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
+    app.setLayer(currentLayer);
+    Tools.switchTo(a, clazz);
+  }
+
+  public static Layer getAppLayer(final Activity a) {
+    final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
+    return app.getLayer();
+  }
+}

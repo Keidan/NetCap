@@ -29,7 +29,11 @@ public class DHCPv6 extends Layer {
   public DHCPv6() {
     super(TYPE_DHCPv6);
   }
-
+  
+  @Override
+  public String getFullName() {
+    return "Dynamic Host Configuration Protocol v6";
+  }
 
   @Override
   public String getProtocolText() {

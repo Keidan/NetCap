@@ -17,7 +17,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:name=".ApplicationCtx" >
         <activity
             android:name=".MainTabActivity"
             android:label="@string/app_name" >
@@ -28,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".chooser.FileChooserActivity"/>
+        <activity android:name=".InputTabActivity"/>
         <activity android:name=".CaptureViewerActivity" android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -36,7 +38,7 @@
             	<data android:mimeType="application/cap" />
             </intent-filter>
         </activity>
-        <activity android:name=".InputTabActivity"/>
+        <activity android:name=".CaptureDetailsActivity"/>
         <activity android:name=".OutputTabActivity"/>
         
     </application>

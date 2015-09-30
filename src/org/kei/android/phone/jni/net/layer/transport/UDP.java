@@ -31,6 +31,11 @@ public class UDP extends Layer {
   public UDP() {
     super(TYPE_UDP);
   }
+  
+  @Override
+  public String getFullName() {
+    return "User Datagram Protocol";
+  }
 
   @Override
   public String getProtocolText() {

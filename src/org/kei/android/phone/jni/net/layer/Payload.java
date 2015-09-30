@@ -25,7 +25,11 @@ public class Payload extends Layer {
   public Payload() {
     super(TYPE_PAYLOAD);
   }
-  
+
+  @Override
+  public String getFullName() {
+    return "Payload";
+  }
 
   /**
    * Get the byte representation of the datas.

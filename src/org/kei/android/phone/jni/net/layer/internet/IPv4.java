@@ -40,6 +40,11 @@ public class IPv4 extends Layer {
   public IPv4() {
     super(TYPE_IPv4);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Internet Protocol v4";
+  }
 
   @Override
   public String getProtocolText() {

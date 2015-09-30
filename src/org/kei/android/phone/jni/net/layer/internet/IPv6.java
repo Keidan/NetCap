@@ -36,6 +36,11 @@ public class IPv6 extends Layer {
   public IPv6() {
     super(TYPE_IPv6);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Internet Protocol v6";
+  }
 
   @Override
   public String getProtocolText() {

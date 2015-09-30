@@ -38,6 +38,11 @@ public class ARP extends Layer {
   public ARP() {
     super(TYPE_ARP);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Address Resolution Protocol";
+  }
 
   @Override
   public String getProtocolText() {

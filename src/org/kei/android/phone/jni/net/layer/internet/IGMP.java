@@ -50,6 +50,11 @@ public class IGMP extends Layer {
     background = Color.parseColor("#FFF3D6");
     foreground = Color.BLACK;
   }
+  
+  @Override
+  public String getFullName() {
+    return "Internet Group Management Protocol";
+  }
 
   @Override
   public String getProtocolText() {

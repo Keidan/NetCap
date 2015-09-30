@@ -10,6 +10,8 @@ import org.kei.android.phone.netcap.utils.fx.Fx;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -36,7 +38,7 @@ import android.widget.ListView;
  *
  *******************************************************************************
  */
-public class CaptureViewerActivity extends Activity  {
+public class CaptureViewerActivity extends Activity implements OnItemClickListener {
   public static final String                   KEY_FILE       = "capture_file";
   private String                               file           = null;
   private ListView                             captureLV      = null;
@@ -61,6 +63,7 @@ public class CaptureViewerActivity extends Activity  {
     CaptureListViewLoader loader = new CaptureListViewLoader(this, adapter, file);
     captureLV.setAdapter(adapter);
     loader.execute();
+    captureLV.setOnItemClickListener(this);
   }
 
   @Override
@@ -74,7 +77,11 @@ public class CaptureViewerActivity extends Activity  {
     Fx.updateTransition(this, false);
     finish();
   }
-  
+
+  public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
+    final CaptureListViewItem item = (CaptureListViewItem)captureLV.getItemAtPosition(pos);
+    ApplicationCtx.startActivity(this, item.getLayer(), CaptureDetailsActivity.class);
+  }
 
   public void fabAction1(View view) {
     captureLV.post(new Runnable() {

@@ -29,6 +29,11 @@ public class DHCPv4 extends Layer {
   public DHCPv4() {
     super(TYPE_DHCPv4);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Dynamic Host Configuration Protocol v4";
+  }
 
   @Override
   public String getProtocolText() {

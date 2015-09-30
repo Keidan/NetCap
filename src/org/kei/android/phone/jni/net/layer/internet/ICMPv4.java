@@ -29,7 +29,11 @@ public class ICMPv4 extends Layer {
   public ICMPv4() {
     super(TYPE_ICMPv4);
   }
-
+  
+  @Override
+  public String getFullName() {
+    return "Internet Control Message Protocol v4";
+  }
 
   @Override
   public String getProtocolText() {

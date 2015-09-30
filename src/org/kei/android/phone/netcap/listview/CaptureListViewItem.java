@@ -3,6 +3,7 @@ package org.kei.android.phone.netcap.listview;
 import java.util.Locale;
 
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
+import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.netcap.R;
 
 import android.graphics.Color;
@@ -35,7 +36,7 @@ public class CaptureListViewItem implements IListViewItem {
   public static final int  FILTER_BY_INFO     = 8;
   public static final int  FILTER_BY_ALL      = 15;
   private PCAPPacketHeader pheader            = null;
-  private byte[]           layer              = null;
+  private Layer            layer              = null;
   private String           id                 = "(null)";
   private String           time               = "(null)";
   private String           protocol           = "(null)";
@@ -43,14 +44,14 @@ public class CaptureListViewItem implements IListViewItem {
   private int              bcolor             = Color.WHITE;
   private int              tcolor             = Color.BLACK;
   
-  
   @Override
   public void updateItem(final LinearLayout layoutItem, final Object object) {
     final CaptureListViewItem me = (CaptureListViewItem)object;
-    final TextView idTV = (TextView)layoutItem.findViewById(R.id.idTV);
-    final TextView timeTV = (TextView)layoutItem.findViewById(R.id.timeTV);
-    final TextView protocolTV = (TextView)layoutItem.findViewById(R.id.protocolTV);
-    final TextView infoTV = (TextView)layoutItem.findViewById(R.id.infoTV);
+    TextView idTV = (TextView)layoutItem.findViewById(R.id.idTV);
+    TextView timeTV = (TextView)layoutItem.findViewById(R.id.timeTV);
+    TextView protocolTV = (TextView)layoutItem.findViewById(R.id.protocolTV);
+    TextView infoTV = (TextView)layoutItem.findViewById(R.id.infoTV);
+    
     idTV.setText(me.getId());
     timeTV.setText(me.getTime());
     protocolTV.setText(me.getProtocol());
@@ -70,11 +71,11 @@ public class CaptureListViewItem implements IListViewItem {
     this.pheader = pheader;
   }
   
-  public byte[] getLayer() {
+  public Layer getLayer() {
     return layer;
   }
   
-  public void setLayer(final byte[] layer) {
+  public void setLayer(final Layer layer) {
     this.layer = layer;
   }
 

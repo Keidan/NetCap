@@ -46,6 +46,11 @@ public class TCP extends Layer {
   public TCP() {
     super(TYPE_TCP);
   }
+  
+  @Override
+  public String getFullName() {
+    return "Transmission Control Protocol";
+  }
 
   @Override
   public String getProtocolText() {
