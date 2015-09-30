@@ -19,7 +19,7 @@ package org.kei.android.phone.jni.net.layer;
  *
  *******************************************************************************
  */
-public abstract class Layer {
+public abstract class Layer extends LayerUI {
   public static final int TYPE_ETHERNET = 0x00;
   public static final int TYPE_IPv4     = 0x01;
   public static final int TYPE_IPv6     = 0x02;
@@ -37,7 +37,6 @@ public abstract class Layer {
   private int             layerType     = TYPE_ETHERNET;
   private int             llength       = 0;
   private Layer           next          = null;
-  private String          labelProto    = "";
   
   /**
    * Allocate the object with the layer type.
@@ -94,14 +93,6 @@ public abstract class Layer {
    */
   public void setNext(final Layer next) {
     this.next = next;
-  }
-
-  public String getLabelProto() {
-    return labelProto;
-  }
-
-  public void setLabelProto(String labelProto) {
-    this.labelProto = labelProto;
   }
 
 }

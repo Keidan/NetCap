@@ -36,6 +36,16 @@ public class IPv6 extends Layer {
   public IPv6() {
     super(TYPE_IPv6);
   }
+
+  @Override
+  public String getProtocolText() {
+    return "IPv6";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
   
   /**
    * Get the source IPv6 addr.

@@ -30,4 +30,14 @@ public class NDP extends Layer {
     super(TYPE_NDP);
   }
 
+  @Override
+  public String getProtocolText() {
+    return "NDP";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
+
 }

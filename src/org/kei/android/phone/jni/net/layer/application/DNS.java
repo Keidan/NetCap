@@ -48,6 +48,19 @@ public class DNS extends Layer {
   public DNS() {
     super(TYPE_DNS);
   }
+
+  @Override
+  public String getProtocolText() {
+    return "DNS";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    if(!isQR()) {
+      return "Standard query 0x" + String.format("%04x", getID());
+    } else
+      return "Standard query response 0x" + String.format("%04x", getID());
+  }
   
   /**
    * @return the id

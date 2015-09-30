@@ -41,6 +41,16 @@ public class IPv4 extends Layer {
     super(TYPE_IPv4);
   }
 
+  @Override
+  public String getProtocolText() {
+    return "IPv4";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
+
   /**
    * Get the source IPv4 addr.
    *

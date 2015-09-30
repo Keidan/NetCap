@@ -1,5 +1,6 @@
 package org.kei.android.phone.jni.net.layer.transport;
 
+import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -29,6 +30,24 @@ public class UDP extends Layer {
 
   public UDP() {
     super(TYPE_UDP);
+  }
+
+  @Override
+  public String getProtocolText() {
+    return "UDP";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    String desc = "";
+    Service srv = Service.findByPort(getSource());
+    if(srv == Service.NOT_FOUND) desc += getSource();
+    else desc += srv.getName() + "(" + srv.getPort() + ")";
+    desc += " > ";
+    srv = Service.findByPort(getDestination());
+    if(srv == Service.NOT_FOUND) desc += getDestination();
+    else desc += srv.getName() + "(" + srv.getPort() + ")";
+    return desc;
   }
   
   /**

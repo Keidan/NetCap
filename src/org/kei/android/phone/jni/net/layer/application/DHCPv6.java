@@ -30,4 +30,14 @@ public class DHCPv6 extends Layer {
     super(TYPE_DHCPv6);
   }
 
+
+  @Override
+  public String getProtocolText() {
+    return "DHCPv6";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
 }

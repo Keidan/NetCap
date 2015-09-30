@@ -39,6 +39,21 @@ public class ARP extends Layer {
     super(TYPE_ARP);
   }
 
+  @Override
+  public String getProtocolText() {
+    return "ARP";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    if(getOpcode() == ARP.REQUEST)
+      return "Who is " + getTargetIPAddress() + "?";
+    else if(getOpcode() == ARP.REPLY)
+      return getSenderIPAddress() + " is " + getSenderHardwareAddress();
+    else
+      return "Unknown";
+  }
+
   /**
    * @return the formatOfHardwareAddress
    */

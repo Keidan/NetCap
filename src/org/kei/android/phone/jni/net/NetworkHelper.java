@@ -1,16 +1,10 @@
 package org.kei.android.phone.jni.net;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
-import org.kei.android.phone.jni.net.layer.application.DNS;
-import org.kei.android.phone.jni.net.layer.internet.IGMP;
-import org.kei.android.phone.jni.net.layer.link.ARP;
-import org.kei.android.phone.jni.net.layer.transport.TCP;
-import org.kei.android.phone.jni.net.layer.transport.UDP;
 
 import android.graphics.Color;
 
@@ -105,121 +99,19 @@ public class NetworkHelper {
   }
   
   public static String getColorsProtocolAndDesc(final byte[] buffer, char split) {
-    String prot = "ERR";
-    String desc = "";
-    int dbcolor = Color.parseColor("#DAEEFF");
-    int tcolor = Color.BLACK, bcolor = dbcolor;
+    String empty = Color.parseColor("#FFFFFF") + "|" + Color.parseColor("#000000") + "|" + "ERR|ERR";
     try {
       Layer layer = NetworkHelper.decodeLayer(buffer);
       Layer last = null;
       do {
         if(layer != null && layer.getLayerType() != Layer.TYPE_PAYLOAD) {
           last = layer;
-          if(last != null && (last.getLayerType() == Layer.TYPE_UDP || last.getLayerType() == Layer.TYPE_TCP)) {
-            desc = "";
-            int s = (last.getLayerType() == Layer.TYPE_UDP) ? ((UDP)last).getSource() : ((TCP)last).getSource();
-            int d = (last.getLayerType() == Layer.TYPE_UDP) ? ((UDP)last).getDestination() : ((TCP)last).getDestination();
-            Service srv = Service.findByPort(s);
-            if(srv ==Service.NOT_FOUND) desc += s;
-            else {
-              desc += srv.getName() + "(" + srv.getPort() + ")";
-              if(srv.getName().toLowerCase(Locale.US).contains("https")) {
-                bcolor = Color.parseColor("#A40000");
-                tcolor = Color.parseColor("#FFFC9C");
-              } else if(srv.getName().toLowerCase(Locale.US).contains("http")) {
-                bcolor = Color.parseColor("#E4FFC7");
-                tcolor = Color.BLACK;
-              }
-            }
-            desc += " > ";
-            srv = Service.findByPort(d);
-            if(srv ==Service.NOT_FOUND) desc += d;
-            else {
-              desc += srv.getName() + "(" + srv.getPort() + ")";
-              if(srv.getName().toLowerCase(Locale.US).contains("https")) {
-                bcolor = Color.parseColor("#A40000");
-                tcolor = Color.parseColor("#FFFC9C");
-              } else if(srv.getName().toLowerCase(Locale.US).contains("http")) {
-                bcolor = Color.parseColor("#E4FFC7");
-                tcolor = Color.BLACK;
-              }
-            }
-            if(last.getLayerType() == Layer.TYPE_TCP) {
-              TCP tcp = (TCP)last;
-              desc += " [";
-              if(bcolor == dbcolor) {
-                bcolor = Color.parseColor("#E7E6FF");
-                tcolor = Color.BLACK;
-              }
-              if(tcp.isSYN()) desc += "SYN, ";
-              if(tcp.isPSH()) desc += "PSH, ";
-              if(tcp.isACK()) desc += "ACK, ";
-              if(tcp.isCWR()) desc += "CWR, ";
-              if(tcp.isECE()) desc += "ECE, ";
-              if(tcp.isRST()) desc += "RST, ";
-              if(tcp.isURG()) desc += "URG, ";
-              if(tcp.isFIN()) desc += "FIN, ";
-              if(desc.endsWith(", ")) desc = desc.substring(0, desc.length() - 2);
-              desc += "]";
-            }
-          } else if(last != null && last.getLayerType() == Layer.TYPE_ARP) {
-            desc = "";
-            ARP arp = (ARP)last;
-            if(arp.getOpcode() == ARP.REQUEST)
-              desc += "Who is " + arp.getTargetIPAddress() + "?";
-            else if(arp.getOpcode() == ARP.REPLY)
-              desc += arp.getSenderIPAddress() + " is " + arp.getSenderHardwareAddress();
-            else
-              desc += "Unknown";
-          } else if(last != null && last.getLayerType() == Layer.TYPE_DNS) {
-            desc = "";
-            DNS dns = (DNS) last;
-            if(!dns.isQR()) {
-              desc += "Standard query 0x" + String.format("%04x", dns.getID());
-            } else
-              desc += "Standard query response 0x" + String.format("%04x", dns.getID());
-          } else if(last != null && last.getLayerType() == Layer.TYPE_IGMP) {
-            bcolor = Color.parseColor("#FFF3D6");
-            tcolor = Color.BLACK;
-            IGMP igmp = (IGMP)last;
-            switch(igmp.getType()) {
-              case IGMP.QUERY: 
-                last.setLabelProto("v2");
-                desc += "Membership Query";
-                break;
-              case IGMP.REPORT_V1: last.setLabelProto("v1"); break;
-              case IGMP.REPORT_V2: 
-                last.setLabelProto("v2");
-                desc += "Membership Report group " + igmp.getGroupAdress();
-                break;
-              case IGMP.REPORT_V3: last.setLabelProto("v3"); break;
-            }
-          }
         }
       } while((layer = layer.getNext()) != null);
-      if(last != null) {
-        switch (last.getLayerType()) {
-          case Layer.TYPE_ETHERNET: prot = ("ETH"); break;
-          case Layer.TYPE_IPv4: prot = ("IPv4"); break;
-          case Layer.TYPE_IPv6: prot = ("IPv6"); break;
-          case Layer.TYPE_ICMPv4: prot = ("ICMPv4"); break;
-          case Layer.TYPE_ICMPv6: prot = ("ICMPv6"); break;
-          case Layer.TYPE_TCP: prot = ("TCP"); break;
-          case Layer.TYPE_UDP: prot = ("UDP"); break;
-          case Layer.TYPE_ARP: prot = ("ARP"); break;
-          case Layer.TYPE_DHCPv4: prot = ("DHCPv4"); break;
-          case Layer.TYPE_DHCPv6: prot = ("DHCPv6"); break;
-          case Layer.TYPE_NDP: prot = ("NDP"); break;
-          case Layer.TYPE_DNS: prot = ("DNS"); break;
-          case Layer.TYPE_IGMP: prot = ("IGMP" + last.getLabelProto()); break;
-          case Layer.TYPE_PAYLOAD: prot = ("PAYLOAD"); break;
-          default: prot = ("UNKNOWN"); break;
-        }
-      }
+      return last == null ? empty : last.compute("|");
     } catch (JniException e) {
       e.printStackTrace();
     }
-    if(desc.isEmpty()) desc = "ERR";
-    return String.valueOf(tcolor) + split + String.valueOf(bcolor) + split + prot + split + desc;
+    return empty;
   }
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.kei.android.phone.jni.net.layer.Layer;
 
+import android.graphics.Color;
+
 /**
  *******************************************************************************
  * @file IGMP.java
@@ -45,6 +47,29 @@ public class IGMP extends Layer {
   public IGMP() {
     super(TYPE_IGMP);
     sourceAdress = new ArrayList<String>();
+    background = Color.parseColor("#FFF3D6");
+    foreground = Color.BLACK;
+  }
+
+  @Override
+  public String getProtocolText() {
+    switch(getType()) {
+      case IGMP.REPORT_V1: return "IGMPv1";
+      case IGMP.REPORT_V2: return "IGMPv2";
+      case IGMP.QUERY: return "IGMPv2";
+      case IGMP.REPORT_V3: return "IGMPv3";
+      default: return "IGMP";
+    }
+  }
+
+  @Override
+  public String getDescriptionText() {
+    switch(getType()) {
+      case IGMP.QUERY: return "Membership Query";
+      case IGMP.REPORT_V2: return "Membership Report group " + getGroupAdress();
+      case IGMP.REPORT_V3: return "Membership Report groups " + getNumberOfSources();
+      default: return "Membership Unknown";
+    }
   }
 
   public int getType() {

@@ -30,6 +30,16 @@ public class Ethernet extends Layer {
     super(TYPE_ETHERNET);
   }
 
+  @Override
+  public String getProtocolText() {
+    return "Ethernet";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
+
   /**
    * Get the source eth addr.
    * 

@@ -1,32 +1,34 @@
 package org.kei.android.phone.jni.net.layer.transport;
 
+import java.util.Locale;
+
+import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
+
+import android.graphics.Color;
 
 /**
  *******************************************************************************
  * @file TCP.java
  * @author Keidan
  * @date 07/09/2015
- * @par Project
- * NetCap
+ * @par Project NetCap
  *
- * @par 
- * Copyright 2015 Keidan, all right reserved
+ * @par Copyright 2015 Keidan, all right reserved
  *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY.
+ *      This software is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY.
  *
- * License summary : 
- *    You can modify and redistribute the sources code and binaries.
- *    You can send me the bug-fix
+ *      License summary : You can modify and redistribute the sources code and
+ *      binaries. You can send me the bug-fix
  *
- * Term of the license in in the file license.txt.
+ *      Term of the license in in the file license.txt.
  *
  *******************************************************************************
  */
 public class TCP extends Layer {
-  private int source;
-  private int destination;
+  private int     source;
+  private int     destination;
   private boolean cwr = false;
   private boolean ece = false;
   private boolean urg = false;
@@ -35,47 +37,102 @@ public class TCP extends Layer {
   private boolean rst = false;
   private boolean syn = false;
   private boolean fin = false;
-  private int seq;
-  private int ackSeq;
-  private int window;
-  private int check;
-  private int urgPtr;
-  
+  private int     seq;
+  private int     ackSeq;
+  private int     window;
+  private int     check;
+  private int     urgPtr;
+
   public TCP() {
     super(TYPE_TCP);
   }
-  
+
+  @Override
+  public String getProtocolText() {
+    return "TCP";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    final int defbg = background;
+    String desc = "";
+    Service srv = Service.findByPort(getSource());
+    if (srv == Service.NOT_FOUND)
+      desc += getSource();
+    else {
+      desc += srv.getName() + "(" + srv.getPort() + ")";
+      if (srv.getName().toLowerCase(Locale.US).contains("https")) {
+        background = Color.parseColor("#A40000");
+        foreground = Color.parseColor("#FFFC9C");
+      } else if (srv.getName().toLowerCase(Locale.US).contains("http")) {
+        background = Color.parseColor("#E4FFC7");
+        foreground = Color.BLACK;
+      }
+    }
+    desc += " > ";
+    srv = Service.findByPort(getDestination());
+    if (srv == Service.NOT_FOUND)
+      desc += getDestination();
+    else {
+      desc += srv.getName() + "(" + srv.getPort() + ")";
+      if (srv.getName().toLowerCase(Locale.US).contains("https")) {
+        background = Color.parseColor("#A40000");
+        foreground = Color.parseColor("#FFFC9C");
+      } else if (srv.getName().toLowerCase(Locale.US).contains("http")) {
+        background = Color.parseColor("#E4FFC7");
+        foreground = Color.BLACK;
+      }
+    }
+    desc += " [";
+    if (background == defbg) {
+      background = Color.parseColor("#E7E6FF");
+      foreground = Color.BLACK;
+    }
+    if (isSYN()) desc += "SYN, ";
+    if (isPSH()) desc += "PSH, ";
+    if (isACK()) desc += "ACK, ";
+    if (isCWR()) desc += "CWR, ";
+    if (isECE()) desc += "ECE, ";
+    if (isRST()) desc += "RST, ";
+    if (isURG()) desc += "URG, ";
+    if (isFIN()) desc += "FIN, ";
+    if (desc.endsWith(", "))
+      desc = desc.substring(0, desc.length() - 2);
+    desc += "]";
+    return desc;
+  }
+
   /**
    * Get the source port.
-   * 
+   *
    * @return int
    */
   public int getSource() {
     return source;
   }
-  
+
   /**
    * Set the source port.
-   * 
+   *
    * @param source
    *          the source to set
    */
   public void setSource(final int source) {
     this.source = source;
   }
-  
+
   /**
    * Get the destination port.
-   * 
+   *
    * @return int
    */
   public int getDestination() {
     return destination;
   }
-  
+
   /**
    * Set the destination port.
-   * 
+   *
    * @param destination
    *          the destination to set
    */
@@ -91,9 +148,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param cwr the cwr to set
+   * @param cwr
+   *          the cwr to set
    */
-  public void setCWR(boolean cwr) {
+  public void setCWR(final boolean cwr) {
     this.cwr = cwr;
   }
 
@@ -105,9 +163,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param ece the ece to set
+   * @param ece
+   *          the ece to set
    */
-  public void setECE(boolean ece) {
+  public void setECE(final boolean ece) {
     this.ece = ece;
   }
 
@@ -119,9 +178,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param urg the urg to set
+   * @param urg
+   *          the urg to set
    */
-  public void setURG(boolean urg) {
+  public void setURG(final boolean urg) {
     this.urg = urg;
   }
 
@@ -133,9 +193,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param ack the ack to set
+   * @param ack
+   *          the ack to set
    */
-  public void setACK(boolean ack) {
+  public void setACK(final boolean ack) {
     this.ack = ack;
   }
 
@@ -147,9 +208,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param psh the psh to set
+   * @param psh
+   *          the psh to set
    */
-  public void setPSH(boolean psh) {
+  public void setPSH(final boolean psh) {
     this.psh = psh;
   }
 
@@ -161,9 +223,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param rst the rst to set
+   * @param rst
+   *          the rst to set
    */
-  public void setRST(boolean rst) {
+  public void setRST(final boolean rst) {
     this.rst = rst;
   }
 
@@ -175,9 +238,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param syn the syn to set
+   * @param syn
+   *          the syn to set
    */
-  public void setSYN(boolean syn) {
+  public void setSYN(final boolean syn) {
     this.syn = syn;
   }
 
@@ -189,9 +253,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param fin the fin to set
+   * @param fin
+   *          the fin to set
    */
-  public void setFIN(boolean fin) {
+  public void setFIN(final boolean fin) {
     this.fin = fin;
   }
 
@@ -203,9 +268,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param seq the seq to set
+   * @param seq
+   *          the seq to set
    */
-  public void setSeq(int seq) {
+  public void setSeq(final int seq) {
     this.seq = seq;
   }
 
@@ -217,9 +283,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param ackSeq the ackSeq to set
+   * @param ackSeq
+   *          the ackSeq to set
    */
-  public void setAckSeq(int ackSeq) {
+  public void setAckSeq(final int ackSeq) {
     this.ackSeq = ackSeq;
   }
 
@@ -231,9 +298,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param window the window to set
+   * @param window
+   *          the window to set
    */
-  public void setWindow(int window) {
+  public void setWindow(final int window) {
     this.window = window;
   }
 
@@ -245,9 +313,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param check the check to set
+   * @param check
+   *          the check to set
    */
-  public void setCheck(int check) {
+  public void setCheck(final int check) {
     this.check = check;
   }
 
@@ -259,9 +328,10 @@ public class TCP extends Layer {
   }
 
   /**
-   * @param urgPtr the urgPtr to set
+   * @param urgPtr
+   *          the urgPtr to set
    */
-  public void setUrgPtr(int urgPtr) {
+  public void setUrgPtr(final int urgPtr) {
     this.urgPtr = urgPtr;
   }
 

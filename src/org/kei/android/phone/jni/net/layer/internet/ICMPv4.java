@@ -30,4 +30,14 @@ public class ICMPv4 extends Layer {
     super(TYPE_ICMPv4);
   }
 
+
+  @Override
+  public String getProtocolText() {
+    return "ICMPv4";
+  }
+
+  @Override
+  public String getDescriptionText() {
+    return null;
+  }
 }

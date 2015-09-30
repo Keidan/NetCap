@@ -45,4 +45,16 @@ public class Payload extends Layer {
   public void setDatas(final byte[] datas) {
     this.datas = datas;
   }
+
+
+  @Override
+  public String getProtocolText() {
+    return "PL";
+  }
+
+
+  @Override
+  public String getDescriptionText() {
+    return "data length: " + getLayerLength();
+  }
 }
