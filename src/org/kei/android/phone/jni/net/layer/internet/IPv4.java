@@ -24,6 +24,7 @@ import org.kei.android.phone.jni.net.layer.Layer;
 public class IPv4 extends Layer {
   private int     tos;
   private int     totLength;
+  private int     ident;
   private int     id;
   private int     fragOff;
   private int     ttl;
@@ -133,11 +134,11 @@ public class IPv4 extends Layer {
   }
   
   /**
-   * Get the ID value.
+   * Get the Flags value.
    * 
    * @return int
    */
-  public int getID() {
+  public int getFlags() {
     return id;
   }
   
@@ -147,10 +148,24 @@ public class IPv4 extends Layer {
    * @param id
    *          The value.
    */
-  public void setID(final int id) {
+  public void setFlags(final int id) {
     this.id = id;
   }
   
+  /**
+   * @return the ident
+   */
+  public int getIdent() {
+    return ident;
+  }
+
+  /**
+   * @param ident the ident to set
+   */
+  public void setIdent(int ident) {
+    this.ident = ident;
+  }
+
   /**
    * Get the FragOffset value.
    * 

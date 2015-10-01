@@ -120,8 +120,8 @@ public class CaptureDetailsActivity extends Activity {
             list.add("  Header length: " + ip4.getHeaderLength() + " bytes");
             list.add("  Differentiated Services Field:");
             list.add("    Total Length: " + ip4.getTotLength());
-            list.add("    Identification: 0x" + String.format("%04x", ip4.getTOS()) + " (" + ip4.getTOS() + ")");
-            list.add("  Flags: 0x" + String.format("%02x", ip4.getID()));
+            list.add("    Identification: 0x" + String.format("%04x", ip4.getIdent()) + " (" + ip4.getIdent() + ")");
+            list.add("  Flags: ");
             list.add("    " + (ip4.isReservedBit() ? "1" : "0") + "... Reserved bit: " + (ip4.isReservedBit() ? "Set" : "Not Set"));
             list.add("    ." + (ip4.isDontFragment() ? "1" : "0") + ".. Don't fragment: " + (ip4.isDontFragment() ? "Set" : "Not Set"));
             list.add("    .." + (ip4.isMoreFragments() ? "1" : "0") + ". More fragments: " + (ip4.isMoreFragments() ? "Set" : "Not Set"));

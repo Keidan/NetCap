@@ -163,7 +163,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   ip4.setDestination = (*env)->GetMethodID (env, ip4.clazz, "setDestination", "(Ljava/lang/String;)V");
   ip4.setTOS = (*env)->GetMethodID (env, ip4.clazz, "setTOS", "(I)V");
   ip4.setTotLength = (*env)->GetMethodID (env, ip4.clazz, "setTotLength", "(I)V");
-  ip4.setID = (*env)->GetMethodID (env, ip4.clazz, "setID", "(I)V");
+  ip4.setIdent = (*env)->GetMethodID (env, ip4.clazz, "setIdent", "(I)V");
+  ip4.setFlags = (*env)->GetMethodID (env, ip4.clazz, "setFlags", "(I)V");
   ip4.setFragOff = (*env)->GetMethodID (env, ip4.clazz, "setFragOff", "(I)V");
   ip4.setTTL = (*env)->GetMethodID (env, ip4.clazz, "setTTL", "(I)V");
   ip4.setProtocol = (*env)->GetMethodID (env, ip4.clazz, "setProtocol", "(I)V");
@@ -556,8 +557,10 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
     if(ipv4->version == 4) {
       size = sizeof(struct iphdr);
       offset += size;
-      flgs = ntohs(ipv4->id);
+      unsigned short foff = ntohs(ipv4->frag_off);
+      flgs = ((foff >> 8) & 0xff);
       tos = ntohs(ipv4->tos);
+
       jip = (*env)->NewObject(env, ip4.clazz, ip4.constructor);
       (*env)->CallVoidMethod(env, jip, layer.setLayerLength, size);
       inet_ntop(AF_INET, &ipv4->saddr, cbuffer_64, INET_ADDRSTRLEN);
@@ -566,14 +569,15 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       (*env)->CallVoidMethod(env, jip, ip4.setDestination, (*env)->NewStringUTF (env, cbuffer_64));
       (*env)->CallVoidMethod(env, jip, ip4.setTOS, tos);
       (*env)->CallVoidMethod(env, jip, ip4.setTotLength, ntohs(ipv4->tot_len));
-      (*env)->CallVoidMethod(env, jip, ip4.setID, flgs);
-      (*env)->CallVoidMethod(env, jip, ip4.setFragOff, ntohs(ipv4->frag_off));
+      (*env)->CallVoidMethod(env, jip, ip4.setIdent, ntohs(ipv4->id));
+      (*env)->CallVoidMethod(env, jip, ip4.setFlags, flgs);
+      (*env)->CallVoidMethod(env, jip, ip4.setFragOff, !!(foff&IP_DF) ? 0 : foff);
       (*env)->CallVoidMethod(env, jip, ip4.setTTL, ipv4->ttl);
       (*env)->CallVoidMethod(env, jip, ip4.setProtocol, ipv4->protocol);
       (*env)->CallVoidMethod(env, jip, ip4.setChecksum, ntohs(ipv4->check));
-      (*env)->CallVoidMethod(env, jip, ip4.setReservedBit, !!(flgs&IP_RF));
-      (*env)->CallVoidMethod(env, jip, ip4.setDontFragment, !!(flgs&IP_DF));
-      (*env)->CallVoidMethod(env, jip, ip4.setMoreFragments, !!(flgs&IP_MF));
+      (*env)->CallVoidMethod(env, jip, ip4.setReservedBit, !!(foff&IP_RF));
+      (*env)->CallVoidMethod(env, jip, ip4.setDontFragment, !!(foff&IP_DF));
+      (*env)->CallVoidMethod(env, jip, ip4.setMoreFragments, !!(foff&IP_MF));
       (*env)->CallVoidMethod(env, jip, ip4.setHeaderLength, (int)ipv4->ihl * 4);
       protocol = ipv4->protocol;
     } else { // ipv4->version
@@ -654,9 +658,9 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
       (*env)->CallVoidMethod(env, jtcp, tcp.setRST, !!tcph->rst);
       (*env)->CallVoidMethod(env, jtcp, tcp.setSYN, !!tcph->syn);
       (*env)->CallVoidMethod(env, jtcp, tcp.setFIN, !!tcph->fin);
-      (*env)->CallVoidMethod(env, jtcp, tcp.setSeq, ntohs(tcph->seq));
-      (*env)->CallVoidMethod(env, jtcp, tcp.setAckSeq, ntohs(tcph->ack_seq));
-      (*env)->CallVoidMethod(env, jtcp, tcp.setWindow, tcph->window);
+      (*env)->CallVoidMethod(env, jtcp, tcp.setSeq, ntohl(tcph->seq));
+      (*env)->CallVoidMethod(env, jtcp, tcp.setAckSeq, ntohl(tcph->ack_seq));
+      (*env)->CallVoidMethod(env, jtcp, tcp.setWindow, ntohs(tcph->window));
       (*env)->CallVoidMethod(env, jtcp, tcp.setCheck, ntohs(tcph->check));
       (*env)->CallVoidMethod(env, jtcp, tcp.setUrgPtr, tcph->urg_ptr);
       (*env)->CallVoidMethod(env, jip, layer.setNext, jtcp);

@@ -109,7 +109,8 @@ struct IPv4 {
     jmethodID setDestination;
     jmethodID setTOS;
     jmethodID setTotLength;
-    jmethodID setID;
+    jmethodID setIdent;
+    jmethodID setFlags;
     jmethodID setFragOff;
     jmethodID setTTL;
     jmethodID setProtocol;
