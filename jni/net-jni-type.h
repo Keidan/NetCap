@@ -59,9 +59,20 @@
       (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setClazz, ntohs(e->clazz));								\
       (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setTTL, ntohl(tempI_1));									\
       (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setDataLength, ntohs(tempS_2));							\
-      inet_ntop(AF_INET, &tempI_2, cbuffer_64, INET_ADDRSTRLEN);												\
-      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setAddress, (*env)->NewStringUTF (env, cbuffer_64));		\
-      (*env)->CallVoidMethod(env, jdns, add, jdnsEntry);												\
+      if(ntohs(tempS_2) == 4) { 																				\
+        inet_ntop(AF_INET, &tempI_2, cbuffer_64, INET_ADDRSTRLEN);												\
+        (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setAddress, (*env)->NewStringUTF (env, cbuffer_64));	\
+      } else {																									\
+    	  /*unsigned int l = ntohs(tempS_2);*/																		\
+      	  /*offset -= sizeof(unsigned int);*/																		\
+    	  /*unsigned char bu[l + 1];*/																				\
+    	  /*bzero(bu, l + 1);*/																						\
+		  /*memcpy(bu, (p + offset), l - 1);*/																			\
+	      /*net_dns_normalize_name(bu);*/																			\
+		  /*offset += l;*/																				\
+          /*(*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setAddress, (*env)->NewStringUTF (env, (const char*)bu));*/\
+      }																											\
+      (*env)->CallVoidMethod(env, jdns, add, jdnsEntry);														\
     }																											\
   }																												\
 })
