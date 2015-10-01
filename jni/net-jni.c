@@ -71,7 +71,8 @@ static struct UDP udp = { NULL, NULL, NULL, NULL, NULL, NULL };
 static struct TCP tcp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static struct Payload payload = { NULL, NULL, NULL };
 static struct ARP arp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-static struct DNS dns = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static struct DNS dns = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static struct DNSEntry dnsEntry = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static struct IGMP igmp = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 static JavaVM *java_vm = NULL;
 
@@ -249,14 +250,28 @@ JNIEXPORT jint JNICALL JNI_OnLoad (JavaVM * vm, void * reserved) {
   dns.setOpcode = (*env)->GetMethodID (env, dns.clazz, "setOpcode", "(I)V");
   dns.setQR = (*env)->GetMethodID (env, dns.clazz, "setQR", "(Z)V");
   dns.setRCode = (*env)->GetMethodID (env, dns.clazz, "setRCode", "(I)V");
-  dns.setCD = (*env)->GetMethodID (env, dns.clazz, "setCD", "(Z)V");
-  dns.setAD = (*env)->GetMethodID (env, dns.clazz, "setAD", "(Z)V");
-  dns.setZ = (*env)->GetMethodID (env, dns.clazz, "setZ", "(Z)V");
+  dns.setZero = (*env)->GetMethodID (env, dns.clazz, "setZero", "(Z)V");
   dns.setRA = (*env)->GetMethodID (env, dns.clazz, "setRA", "(Z)V");
   dns.setQCount = (*env)->GetMethodID (env, dns.clazz, "setQCount", "(I)V");
   dns.setAnsCount = (*env)->GetMethodID (env, dns.clazz, "setAnsCount", "(I)V");
   dns.setAuthCount = (*env)->GetMethodID (env, dns.clazz, "setAuthCount", "(I)V");
   dns.setAddCount = (*env)->GetMethodID (env, dns.clazz, "setAddCount", "(I)V");
+  dns.addQuery = (*env)->GetMethodID (env, dns.clazz, "addQuery", "(Lorg/kei/android/phone/jni/net/layer/application/DNSEntry;)V");
+  dns.addAnswer = (*env)->GetMethodID (env, dns.clazz, "addAnswer", "(Lorg/kei/android/phone/jni/net/layer/application/DNSEntry;)V");
+  dns.addAuthority = (*env)->GetMethodID (env, dns.clazz, "addAuthority", "(Lorg/kei/android/phone/jni/net/layer/application/DNSEntry;)V");
+  dns.addAdditional = (*env)->GetMethodID (env, dns.clazz, "addAdditional", "(Lorg/kei/android/phone/jni/net/layer/application/DNSEntry;)V");
+
+  tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/application/DNSEntry");
+  dnsEntry.clazz = (*env)->NewGlobalRef(env, tmpC);
+  (*env)->DeleteLocalRef(env, tmpC);
+  dnsEntry.constructor = (*env)->GetMethodID (env, dnsEntry.clazz, "<init>", "()V");
+  dnsEntry.setNameOffset = (*env)->GetMethodID (env, dnsEntry.clazz, "setNameOffset", "(I)V");
+  dnsEntry.setName = (*env)->GetMethodID (env, dnsEntry.clazz, "setName", "(Ljava/lang/String;)V");
+  dnsEntry.setType = (*env)->GetMethodID (env, dnsEntry.clazz, "setType", "(I)V");
+  dnsEntry.setClazz = (*env)->GetMethodID (env, dnsEntry.clazz, "setClazz", "(I)V");
+  dnsEntry.setTTL = (*env)->GetMethodID (env, dnsEntry.clazz, "setTTL", "(I)V");
+  dnsEntry.setDataLength = (*env)->GetMethodID (env, dnsEntry.clazz, "setDataLength", "(I)V");
+  dnsEntry.setAddress = (*env)->GetMethodID (env, dnsEntry.clazz, "setAddress", "(Ljava/lang/String;)V");
 
   tmpC = (*env)->FindClass(env, "org/kei/android/phone/jni/net/layer/internet/IGMP");
   igmp.clazz = (*env)->NewGlobalRef(env, tmpC);
@@ -617,23 +632,48 @@ JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decod
           struct dns_header_s *dnsh = (struct dns_header_s*)(p + offset);
 	      jobject jdns = (*env)->NewObject(env, dns.clazz, dns.constructor);
 	      (*env)->CallVoidMethod(env, jdns, dns.setID, ntohs(dnsh->id));
-	      (*env)->CallVoidMethod(env, jdns, dns.setRD, !!dnsh->rd);
-	      (*env)->CallVoidMethod(env, jdns, dns.setTC, !!dnsh->tc);
-	      (*env)->CallVoidMethod(env, jdns, dns.setAA, !!dnsh->aa);
-	      (*env)->CallVoidMethod(env, jdns, dns.setOpcode, ntohs(dnsh->opcode));
 	      (*env)->CallVoidMethod(env, jdns, dns.setQR, !!dnsh->qr);
-	      (*env)->CallVoidMethod(env, jdns, dns.setRCode, ntohs(dnsh->rcode));
-	      (*env)->CallVoidMethod(env, jdns, dns.setCD, !!dnsh->cd);
-	      (*env)->CallVoidMethod(env, jdns, dns.setAD, !!dnsh->ad);
-	      (*env)->CallVoidMethod(env, jdns, dns.setZ, !!dnsh->z);
+	      (*env)->CallVoidMethod(env, jdns, dns.setOpcode, ntohs(dnsh->opcode));
+	      (*env)->CallVoidMethod(env, jdns, dns.setAA, !!dnsh->aa);
+	      (*env)->CallVoidMethod(env, jdns, dns.setTC, !!dnsh->tc);
+	      (*env)->CallVoidMethod(env, jdns, dns.setRD, !!dnsh->rd);
 	      (*env)->CallVoidMethod(env, jdns, dns.setRA, !!dnsh->ra);
+	      (*env)->CallVoidMethod(env, jdns, dns.setZero, !!dnsh->zero);
+	      (*env)->CallVoidMethod(env, jdns, dns.setRCode, ntohs(dnsh->rcode));
 	      (*env)->CallVoidMethod(env, jdns, dns.setQCount, ntohs(dnsh->q_count));
 	      (*env)->CallVoidMethod(env, jdns, dns.setAnsCount, ntohs(dnsh->ans_count));
 	      (*env)->CallVoidMethod(env, jdns, dns.setAuthCount, ntohs(dnsh->auth_count));
 	      (*env)->CallVoidMethod(env, jdns, dns.setAddCount, ntohs(dnsh->add_count));
+
+	      int boffset = offset;
           size = sizeof(struct dns_header_s);
           offset += size;
-          (*env)->CallVoidMethod(env, jdns, layer.setLayerLength, size);
+
+	      if(ntohs(dnsh->q_count)) {
+	        int n, nlen;
+	        unsigned char* tbuf;
+	        for(n = 0; n < ntohs(dnsh->q_count); n++) {
+	          tbuf = (p + offset);
+	          // get the name
+	          for(nlen = 0; tbuf[nlen] != 0; nlen++) ;
+	          nlen++;// add 0
+	          unsigned char name[nlen];
+	          memcpy(name, tbuf, nlen);
+	          net_dns_normalize_name(name);
+	          offset+=nlen;
+	          struct dns_query_entry_s *e = (struct dns_query_entry_s*)(p + offset);
+	          offset += sizeof(struct dns_query_entry_s);
+		      jobject jdnsEntry = (*env)->NewObject(env, dnsEntry.clazz, dnsEntry.constructor);
+		      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setName, (*env)->NewStringUTF (env, (const char *)name));
+		      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setType, ntohs(e->type));
+		      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setClazz, ntohs(e->clazz));
+		      (*env)->CallVoidMethod(env, jdns, dns.addQuery, jdnsEntry);
+	        }
+	      }
+	      addDNSEntry(dnsh->ans_count, p, offset, cbuffer_64, jdns, dns.addAnswer);
+	      addDNSEntry(dnsh->auth_count, p, offset, cbuffer_64, jdns, dns.addAuthority);
+	      addDNSEntry(dnsh->add_count, p, offset, cbuffer_64, jdns, dns.addAdditional);
+          (*env)->CallVoidMethod(env, jdns, layer.setLayerLength, offset - boffset);
           (*env)->CallVoidMethod(env, judp, layer.setNext, jdns);
           prev = jdns;
     	} else

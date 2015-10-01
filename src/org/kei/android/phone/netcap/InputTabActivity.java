@@ -83,6 +83,7 @@ public class InputTabActivity extends Activity {
             return;
           }
         } catch(Throwable t) {
+          t.printStackTrace();
           Tools.showAlertDialog(this, "Error", "Exception occurred: " + t.getMessage());
           return;
         }

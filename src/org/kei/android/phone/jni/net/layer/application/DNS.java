@@ -1,5 +1,8 @@
 package org.kei.android.phone.jni.net.layer.application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -36,22 +39,28 @@ public class DNS extends Layer {
   private int             opcode;
   private boolean         qr;
   private int             rcode;
-  private boolean         cd;
-  private boolean         ad;
-  private boolean         z;
+  private boolean         zero;
   private boolean         ra;
   private int             qCount;
   private int             ansCount;
   private int             authCount;
   private int             addCount;
+  private List<DNSEntry>  queries;
+  private List<DNSEntry>  answers;
+  private List<DNSEntry>  authorities;
+  private List<DNSEntry>  additionals;
 
   public DNS() {
     super(TYPE_DNS);
+    queries = new ArrayList<DNSEntry>();
+    answers = new ArrayList<DNSEntry>();
+    authorities = new ArrayList<DNSEntry>();
+    additionals = new ArrayList<DNSEntry>();
   }
   
   @Override
   public String getFullName() {
-    return "Domain Name System";
+    return "Domain Name System (" + ((qr && !rd) ? "query" : "response") + ")";
   }
 
   @Override
@@ -61,12 +70,78 @@ public class DNS extends Layer {
 
   @Override
   public String getDescriptionText() {
-    if(!isQR()) {
-      return "Standard query 0x" + String.format("%04x", getID());
-    } else
-      return "Standard query response 0x" + String.format("%04x", getID());
+    StringBuilder sb = new StringBuilder();
+    if(!queries.isEmpty() && answers.isEmpty() && authorities.isEmpty() && additionals.isEmpty()) {
+      for(DNSEntry e : queries)
+        sb.append(" ").append(e.getTypeString()).append(" ").append(e.getName());
+      return "Standard query 0x" + String.format("%04x", getID()) + sb.toString();
+    } else {
+      for(DNSEntry e : answers)
+        sb.append(" ").append(e.getTypeString()).append(" ").append(e.getAddress());
+      for(DNSEntry e : authorities)
+        sb.append(" ").append(e.getTypeString()).append(" ").append(e.getAddress());
+      for(DNSEntry e : additionals)
+        sb.append(" ").append(e.getTypeString()).append(" ").append(e.getAddress());
+      return "Standard query response 0x" + String.format("%04x", getID()) + sb.toString();
+    }
   }
   
+  /**
+   * @return the queries
+   */
+  public List<DNSEntry> getQueries() {
+    return queries;
+  }
+
+  /**
+   * @param query the query to add
+   */
+  public void addQuery(DNSEntry query) {
+    this.queries.add(query);
+  }
+
+  /**
+   * @return the answers
+   */
+  public List<DNSEntry> getAnswers() {
+    return answers;
+  }
+
+  /**
+   * @param answer the answer to add
+   */
+  public void addAnswer(DNSEntry answer) {
+    this.answers.add(answer);
+  }
+
+  /**
+   * @return the authorities
+   */
+  public List<DNSEntry> getAuthorities() {
+    return authorities;
+  }
+
+  /**
+   * @param authority the authority to add
+   */
+  public void addAuthority(DNSEntry authority) {
+    this.authorities.add(authority);
+  }
+
+  /**
+   * @return the additionals
+   */
+  public List<DNSEntry> getAdditionals() {
+    return additionals;
+  }
+
+  /**
+   * @param additional the additional to set
+   */
+  public void addAdditional(DNSEntry additional) {
+    this.additionals.add(additional);
+  }
+
   /**
    * @return the id
    */
@@ -173,48 +248,18 @@ public class DNS extends Layer {
   }
   
   /**
-   * @return the cd
+   * @return the zero
    */
-  public boolean isCD() {
-    return cd;
+  public boolean isZero() {
+    return zero;
   }
   
   /**
-   * @param cd
-   *          the cd to set
+   * @param zero
+   *          the zero to set
    */
-  public void setCD(final boolean cd) {
-    this.cd = cd;
-  }
-  
-  /**
-   * @return the ad
-   */
-  public boolean isAD() {
-    return ad;
-  }
-  
-  /**
-   * @param ad
-   *          the ad to set
-   */
-  public void setAD(final boolean ad) {
-    this.ad = ad;
-  }
-  
-  /**
-   * @return the z
-   */
-  public boolean isZ() {
-    return z;
-  }
-  
-  /**
-   * @param z
-   *          the z to set
-   */
-  public void setZ(final boolean z) {
-    this.z = z;
+  public void setZero(final boolean zero) {
+    this.zero = zero;
   }
   
   /**

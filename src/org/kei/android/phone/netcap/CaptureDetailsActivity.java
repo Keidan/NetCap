@@ -7,6 +7,8 @@ import java.util.List;
 import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.application.DNS;
+import org.kei.android.phone.jni.net.layer.application.DNSEntry;
 import org.kei.android.phone.jni.net.layer.internet.IGMP;
 import org.kei.android.phone.jni.net.layer.internet.IPv4;
 import org.kei.android.phone.jni.net.layer.internet.IPv6;
@@ -183,6 +185,34 @@ public class CaptureDetailsActivity extends Activity {
               for(String s : igmp.getSourceAdress()) list.add("  Source Address: " + s);
             }
             break;
+          case Layer.TYPE_DNS:
+            DNS dns = (DNS)layer;
+            list.add("  Transaction ID: 0x" + String.format("%04x", dns.getID()));
+            list.add("  Flags:");
+            list.add("    RD: " + (dns.isRD() ? "Set" : "Not Set"));
+            list.add("    TC: " + (dns.isTC() ? "Set" : "Not Set"));
+            list.add("    AA: " + (dns.isAA() ? "Set" : "Not Set"));
+            list.add("    OPCODE: 0x" + String.format("%04x", dns.getOpcode()));
+            list.add("    QR: " + (dns.isQR() ? "Set" : "Not Set"));
+            list.add("    RCODE: 0x" + String.format("%04x", dns.getRCode()));
+            list.add("    ZERO: " + (dns.isZero() ? "Set" : "Not Set"));
+            list.add("    RA: " + (dns.isRA() ? "Set" : "Not Set"));
+            list.add("  Questions: " + dns.getQCount());
+            list.add("  Answer RRs: " + dns.getAnsCount());
+            list.add("  Authority RRs: " + dns.getAuthCount());
+            list.add("  Additional RRs: " + dns.getAddCount());
+            if(!dns.getQueries().isEmpty()) {
+              list.add("  Queries");
+              for(DNSEntry e : dns.getQueries()) {
+                list.add("    Name: " + e.getName());
+                list.add("    Type: " + e.getTypeString());
+                list.add("    Class: " + e.getClazzString());
+              }
+            }
+            addDNSEntry("Answer", dns.getAnswers(), list);
+            addDNSEntry("Authority", dns.getAuthorities(), list);
+            addDNSEntry("Additional", dns.getAdditionals(), list);
+            break;
           case Layer.TYPE_PAYLOAD:
             Payload payload = (Payload)layer;
             byte [] buffer = payload.getDatas();
@@ -194,5 +224,19 @@ public class CaptureDetailsActivity extends Activity {
         listDataChild.put(layer.getFullName(), list);
       }
     } while ((layers = layers.getNext()) != null);
+  }
+  
+  private void addDNSEntry(final String label, final List<DNSEntry> entries, final List<String> list) {
+    if(!entries.isEmpty()) {
+      list.add("  " + label);
+      for(DNSEntry e : entries) {
+        list.add("    Name: 0x" + String.format("%04x", e.getNameOffset()));
+        list.add("    Type: " + e.getTypeString());
+        list.add("    Class: " + e.getClazzString());
+        list.add("    Time to live: " + ((int)e.getTTL() / 60) + " minutes, " + ((int)e.getTTL() % 60) + " seconds");
+        list.add("    Data length: " + e.getDataLength());
+        list.add("    Addr: " + e.getAddress());
+      }
+    }
   }
 }

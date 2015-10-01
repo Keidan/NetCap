@@ -426,3 +426,22 @@ void net_pcap_write_packet(FILE* output, unsigned int link, const unsigned char*
   fflush(output);
 }
 
+/**
+ * Normalize the DNS name.
+ * @param name The buffer is changed after a call.
+ */
+void net_dns_normalize_name(unsigned char* name) {
+  int i, j;
+  unsigned int pp;
+  //now convert 3www6google3com0 to www.google.com
+  for(i = 0; i < (int)strlen((const char*)name); i++) {
+    pp = name[i];
+    for(j=0;j<(int)pp;j++) {
+      name[i] = name[i+1];
+      i++;
+    }
+    name[i]='.';
+  }
+  name[i-1]='\0'; //remove the last dot
+}
+

@@ -37,6 +37,36 @@
   }																						\
 })
 
+#define addDNSEntry(count, p, offset, cbuffer_64, jdns, add) ({													\
+  if(ntohs(count)) {																							\
+    int n;																										\
+    unsigned short tempS_1, tempS_2;																			\
+    unsigned int tempI_1,tempI_2;																				\
+    for(n = 0; n < ntohs(count); n++) {																			\
+      tempS_1 = *((unsigned short*)(p + offset));																\
+      offset += sizeof(unsigned short);																			\
+      struct dns_query_entry_s *e = (struct dns_query_entry_s*)(p + offset);									\
+      offset += sizeof(struct dns_query_entry_s);																\
+      tempI_1 = *((unsigned int*)(p + offset));																	\
+      offset += sizeof(unsigned int);																			\
+      tempS_2 = *((unsigned short*)(p + offset));																\
+      offset += sizeof(unsigned short);																			\
+      tempI_2 = *((unsigned int*)(p + offset));																	\
+      offset += sizeof(unsigned int);																			\
+      jobject jdnsEntry = (*env)->NewObject(env, dnsEntry.clazz, dnsEntry.constructor);							\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setNameOffset, ntohs(tempS_1));							\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setType, ntohs(e->type));									\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setClazz, ntohs(e->clazz));								\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setTTL, ntohl(tempI_1));									\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setDataLength, ntohs(tempS_2));							\
+      inet_ntop(AF_INET, &tempI_2, cbuffer_64, INET_ADDRSTRLEN);												\
+      (*env)->CallVoidMethod(env, jdnsEntry, dnsEntry.setAddress, (*env)->NewStringUTF (env, cbuffer_64));		\
+      (*env)->CallVoidMethod(env, jdns, add, jdnsEntry);												\
+    }																											\
+  }																												\
+})
+
+
 struct JniException{
     jclass clazz;
     jmethodID constructor;
@@ -196,16 +226,29 @@ struct DNS {
     jmethodID setOpcode;
     jmethodID setQR;
     jmethodID setRCode;
-    jmethodID setCD;
-    jmethodID setAD;
-    jmethodID setZ;
+    jmethodID setZero;
     jmethodID setRA;
     jmethodID setQCount;
     jmethodID setAnsCount;
     jmethodID setAuthCount;
     jmethodID setAddCount;
+    jmethodID addQuery;
+    jmethodID addAnswer;
+    jmethodID addAuthority;
+    jmethodID addAdditional;
 };
 
+struct DNSEntry {
+    jclass clazz;
+    jmethodID constructor;
+    jmethodID setNameOffset;
+    jmethodID setName;
+	jmethodID setType;
+	jmethodID setClazz;
+	jmethodID setTTL;
+	jmethodID setDataLength;
+	jmethodID setAddress;
+};
 
 struct IGMP {
     jclass clazz;
