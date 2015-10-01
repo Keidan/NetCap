@@ -8,10 +8,11 @@
  
     <TextView
         android:id="@+id/lblListHeaderTV"
+        android:typeface="monospace"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingEnd="0dp"
         android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="17sp"/>
+        android:textSize="15sp"/>
  
 </LinearLayout>
