@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer.internet;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -50,6 +52,18 @@ public class IPv6 extends Layer {
   @Override
   public String getDescriptionText() {
     return null;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Version: 6");
+    lines.add("  Priority: " + getPriority());
+    lines.add("  Flowlabel: 0x" + String.format("%02x%02x%02x", getFlowLbl_1(), getFlowLbl_2(), getFlowLbl_3()));
+    lines.add("  Payload length: " + getPayloadLen());
+    lines.add("  Next header: " + getNexthdr());
+    lines.add("  Hop limit: " + getHopLimit());
+    lines.add("  Source: " + getSource());
+    lines.add("  Destination: " + getDestination());
   }
   
   /**

@@ -9,7 +9,7 @@ import android.graphics.Color;
 
 /**
  *******************************************************************************
- * @file IGMP.java
+ * @file java
  * @author Keidan
  * @date 29/09/2015
  * @par Project NetCap
@@ -59,10 +59,10 @@ public class IGMP extends Layer {
   @Override
   public String getProtocolText() {
     switch(getType()) {
-      case IGMP.REPORT_V1: return "IGMPv1";
-      case IGMP.REPORT_V2: return "IGMPv2";
-      case IGMP.QUERY: return "IGMPv2";
-      case IGMP.REPORT_V3: return "IGMPv3";
+      case REPORT_V1: return "IGMPv1";
+      case REPORT_V2: return "IGMPv2";
+      case QUERY: return "IGMPv2";
+      case REPORT_V3: return "IGMPv3";
       default: return "IGMP";
     }
   }
@@ -70,10 +70,25 @@ public class IGMP extends Layer {
   @Override
   public String getDescriptionText() {
     switch(getType()) {
-      case IGMP.QUERY: return "Membership Query, general";
-      case IGMP.REPORT_V2: return "Membership Report group " + getGroupAdress();
-      case IGMP.REPORT_V3: return "Membership Report groups " + getNumberOfSources();
+      case QUERY: return "Membership Query, general";
+      case REPORT_V2: return "Membership Report group " + getGroupAdress();
+      case REPORT_V3: return "Membership Report groups " + getNumberOfSources();
       default: return "Membership Unknown";
+    }
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    if(getType() == QUERY)
+      lines.add("  Type: Membership Query (0x" + String.format("%02x", getType()) + ")");
+    else
+      lines.add("  Type: Membership Report (0x" + String.format("%02x", getType()) + ")");
+    lines.add("  Max Response Time: " + ((float)(getMaxRespTime() / 10)) + " sec (0x" + String.format("%02x", getMaxRespTime()) + ")");
+    lines.add("  Header checksum: 0x" + String.format("%04x", getChecksum()));
+    lines.add("  Multicast address: " + getGroupAdress());
+    if(getNumberOfSources() != 0) {
+      lines.add("  Num Src: " + getNumberOfSources());
+      for(String s : getSourceAdress()) lines.add("  Source Address: " + s);
     }
   }
 

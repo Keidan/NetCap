@@ -7,7 +7,7 @@ import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
  *******************************************************************************
- * @file DNS.java
+ * @file java
  * @author Keidan
  * @date 07/09/2015
  * @par Project NetCap
@@ -83,6 +83,49 @@ public class DNS extends Layer {
       for(DNSEntry e : additionals)
         sb.append(" ").append(e.getTypeString()).append(" ").append(e.getAddress());
       return "Standard query response 0x" + String.format("%04x", getID()) + sb.toString();
+    }
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Transaction ID: 0x" + String.format("%04x", getID()));
+    lines.add("  Flags:");
+    lines.add("    RD: " + (isRD() ? "Set" : "Not Set"));
+    lines.add("    TC: " + (isTC() ? "Set" : "Not Set"));
+    lines.add("    AA: " + (isAA() ? "Set" : "Not Set"));
+    lines.add("    OPCODE: 0x" + String.format("%04x", getOpcode()));
+    lines.add("    QR: " + (isQR() ? "Set" : "Not Set"));
+    lines.add("    RCODE: 0x" + String.format("%04x", getRCode()));
+    lines.add("    ZERO: " + (isZero() ? "Set" : "Not Set"));
+    lines.add("    RA: " + (isRA() ? "Set" : "Not Set"));
+    lines.add("  Questions: " + getQCount());
+    lines.add("  Answer RRs: " + getAnsCount());
+    lines.add("  Authority RRs: " + getAuthCount());
+    lines.add("  Additional RRs: " + getAddCount());
+    if(!getQueries().isEmpty()) {
+      lines.add("  Queries");
+      for(DNSEntry e : getQueries()) {
+        lines.add("    Name: " + e.getName());
+        lines.add("    Type: " + e.getTypeString());
+        lines.add("    Class: " + e.getClazzString());
+      }
+    }
+    addDNSEntry("Answer", getAnswers(), lines);
+    addDNSEntry("Authority", getAuthorities(), lines);
+    addDNSEntry("Additional", getAdditionals(), lines);
+  }
+  
+  private void addDNSEntry(final String label, final List<DNSEntry> entries, final List<String> lines) {
+    if(!entries.isEmpty()) {
+      lines.add("  " + label);
+      for(DNSEntry e : entries) {
+        lines.add("    Name: 0x" + String.format("%04x", e.getNameOffset()));
+        lines.add("    Type: " + e.getTypeString());
+        lines.add("    Class: " + e.getClazzString());
+        lines.add("    Time to live: " + ((int)e.getTTL() / 60) + " minutes, " + ((int)e.getTTL() % 60) + " seconds");
+        lines.add("    Data length: " + e.getDataLength());
+        lines.add("    Addr: " + e.getAddress());
+      }
     }
   }
   

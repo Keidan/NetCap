@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer.link;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -43,6 +45,11 @@ public class NDP extends Layer {
   @Override
   public String getDescriptionText() {
     return null;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    
   }
 
 }

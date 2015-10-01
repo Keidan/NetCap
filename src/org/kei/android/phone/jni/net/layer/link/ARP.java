@@ -1,10 +1,12 @@
 package org.kei.android.phone.jni.net.layer.link;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
  *******************************************************************************
- * @file ARP.java
+ * @file java
  * @author Keidan
  * @date 07/09/2015
  * @par Project NetCap
@@ -51,12 +53,27 @@ public class ARP extends Layer {
 
   @Override
   public String getDescriptionText() {
-    if(getOpcode() == ARP.REQUEST)
+    if(getOpcode() == REQUEST)
       return "Who is " + getTargetIPAddress() + "?";
-    else if(getOpcode() == ARP.REPLY)
+    else if(getOpcode() == REPLY)
       return getSenderIPAddress() + " is " + getSenderHardwareAddress();
     else
       return "Unknown";
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Hardware type: 0x" + String.format("%04x", getFormatOfHardwareAddress()));
+    lines.add("  Protocol type: 0x" + String.format("%04x", getFormatOfProtocolAddress()));
+    lines.add("  Hardware size: " + String.format("%x", getLengthOfHardwareAddress()));
+    lines.add("  Protocol size: " + String.format("%x", getLengthOfProtocolAddress()));
+    lines.add("  Opcode: " + (getOpcode() == REPLY ? "reply" : (getOpcode() == REQUEST ? "request" : "unknown")));
+    if(getSenderHardwareAddress() != null) {
+      lines.add("  Sender MAC address: " + getSenderHardwareAddress());
+      lines.add("  Sender IP address: " + getSenderIPAddress());
+      lines.add("  Target MAC address: " + getTargetHardwareAddress());
+      lines.add("  Target IP address: " + getTargetIPAddress());
+    }
   }
 
   /**

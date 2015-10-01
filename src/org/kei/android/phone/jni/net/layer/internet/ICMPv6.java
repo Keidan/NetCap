@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer.internet;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -44,5 +46,10 @@ public class ICMPv6 extends Layer {
   @Override
   public String getDescriptionText() {
     return null;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    
   }
 }

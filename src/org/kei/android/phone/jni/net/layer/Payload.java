@@ -1,5 +1,9 @@
 package org.kei.android.phone.jni.net.layer;
 
+import java.util.List;
+
+import org.kei.android.phone.jni.net.NetworkHelper;
+
 /**
  *******************************************************************************
  * @file Payload.java
@@ -29,6 +33,13 @@ public class Payload extends Layer {
   @Override
   public String getFullName() {
     return "Payload";
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    byte [] buffer = getDatas();
+    List<String> l = NetworkHelper.formatBuffer(buffer);
+    for(String s : l) lines.add(s);
   }
 
   /**

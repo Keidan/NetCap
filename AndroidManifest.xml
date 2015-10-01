@@ -18,7 +18,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:name=".ApplicationCtx" >
+        android:name="org.kei.android.phone.netcap.ApplicationCtx" >
         <activity
             android:name=".MainTabActivity"
             android:label="@string/app_name" >

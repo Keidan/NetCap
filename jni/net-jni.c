@@ -38,7 +38,6 @@
 #define GET_STRING(str) (str == NULL ? "(null)" : str)
 #define TOJLONG(value) (jlong)(unsigned long long)value
 
-
 /**
  * Throw a JniException.
  * @param env The JNI env.

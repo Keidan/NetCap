@@ -1,5 +1,6 @@
 package org.kei.android.phone.jni.net.layer.transport;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.kei.android.phone.jni.net.Service;
@@ -9,7 +10,7 @@ import android.graphics.Color;
 
 /**
  *******************************************************************************
- * @file TCP.java
+ * @file java
  * @author Keidan
  * @date 07/09/2015
  * @par Project NetCap
@@ -105,6 +106,26 @@ public class TCP extends Layer {
       desc = desc.substring(0, desc.length() - 2);
     desc += "]";
     return desc;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Source port: " + getSource());
+    lines.add("  Destination port: " + getDestination());
+    lines.add("  Sequence number: " + getSeq());
+    lines.add("  Acknowledgement number: " + getAckSeq());
+    lines.add("  Flags:");
+    lines.add("    " + (isCWR() ? "1" : "0") + "... .... = Congestion Window Reduced (CWR): " + (isCWR() ? "Set" : "Not Set"));
+    lines.add("    ." + (isECE() ? "1" : "0") + ".. .... = ECN-Echo: " + (isECE() ? "Set" : "Not Set"));
+    lines.add("    .." + (isURG() ? "1" : "0") + ". .... = Urgent: " + (isURG() ? "Set" : "Not Set"));
+    lines.add("    ..." + (isACK() ? "1" : "0") + " .... = Acknowledgement: " + (isACK() ? "Set" : "Not Set"));
+    lines.add("    .... " + (isPSH() ? "1" : "0") + "... = Push: " + (isPSH() ? "Set" : "Not Set"));
+    lines.add("    .... ." + (isRST() ? "1" : "0") + ".. = Reset: " + (isRST() ? "Set" : "Not Set"));
+    lines.add("    .... .." + (isSYN() ? "1" : "0") + ". = Syn: " + (isSYN() ? "Set" : "Not Set"));
+    lines.add("    .... ..." + (isFIN() ? "1" : "0") + " = Fin: " + (isFIN() ? "Set" : "Not Set"));
+    lines.add("  Window size: " + getWindow());
+    lines.add("  Checksum: 0x" + String.format("%04x", getCheck()));
+    lines.add("  Urg ptr: " + getUrgPtr());
   }
 
   /**

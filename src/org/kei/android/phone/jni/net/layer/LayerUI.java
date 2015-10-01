@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer;
 
+import java.util.List;
+
 import android.graphics.Color;
 
 /**
@@ -30,6 +32,8 @@ public abstract class LayerUI {
   public abstract String getDescriptionText();
   
   public abstract String getFullName();
+  
+  public abstract void buildDetails(List<String> lines);
 
   public String compute(final String sep) {
     String preloadProto = getProtocolText();

@@ -1,11 +1,13 @@
 package org.kei.android.phone.jni.net.layer.transport;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
  *******************************************************************************
- * @file UDP.java
+ * @file java
  * @author Keidan
  * @date 07/09/2015
  * @par Project NetCap
@@ -53,6 +55,14 @@ public class UDP extends Layer {
     if(srv == Service.NOT_FOUND) desc += getDestination();
     else desc += srv.getName() + "(" + srv.getPort() + ")";
     return desc;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Source port: " + getSource());
+    lines.add("  Destination port: " + getDestination());
+    lines.add("  Length: " + getLength());
+    lines.add("  Checksum: 0x" + String.format("%04x", getChecksum()));
   }
   
   /**

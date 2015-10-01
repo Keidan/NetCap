@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer.internet;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -55,6 +57,25 @@ public class IPv4 extends Layer {
   @Override
   public String getDescriptionText() {
     return null;
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    lines.add("  Version: 4");
+    lines.add("  Header length: " + getHeaderLength() + " bytes");
+    lines.add("  Differentiated Services Field:");
+    lines.add("    Total Length: " + getTotLength());
+    lines.add("    Identification: 0x" + String.format("%04x", getIdent()) + " (" + getIdent() + ")");
+    lines.add("  Flags: ");
+    lines.add("    " + (isReservedBit() ? "1" : "0") + "... Reserved bit: " + (isReservedBit() ? "Set" : "Not Set"));
+    lines.add("    ." + (isDontFragment() ? "1" : "0") + ".. Don't fragment: " + (isDontFragment() ? "Set" : "Not Set"));
+    lines.add("    .." + (isMoreFragments() ? "1" : "0") + ". More fragments: " + (isMoreFragments() ? "Set" : "Not Set"));
+    lines.add("  Fragment offset: " + getFragOff());
+    lines.add("  Time to live: " + getTTL());
+    lines.add("  Protocol: " + getProtocol());
+    lines.add("  Header checksum: 0x" + String.format("%04x", getChecksum()));
+    lines.add("  Source: " + getSource());
+    lines.add("  Destination: " + getDestination());
   }
 
   /**

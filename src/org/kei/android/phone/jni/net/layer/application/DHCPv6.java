@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer.application;
 
+import java.util.List;
+
 import org.kei.android.phone.jni.net.layer.Layer;
 
 /**
@@ -33,6 +35,11 @@ public class DHCPv6 extends Layer {
   @Override
   public String getFullName() {
     return "Dynamic Host Configuration Protocol v6";
+  }
+  
+  @Override
+  public void buildDetails(List<String> lines) {
+    
   }
 
   @Override
