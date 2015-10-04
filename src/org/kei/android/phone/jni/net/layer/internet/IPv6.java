@@ -2,6 +2,7 @@ package org.kei.android.phone.jni.net.layer.internet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kei.android.phone.jni.net.NetworkHelper;
@@ -30,21 +31,23 @@ import org.kei.android.phone.jni.net.layer.transport.UDP;
  *******************************************************************************
  */
 public class IPv6 extends Layer {
-  public static final int IPPROTO_UDP  = 17;
-  public static final int IPPROTO_TCP  = 6;
-  public static final int IPPROTO_IGMP = 2;
-  public static final int IPPROTO_ICMP = 1;
-  private int             priority;
-  private int             version;
-  private int             flowLbl_1;
-  private int             flowLbl_2;
-  private int             flowLbl_3;
-  private int             payloadLen;
-  private int             nexthdr;
-  private int             hopLimit;
-  private String          source;
-  private String          destination;
-  private int             headerLength;
+  public static final int  IPPROTO_UDP    = 17;
+  public static final int  IPPROTO_TCP    = 6;
+  public static final int  IPPROTO_IGMP   = 2;
+  public static final int  IPPROTO_ICMPV6 = 58;
+  private int              priority;
+  private int              version;
+  private int              flowLbl_1;
+  private int              flowLbl_2;
+  private int              flowLbl_3;
+  private int              payloadLen;
+  private int              nexthdr;
+  private int              hopLimit;
+  private String           source;
+  private String           destination;
+  private int              headerLength;
+  private int              hbhLength;
+  private List<IPv6Option> options        = new ArrayList<IPv6.IPv6Option>();
   
   public IPv6() {
     super();
@@ -71,10 +74,32 @@ public class IPv6 extends Layer {
     lines.add("  Priority: " + getPriority());
     lines.add("  Flowlabel: 0x" + String.format("%02x%02x%02x", getFlowLbl_1(), getFlowLbl_2(), getFlowLbl_3()));
     lines.add("  Payload length: " + getPayloadLen());
-    lines.add("  Next header: " + getNexthdr());
+    if(getOptions().isEmpty())
+      lines.add("  Next header: " + getNexthdr());
+    else
+      lines.add("  Next header: Hop-by-Hop option");
     lines.add("  Hop limit: " + getHopLimit());
     lines.add("  Source: " + getSource());
     lines.add("  Destination: " + getDestination());
+    if(!getOptions().isEmpty()) {
+      lines.add("  Hop-by-Hop option");
+      lines.add("    Next header: " + getNexthdr());
+      lines.add("    Length: " + getHBHLength());
+      for(IPv6Option opt : getOptions()) {
+      lines.add("    IPv6 Option");
+      lines.add("      Type: " + opt.getType());
+      lines.add("      Length: " + opt.getLength());
+      if(opt.getLength() != 0) {
+        String s = "";
+        byte [] mld = opt.getMLD();
+        for(int i = 0; i < mld.length; i++)
+          s += String.format("%02x ", mld[i]);
+        s = s.trim();
+        lines.add("      Value: " + s);
+      } else
+        lines.add("      Value: MISSING");
+      }
+    }
   }
   
   @Override
@@ -102,6 +127,7 @@ public class IPv6 extends Layer {
 
     nexthdr = buffer[offset++];
     hopLimit = buffer[offset++];
+    if(hopLimit < 0) hopLimit &= 0xFF;
     
     
     NetworkHelper.zcopy(buffer, offset, temp16, 0, temp16.length);
@@ -122,6 +148,25 @@ public class IPv6 extends Layer {
       e.printStackTrace();
       destination = e.getMessage();
     }
+    if(nexthdr == 0) {
+      int opts = (buffer.length - offset) - (payloadLen-8);
+      nexthdr = buffer[offset++];
+      hbhLength = buffer[offset++];
+      for(int i = 0; i < opts; i++) {
+        IPv6Option opt = new IPv6Option();
+        opt.setType(buffer[offset++]);
+        opt.setLength(buffer[offset++]);
+        if(opt.getLength() == 0) {
+          options.add(opt);
+          break;
+        }
+        byte [] mld = new byte[opt.getLength()];
+        NetworkHelper.zcopy(buffer, offset, mld, 0, mld.length);
+        offset += mld.length;
+        opt.setMLD(mld);
+        options.add(opt);
+      }
+    }
     headerLength = offset;
     if(nexthdr == IPPROTO_UDP) {
       byte [] sub_buffer = resizeBuffer(buffer);
@@ -141,7 +186,7 @@ public class IPv6 extends Layer {
       sub_buffer = resizeBuffer(buffer);
       igmp.decodeLayer(sub_buffer, this);
       setNext(igmp);
-    } else if(nexthdr == IPPROTO_ICMP) {
+    } else if(nexthdr == IPPROTO_ICMPV6) {
       byte [] sub_buffer = resizeBuffer(buffer);
       ICMPv6 icmp = new ICMPv6();
       icmp.decodeLayer(sub_buffer, this);
@@ -154,6 +199,56 @@ public class IPv6 extends Layer {
     }
   }
   
+  public class IPv6Option {
+    private int type;
+    private int length;
+    private byte [] mld;
+    
+    /**
+     * @return the type
+     */
+    public int getType() {
+      return type;
+    }
+    /**
+     * @param type the type to set
+     */
+    public void setType(int type) {
+      this.type = type;
+    }
+    /**
+     * @return the length
+     */
+    public int getLength() {
+      return length;
+    }
+    /**
+     * @param length the length to set
+     */
+    public void setLength(int length) {
+      this.length = length;
+    }
+    /**
+     * @return the mld
+     */
+    public byte[] getMLD() {
+      return mld;
+    }
+    /**
+     * @param mld the mld to set
+     */
+    public void setMLD(byte[] mld) {
+      this.mld = mld;
+    }
+  }
+  
+  /**
+   * @return the options
+   */
+  public List<IPv6Option> getOptions() {
+    return options;
+  }
+
   /**
    * Get the source IPv6 addr.
    *
@@ -342,6 +437,20 @@ public class IPv6 extends Layer {
    */
   public void setHopLimit(final int hopLimit) {
     this.hopLimit = hopLimit;
+  }
+
+  /**
+   * @return the hbhLength
+   */
+  public int getHBHLength() {
+    return hbhLength;
+  }
+
+  /**
+   * @param hbhLength the hbhLength to set
+   */
+  public void setHBHLength(int hbhLength) {
+    this.hbhLength = hbhLength;
   }
 
 }
