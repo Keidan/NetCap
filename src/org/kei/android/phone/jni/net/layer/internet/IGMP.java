@@ -1,9 +1,14 @@
 package org.kei.android.phone.jni.net.layer.internet;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
 
 import android.graphics.Color;
 
@@ -38,14 +43,15 @@ public class IGMP extends Layer {
   private int             checksum        = 0;
   private String          groupAdress     = "0.0.0.0";
   private int             resv            = 0;
-  private int             s               = 0;
+  private boolean         s               = false;
   private int             qrv             = 0;
   private int             qqic            = 0;
   private int             numberOfSources = 0;
   private List<String>    sourceAdress    = null;
+  private int             headerLength    = 0;
 
   public IGMP() {
-    super(TYPE_IGMP);
+    super();
     sourceAdress = new ArrayList<String>();
     background = Color.parseColor("#FFF3D6");
     foreground = Color.BLACK;
@@ -91,6 +97,101 @@ public class IGMP extends Layer {
       for(String s : getSourceAdress()) lines.add("  Source Address: " + s);
     }
   }
+  
+  @Override
+  public int getHeaderLength() {
+    return headerLength;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    int tos = 0;
+    if(IPv4.class.isInstance(owner))
+      tos = ((IPv4)owner).getTOS();
+    else if(IPv6.class.isInstance(owner))
+      tos = ((IPv6)owner).getFlowLbl_1();
+    int offset = 0;
+    byte temp2 [] = new byte[2];
+    byte temp4 [] = new byte[4];
+    
+    type = buffer[offset++];
+    if(tos == 0xc0 && type != QUERY) {
+      maxRespTime = buffer[offset++];
+      NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+      checksum = NetworkHelper.ntohs2(temp2);
+      offset+=temp2.length;
+      System.arraycopy(buffer, offset, temp4, 0, temp4.length);
+      offset+=temp4.length;
+      try {
+        InetAddress address = InetAddress.getByAddress(temp4);
+        groupAdress = address.getHostAddress();
+      } catch (UnknownHostException e) {
+        e.printStackTrace();
+        groupAdress = e.getMessage();
+      }
+      
+
+      resv = (byte)(buffer[offset++] & 0x0f);
+      int n = buffer[offset++];
+      s = BigInteger.valueOf(n).testBit(4);
+      n = BigInteger.valueOf(n).clearBit(4).intValue();
+      qrv = n;
+      qqic = buffer[offset++];
+      NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+      numberOfSources = NetworkHelper.ntohs2(temp2);
+      offset+=temp2.length;
+      for(int i = 0; i < numberOfSources; i++) {
+        System.arraycopy(buffer, offset, temp4, 0, temp4.length);
+        offset+=temp4.length;
+        try {
+          InetAddress address = InetAddress.getByAddress(temp4);
+          addSourceAdress(address.getHostAddress());
+        } catch (UnknownHostException e) {
+          e.printStackTrace();
+          addSourceAdress(e.getMessage());
+        }
+      }
+    } else if(type == REPORT_V3) {
+      NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+      checksum = NetworkHelper.ntohs2(temp2);
+      offset+=temp2.length;
+      NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+      numberOfSources = NetworkHelper.ntohs2(temp2);
+      offset+=temp2.length;
+      for(int i = 0; i < numberOfSources; i++) {
+        System.arraycopy(buffer, offset, temp4, 0, temp4.length);
+        offset+=temp4.length;
+        try {
+          InetAddress address = InetAddress.getByAddress(temp4);
+          addSourceAdress(address.getHostAddress());
+        } catch (UnknownHostException e) {
+          e.printStackTrace();
+          addSourceAdress(e.getMessage());
+        }
+      }
+    } else {
+      maxRespTime = buffer[offset++];
+      NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+      checksum = NetworkHelper.ntohs2(temp2);
+      offset+=temp2.length;
+      System.arraycopy(buffer, offset, temp4, 0, temp4.length);
+      offset+=temp4.length;
+      try {
+        InetAddress address = InetAddress.getByAddress(temp4);
+        groupAdress = address.getHostAddress();
+      } catch (UnknownHostException e) {
+        e.printStackTrace();
+        groupAdress = e.getMessage();
+      }
+    }
+    headerLength = offset;
+    byte [] sub_buffer = resizeBuffer(buffer);
+    if(sub_buffer != null) {
+      Payload p = new Payload();
+      p.decodeLayer(sub_buffer, this);
+      setNext(p);
+    }
+  }
 
   public int getType() {
     return type;
@@ -132,11 +233,11 @@ public class IGMP extends Layer {
     this.resv = resv;
   }
 
-  public int getS() {
+  public boolean isS() {
     return s;
   }
 
-  public void setS(final int s) {
+  public void setS(final boolean s) {
     this.s = s;
   }
 

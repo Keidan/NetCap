@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -38,7 +39,7 @@ import android.widget.ListView;
  *
  *******************************************************************************
  */
-public class CaptureViewerActivity extends Activity implements OnItemClickListener {
+public class CaptureViewerActivity extends Activity implements OnItemClickListener, OnItemLongClickListener {
   public static final String                   KEY_FILE       = "capture_file";
   private String                               file           = null;
   private ListView                             captureLV      = null;
@@ -64,6 +65,7 @@ public class CaptureViewerActivity extends Activity implements OnItemClickListen
     captureLV.setAdapter(adapter);
     loader.execute();
     captureLV.setOnItemClickListener(this);
+    captureLV.setOnItemLongClickListener(this);
   }
 
   @Override
@@ -81,6 +83,13 @@ public class CaptureViewerActivity extends Activity implements OnItemClickListen
   public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
     final CaptureListViewItem item = (CaptureListViewItem)captureLV.getItemAtPosition(pos);
     ApplicationCtx.startActivity(this, item.getLayer(), item.getId(), CaptureDetailsActivity.class);
+  }
+  
+  @Override
+  public boolean onItemLongClick(AdapterView<?> adapter, View v, int pos, long id) {
+    final CaptureListViewItem item = (CaptureListViewItem)captureLV.getItemAtPosition(pos);
+    ApplicationCtx.startActivity(this, item.getPayload(), item.getId(), PayloadViewerActivity.class);
+    return true;
   }
 
   public void fabAction1(View view) {

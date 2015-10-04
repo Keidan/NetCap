@@ -39,13 +39,6 @@ JNIEXPORT jboolean JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_isPC
 JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_getPCAPHeader
   (JNIEnv *, jclass, jstring);
 
-/*
- * Class:     org_kei_android_phone_jni_net_NetworkHelper
- * Method:    decodeLayer
- * Signature: ([B)Lorg/kei/android/phone/jni/net/layer/Layer;
- */
-JNIEXPORT jobject JNICALL Java_org_kei_android_phone_jni_net_NetworkHelper_decodeLayer
-  (JNIEnv *, jclass, jbyteArray);
 
 #ifdef __cplusplus
 }

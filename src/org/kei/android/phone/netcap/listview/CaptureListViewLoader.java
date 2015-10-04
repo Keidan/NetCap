@@ -8,6 +8,7 @@ import org.kei.android.phone.jni.net.capture.CaptureFile;
 import org.kei.android.phone.jni.net.capture.ICapture;
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -89,6 +90,8 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     ++captureCount;
     item.setId(""+captureCount);
     item.setTime(pheader.getTime());
+    Payload payload = new Payload();
+    payload.decodeLayer(buffer, null);
     Layer layer = NetworkHelper.getLayer(buffer);
     Layer last = NetworkHelper.getLastLayer(layer);
     String info = last == null ? DEFAULT_LINE : last.compute("|");
@@ -113,6 +116,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
     item.setInfo(info);
     item.setPheader(pheader);
     item.setLayer(layer);
+    item.setPayload(payload);
     items.add(item);
     /*if ((captureCount % 1000) == 0)
       handler.sendEmptyMessage(0);*/

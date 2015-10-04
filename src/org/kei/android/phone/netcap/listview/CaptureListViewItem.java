@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
 import org.kei.android.phone.netcap.R;
 
 import android.graphics.Color;
@@ -37,6 +38,7 @@ public class CaptureListViewItem implements IListViewItem {
   public static final int  FILTER_BY_ALL      = 15;
   private PCAPPacketHeader pheader            = null;
   private Layer            layer              = null;
+  private Payload          payload            = null;
   private String           id                 = "(null)";
   private String           time               = "(null)";
   private String           protocol           = "(null)";
@@ -71,6 +73,14 @@ public class CaptureListViewItem implements IListViewItem {
     this.pheader = pheader;
   }
   
+  public Payload getPayload() {
+    return payload;
+  }
+
+  public void setPayload(final Payload payload) {
+    this.payload = payload;
+  }
+
   public Layer getLayer() {
     return layer;
   }

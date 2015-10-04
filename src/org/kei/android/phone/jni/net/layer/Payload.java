@@ -27,7 +27,12 @@ public class Payload extends Layer {
   private byte[] datas = null;
   
   public Payload() {
-    super(TYPE_PAYLOAD);
+    super();
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return 0;
   }
 
   @Override
@@ -40,6 +45,12 @@ public class Payload extends Layer {
     byte [] buffer = getDatas();
     List<String> l = NetworkHelper.formatBuffer(buffer);
     for(String s : l) lines.add(s);
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    datas = new byte[buffer.length];
+    System.arraycopy(buffer, 0, datas, 0, buffer.length);
   }
 
   /**

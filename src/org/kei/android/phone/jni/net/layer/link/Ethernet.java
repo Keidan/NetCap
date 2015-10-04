@@ -2,7 +2,11 @@ package org.kei.android.phone.jni.net.layer.link;
 
 import java.util.List;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.internet.IPv4;
+import org.kei.android.phone.jni.net.layer.internet.IPv6;
 
 /**
  *******************************************************************************
@@ -24,17 +28,21 @@ import org.kei.android.phone.jni.net.layer.Layer;
  *******************************************************************************
  */
 public class Ethernet extends Layer {
-  private String source      = "";
-  private String destination = "";
-  private int    proto       = 0;
+  public static final int HEADER_LENGTH = 14;
+  public static final int ETH_P_IP    = 0x0800;
+  public static final int ETH_P_IPV6  = 0x86DD;
+  public static final int ETH_P_ARP   = 0x0806;
+  private String          source      = "";
+  private String          destination = "";
+  private int             proto       = 0;
   
   public Ethernet() {
-    super(TYPE_ETHERNET);
+    super();
   }
   
   @Override
   public String getFullName() {
-    return "Ethernet";
+    return "Ethernet (Src: " + source + ", Dst: " + destination + ")";
   }
 
   @Override
@@ -50,8 +58,50 @@ public class Ethernet extends Layer {
   @Override
   public void buildDetails(List<String> lines) {
     lines.add("  Source: " + getSource());
-    lines.add("  Destination: " + getDestination());
-    lines.add("  Type: " + String.format("0x%04d", getProto()));
+    lines.add("  Destination: " + getDestination());    
+    if(proto == ETH_P_IP)
+      lines.add("  Type: IP (" + String.format("0x%04d", ETH_P_IP) + ")");
+    else if(proto == ETH_P_IPV6)
+      lines.add("  Type: IPv6 (" + String.format("0x%04d", ETH_P_IPV6) + ")");
+    else if(proto == ETH_P_ARP)
+      lines.add("  Type: ARP (" + String.format("0x%04d", ETH_P_ARP) + ")");
+    else
+      lines.add("  Type: (" + String.format("0x%04d", getProto()) + ")");
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return 14;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    byte temp6 [] = new byte[6];
+    byte temp2 [] = new byte[2];
+    System.arraycopy(buffer, 0, temp6, 0, temp6.length);
+    source = String.format("%02x:%02x:%02x:%02x:%02x:%02x", temp6[0], temp6[1], temp6[2], temp6[3], temp6[4], temp6[5]);
+    System.arraycopy(buffer, 6, temp6, 0, temp6.length);
+    destination = String.format("%02x:%02x:%02x:%02x:%02x:%02x", temp6[0], temp6[1], temp6[2], temp6[3], temp6[4], temp6[5]);
+    System.arraycopy(buffer, 12, temp2, 0, temp2.length);
+    proto = NetworkHelper.ntohs2(temp2);
+    byte [] sub_buffer = resizeBuffer(buffer);
+    if(proto == ETH_P_IP) {
+      IPv4 ip = new IPv4();
+      ip.decodeLayer(sub_buffer, this);
+      setNext(ip);
+    } else if(proto == ETH_P_IPV6) {
+      IPv6 ip = new IPv6();
+      ip.decodeLayer(sub_buffer, this);
+      setNext(ip);
+    } else if(proto == ETH_P_ARP) {
+      ARP arp = new ARP();
+      arp.decodeLayer(sub_buffer, this);
+      setNext(arp);
+    } else {
+      Payload p = new Payload();
+      p.decodeLayer(sub_buffer, this);
+      setNext(p);
+    }
   }
 
   /**

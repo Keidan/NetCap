@@ -1,5 +1,7 @@
 package org.kei.android.phone.jni.net.layer;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
+
 /**
  *******************************************************************************
  * @file Layer.java
@@ -39,15 +41,24 @@ public abstract class Layer extends LayerUI {
   private Layer           next          = null;
   
   /**
-   * Allocate the object with the layer type.
-   *
-   * @param type
-   *          The type.
+   * Allocate the object.
    */
-  public Layer(final int type) {
-    this.layerType = type;
+  public Layer() {
   }
   
+  public abstract int getHeaderLength();
+  
+  public abstract void decodeLayer(final byte [] buffer, Layer owner);
+  
+  
+  protected byte[] resizeBuffer(byte [] buffer) {
+    if(buffer.length - getHeaderLength() > 0) {
+      byte [] sub_buffer = new byte[buffer.length - getHeaderLength()];
+      NetworkHelper.zcopy(buffer, getHeaderLength(), sub_buffer, 0, sub_buffer.length);
+      return sub_buffer;
+    }
+    return null;
+  }
   /**
    * Get the packet type.
    *

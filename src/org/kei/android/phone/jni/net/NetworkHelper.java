@@ -1,11 +1,14 @@
 package org.kei.android.phone.jni.net;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kei.android.phone.jni.JniException;
 import org.kei.android.phone.jni.net.capture.PCAPHeader;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.link.Ethernet;
 
 /**
  *******************************************************************************
@@ -70,17 +73,6 @@ public class NetworkHelper {
    *           If an exception has occurred.
    */
   public static native PCAPHeader getPCAPHeader(final String filename) throws JniException;
-
-  /**
-   * Decode the buffer.
-   * 
-   * @param buffer
-   *          The buffer.
-   * @return The layer.
-   * @throws JniException
-   *           If an exception has occurred.
-   */
-  public static native Layer decodeLayer(byte[] buffer) throws JniException;
   
   public static List<String> formatBuffer(final byte [] buffer) {
     int max = 16, length = buffer.length;
@@ -116,21 +108,75 @@ public class NetworkHelper {
   }
 
   public static Layer getLayer(final byte[] buffer) {
-    try {
-      return NetworkHelper.decodeLayer(buffer);
-    } catch (JniException e) {
-      e.printStackTrace();
-    }
-    return null;
+    Ethernet eth = new Ethernet();
+    eth.decodeLayer(buffer, null);
+    return eth;
   }
 
   public static Layer getLastLayer(Layer layer) {
     Layer last = null;
     do {
-      if (layer != null && layer.getLayerType() != Layer.TYPE_PAYLOAD) {
+      if (layer != null && !Payload.class.isInstance(layer)) {
         last = layer;
       }
     } while ((layer = layer.getNext()) != null);
     return last;
+  }
+  
+  public static void zcopy(byte [] src, int srcPos, byte [] dst, int dstPos, int length) {
+    for(int i = 0; i < dst.length; i++) dst[i] = (byte)0x00;
+    System.arraycopy(src, srcPos, dst, dstPos, length);
+  }
+  
+  public static byte[] htonl(int x) {
+    byte [] res = new byte[4];
+    for (int i=0; i<4; i++) {
+      res[i] = (byte)(x >>> 24);
+      x <<= 8;
+    }
+    return res;
+  }
+  
+  public static int ntohl(byte [] x) {
+    int res = 0;
+    for (int i=0; i<4; i++) {
+      res <<= 8;
+      res |= (int)x[i];
+    }
+    return res;
+  }
+  
+  public static short getValue(final byte[] data) {
+    short value = data[1];
+    value = (short)((value << 8) | data[0]);
+    return value;
+  }
+  
+  public static short ntohs(byte[] value) {
+    ByteBuffer buf = ByteBuffer.wrap(value);
+    return buf.getShort();
+  }
+  
+  public static int ntohs2(byte[] value) {
+    return ntohs(value) & 0x0000ffff;
+  }
+
+  public static byte[] htons(short sValue) {
+    byte[] baValue = new byte[2];
+    ByteBuffer buf = ByteBuffer.wrap(baValue);
+    return buf.putShort(sValue).array();
+  }
+  
+  public static byte setBit(byte b, int pos, boolean value) {
+    if(value)
+      return (byte)(b | (1 << pos));
+    return (byte)(b & ~(1 << pos));
+  }
+  
+  public static int getUShort(byte[] msg, int pos) {
+    return (((msg[pos] & 0xFF) << 8) | (msg[pos + 1] & 0xFF));
+  }
+  public static int getInt(byte[] msg, int pos) {
+    return ((getUShort(msg, pos) << 16) | getUShort(msg, pos + 2));
   }
 }

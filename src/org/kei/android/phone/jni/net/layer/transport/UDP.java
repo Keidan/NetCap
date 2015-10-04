@@ -2,8 +2,11 @@ package org.kei.android.phone.jni.net.layer.transport;
 
 import java.util.List;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.application.DNS;
 
 /**
  *******************************************************************************
@@ -31,12 +34,12 @@ public class UDP extends Layer {
   private int checksum;
 
   public UDP() {
-    super(TYPE_UDP);
+    super();
   }
   
   @Override
   public String getFullName() {
-    return "User Datagram Protocol";
+    return "User Datagram Protocol (Src: " + source + ", Dst: " + destination + ")";
   }
 
   @Override
@@ -63,6 +66,42 @@ public class UDP extends Layer {
     lines.add("  Destination port: " + getDestination());
     lines.add("  Length: " + getLength());
     lines.add("  Checksum: 0x" + String.format("%04x", getChecksum()));
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return 8;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    int offset = 0;
+    byte temp2 [] = new byte[2];
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    source = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    destination = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    length = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    checksum = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    
+    byte [] sub_buffer = resizeBuffer(buffer);
+    if(sub_buffer != null) {
+      if(source == DNS.PORT || destination == DNS.PORT) {
+        DNS dns = new DNS();
+        dns.decodeLayer(sub_buffer, this);
+        setNext(dns);
+      } else {
+        Payload p = new Payload();
+        p.decodeLayer(sub_buffer, this);
+        setNext(p);
+      }
+    }
   }
   
   /**

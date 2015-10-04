@@ -5,7 +5,6 @@ import java.util.List;
 import org.kei.android.phone.netcap.R;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,7 +89,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
       TextView lblListHeader = (TextView) convertView
               .findViewById(R.id.lblListHeaderTV);
-      lblListHeader.setTypeface(null, Typeface.BOLD);
       lblListHeader.setText(headerTitle);
 
       return convertView;

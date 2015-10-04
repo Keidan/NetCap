@@ -39,6 +39,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CaptureDetailsActivity"/>
+        <activity android:name=".PayloadViewerActivity"/>
         <activity android:name=".OutputTabActivity"/>
         
     </application>

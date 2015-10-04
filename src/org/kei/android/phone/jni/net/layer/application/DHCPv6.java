@@ -3,6 +3,7 @@ package org.kei.android.phone.jni.net.layer.application;
 import java.util.List;
 
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
 
 /**
  *******************************************************************************
@@ -29,7 +30,7 @@ import org.kei.android.phone.jni.net.layer.Layer;
 public class DHCPv6 extends Layer {
 
   public DHCPv6() {
-    super(TYPE_DHCPv6);
+    super();
   }
   
   @Override
@@ -50,5 +51,20 @@ public class DHCPv6 extends Layer {
   @Override
   public String getDescriptionText() {
     return null;
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return 0;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    byte [] sub_buffer = resizeBuffer(buffer);
+    if(sub_buffer != null) {
+      Payload p = new Payload();
+      p.decodeLayer(sub_buffer, this);
+      setNext(p);
+    }
   }
 }

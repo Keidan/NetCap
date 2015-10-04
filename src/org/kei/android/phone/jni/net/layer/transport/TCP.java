@@ -3,8 +3,10 @@ package org.kei.android.phone.jni.net.layer.transport;
 import java.util.List;
 import java.util.Locale;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
 
 import android.graphics.Color;
 
@@ -28,29 +30,41 @@ import android.graphics.Color;
  *******************************************************************************
  */
 public class TCP extends Layer {
-  private int     source;
-  private int     destination;
-  private boolean cwr = false;
-  private boolean ece = false;
-  private boolean urg = false;
-  private boolean ack = false;
-  private boolean psh = false;
-  private boolean rst = false;
-  private boolean syn = false;
-  private boolean fin = false;
-  private int     seq;
-  private int     ackSeq;
-  private int     window;
-  private int     check;
-  private int     urgPtr;
-
+  public static final int FLAG_CWR = 0x0080;
+  public static final int FLAG_ECE = 0x0040;
+  public static final int FLAG_URG = 0x0020;
+  public static final int FLAG_ACK = 0x0010;
+  public static final int FLAG_PSH = 0x0008;
+  public static final int FLAG_RST = 0x0004;
+  public static final int FLAG_SYN = 0x0002;
+  public static final int FLAG_FIN = 0x0001;
+  private int             source;
+  private int             destination;
+  private boolean         cwr      = false;
+  private boolean         ece      = false;
+  private boolean         urg      = false;
+  private boolean         ack      = false;
+  private boolean         psh      = false;
+  private boolean         rst      = false;
+  private boolean         syn      = false;
+  private boolean         fin      = false;
+  private int             seq;
+  private int             ackSeq;
+  private int             window;
+  private int             check;
+  private int             urgPtr;
+  private int             doff;
+  private int             reserved;
+  private int             flags;
+  private byte[]          optionBytes;
+  
   public TCP() {
-    super(TYPE_TCP);
+    super();
   }
   
   @Override
   public String getFullName() {
-    return "Transmission Control Protocol";
+    return "Transmission Control Protocol (Src: " + source + ", Dst: " + destination + ")";
   }
 
   @Override
@@ -114,8 +128,9 @@ public class TCP extends Layer {
     lines.add("  Destination port: " + getDestination());
     lines.add("  Sequence number: " + getSeq());
     lines.add("  Acknowledgement number: " + getAckSeq());
+    lines.add("  Header Length: " + getHeaderLength() + " bytes");
     lines.add("  Flags:");
-    lines.add("    " + (isCWR() ? "1" : "0") + "... .... = Congestion Window Reduced (CWR): " + (isCWR() ? "Set" : "Not Set"));
+    lines.add("    " + (isCWR() ? "1" : "0") + "... .... = Congestion Window Reduced: " + (isCWR() ? "Set" : "Not Set"));
     lines.add("    ." + (isECE() ? "1" : "0") + ".. .... = ECN-Echo: " + (isECE() ? "Set" : "Not Set"));
     lines.add("    .." + (isURG() ? "1" : "0") + ". .... = Urgent: " + (isURG() ? "Set" : "Not Set"));
     lines.add("    ..." + (isACK() ? "1" : "0") + " .... = Acknowledgement: " + (isACK() ? "Set" : "Not Set"));
@@ -126,6 +141,72 @@ public class TCP extends Layer {
     lines.add("  Window size: " + getWindow());
     lines.add("  Checksum: 0x" + String.format("%04x", getCheck()));
     lines.add("  Urg ptr: " + getUrgPtr());
+    if(getOptionBytes() != null && getOptionBytes().length > 0) {
+      lines.add("  Options: " + getOptionBytes().length + " bytes");
+      List<String> l = NetworkHelper.formatBuffer(getOptionBytes());
+      for(String s : l) lines.add("    " + s);
+    }
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return doff * 4;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    int offset = 0;
+    byte temp2 [] = new byte[2];
+    byte temp4 [] = new byte[4];
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    source = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    destination = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp4, 0, temp4.length);
+    seq = NetworkHelper.ntohl(temp4);
+    offset+=temp4.length;
+    NetworkHelper.zcopy(buffer, offset, temp4, 0, temp4.length);
+    ackSeq = NetworkHelper.ntohl(temp4);
+    offset+=temp4.length;
+
+    byte doff_reserved = buffer[offset++];
+    doff = Math.abs((byte)(doff_reserved >> 4));
+    reserved = (byte)(doff_reserved & 0x0f);
+    int flags = buffer[offset++]& 0x3F;
+
+    cwr = (flags&FLAG_CWR) != 0;
+    ece = (flags&FLAG_ECE) != 0;
+    urg = (flags&FLAG_URG) != 0;
+    ack = (flags&FLAG_ACK) != 0;
+    psh = (flags&FLAG_PSH) != 0;
+    rst = (flags&FLAG_RST) != 0;
+    syn = (flags&FLAG_SYN) != 0;
+    fin = (flags&FLAG_FIN) != 0;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    window = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    check = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    urgPtr = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+    
+    if (doff > 5) {
+      optionBytes = new byte[(doff - 5) * 4];
+      System.arraycopy(buffer, offset, optionBytes, 0, optionBytes.length);
+      offset+=optionBytes.length;
+    } else
+      optionBytes = new byte[0];
+    
+    byte [] sub_buffer = resizeBuffer(buffer);
+    if(sub_buffer != null) {
+      Payload p = new Payload();
+      p.decodeLayer(sub_buffer, this);
+      setNext(p);
+    }
   }
 
   /**
@@ -359,6 +440,62 @@ public class TCP extends Layer {
    */
   public void setUrgPtr(final int urgPtr) {
     this.urgPtr = urgPtr;
+  }
+
+  /**
+   * @return the doff
+   */
+  public int getDOFF() {
+    return doff;
+  }
+
+  /**
+   * @param doff the doff to set
+   */
+  public void setDOFF(int doff) {
+    this.doff = doff;
+  }
+
+  /**
+   * @return the reserved
+   */
+  public int getReserved() {
+    return reserved;
+  }
+
+  /**
+   * @param reserved the reserved to set
+   */
+  public void setReserved(int reserved) {
+    this.reserved = reserved;
+  }
+
+  /**
+   * @return the flags
+   */
+  public int getFlags() {
+    return flags;
+  }
+
+  /**
+   * @param flags the flags to set
+   */
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
+
+  /**
+   * @return the optionBytes
+   */
+  public byte[] getOptionBytes() {
+    return optionBytes;
+  }
+
+  /**
+   * @param optionBytes the optionBytes to set
+   */
+  public void setOptionBytes(byte[] optionBytes) {
+    this.optionBytes = optionBytes;
   }
 
 }

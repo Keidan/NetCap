@@ -21,7 +21,6 @@ package org.kei.android.phone.jni.net.layer.application;
  */
 public class DNSEntry {
   private String name       = null;
-  private int    nameOffset = 0;
   private int    type       = 0;
   private int    clazz      = 0;
   private int    ttl        = 0;
@@ -62,20 +61,6 @@ public class DNSEntry {
   }
 
   
-  /**
-   * @return the nameOffset
-   */
-  public int getNameOffset() {
-    return nameOffset;
-  }
-
-  /**
-   * @param nameOffset the nameOffset to set
-   */
-  public void setNameOffset(final int nameOffset) {
-    this.nameOffset = nameOffset;
-  }
-
   /**
    * @return the name
    */

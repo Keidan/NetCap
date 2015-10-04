@@ -1,8 +1,14 @@
 package org.kei.android.phone.jni.net.layer.internet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
+import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.transport.TCP;
+import org.kei.android.phone.jni.net.layer.transport.UDP;
 
 /**
  *******************************************************************************
@@ -24,24 +30,29 @@ import org.kei.android.phone.jni.net.layer.Layer;
  *******************************************************************************
  */
 public class IPv6 extends Layer {
-  private int    priority;
-  private int    version;
-  private int    flowLbl_1;
-  private int    flowLbl_2;
-  private int    flowLbl_3;
-  private int    payloadLen;
-  private int    nexthdr;
-  private int    hopLimit;
-  private String source;
-  private String destination;
+  public static final int IPPROTO_UDP  = 17;
+  public static final int IPPROTO_TCP  = 6;
+  public static final int IPPROTO_IGMP = 2;
+  public static final int IPPROTO_ICMP = 1;
+  private int             priority;
+  private int             version;
+  private int             flowLbl_1;
+  private int             flowLbl_2;
+  private int             flowLbl_3;
+  private int             payloadLen;
+  private int             nexthdr;
+  private int             hopLimit;
+  private String          source;
+  private String          destination;
+  private int             headerLength;
   
   public IPv6() {
-    super(TYPE_IPv6);
+    super();
   }
   
   @Override
   public String getFullName() {
-    return "Internet Protocol v6";
+    return "Internet Protocol v" + getVersion() +" (Src: " + source + ", Dst: " + destination + ")";
   }
 
   @Override
@@ -56,7 +67,7 @@ public class IPv6 extends Layer {
   
   @Override
   public void buildDetails(List<String> lines) {
-    lines.add("  Version: 6");
+    lines.add("  Version: " + getVersion());
     lines.add("  Priority: " + getPriority());
     lines.add("  Flowlabel: 0x" + String.format("%02x%02x%02x", getFlowLbl_1(), getFlowLbl_2(), getFlowLbl_3()));
     lines.add("  Payload length: " + getPayloadLen());
@@ -64,6 +75,83 @@ public class IPv6 extends Layer {
     lines.add("  Hop limit: " + getHopLimit());
     lines.add("  Source: " + getSource());
     lines.add("  Destination: " + getDestination());
+  }
+  
+  @Override
+  public int getHeaderLength() {
+    return headerLength;
+  }
+  
+  @Override
+  public void decodeLayer(final byte [] buffer, final Layer owner) {
+    byte temp16 [] = new byte[16];
+    byte temp2 [] = new byte[2];
+    int offset = 0;
+    byte ihl_priority = buffer[offset++];
+    version = (byte)(ihl_priority >> 4);
+    priority = (byte)(ihl_priority & 0x0f);
+    
+    flowLbl_1 = buffer[offset++];
+    flowLbl_2 = buffer[offset++];
+    flowLbl_3 = buffer[offset++];
+    
+    
+    NetworkHelper.zcopy(buffer, offset, temp2, 0, temp2.length);
+    payloadLen = NetworkHelper.ntohs2(temp2);
+    offset+=temp2.length;
+
+    nexthdr = buffer[offset++];
+    hopLimit = buffer[offset++];
+    
+    
+    NetworkHelper.zcopy(buffer, offset, temp16, 0, temp16.length);
+    offset+=temp16.length;
+    try {
+      InetAddress address = InetAddress.getByAddress(temp16);
+      source = address.getHostAddress();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+      source = e.getMessage();
+    }
+    NetworkHelper.zcopy(buffer, offset, temp16, 0, temp16.length);
+    offset+=temp16.length;
+    try {
+      InetAddress address = InetAddress.getByAddress(temp16);
+      destination = address.getHostAddress();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+      destination = e.getMessage();
+    }
+    headerLength = offset;
+    if(nexthdr == IPPROTO_UDP) {
+      byte [] sub_buffer = resizeBuffer(buffer);
+      UDP udp = new UDP();
+      udp.decodeLayer(sub_buffer, this);
+      setNext(udp);
+    } else if(nexthdr == IPPROTO_TCP) {
+      byte [] sub_buffer = resizeBuffer(buffer);
+      TCP tcp = new TCP();
+      tcp.decodeLayer(sub_buffer, this);
+      setNext(tcp);
+    } else if(nexthdr == IPPROTO_IGMP) {
+      IGMP igmp = new IGMP();
+      offset += 4; // options
+      headerLength = offset;
+      byte [] sub_buffer = resizeBuffer(buffer);
+      sub_buffer = resizeBuffer(buffer);
+      igmp.decodeLayer(sub_buffer, this);
+      setNext(igmp);
+    } else if(nexthdr == IPPROTO_ICMP) {
+      byte [] sub_buffer = resizeBuffer(buffer);
+      ICMPv6 icmp = new ICMPv6();
+      icmp.decodeLayer(sub_buffer, this);
+      setNext(icmp);
+    } else {
+      byte [] sub_buffer = resizeBuffer(buffer);
+      Payload p = new Payload();
+      p.decodeLayer(sub_buffer, this);
+      setNext(p);
+    }
   }
   
   /**
