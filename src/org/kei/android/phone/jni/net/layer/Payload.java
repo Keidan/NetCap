@@ -81,6 +81,6 @@ public class Payload extends Layer {
 
   @Override
   public String getDescriptionText() {
-    return "data length: " + getLayerLength();
+    return "data length: " + getDatas().length;
   }
 }

@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -91,9 +90,7 @@ public class InputTabActivity extends Activity  implements OnItemClickListener, 
     while(preferences.contains(KEY_RECENT + i)) {
       String c = preferences.getString(KEY_RECENT + i, null);
       if(c != null && !c.isEmpty()) {
-        Log.e("PLOP", "C: '" + c + "'");
         String [] split = c.split(Pattern.quote("|"));
-        Log.e("PLOP", "split[0]: '" + split[0] + "'");
         RecentFileListViewItem r = new RecentFileListViewItem();
         r.setTime(Long.parseLong(split[0]));
         r.setFile(split[1]);

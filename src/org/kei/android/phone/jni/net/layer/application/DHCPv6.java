@@ -1,12 +1,14 @@
 package org.kei.android.phone.jni.net.layer.application;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
-import org.kei.android.phone.jni.net.layer.Payload;
 import org.kei.android.phone.jni.net.layer.application.utils.DHCPv6Option;
+import org.kei.android.phone.jni.net.layer.application.utils.DHCPv6OptionLabel;
 
 /**
  *******************************************************************************
@@ -38,12 +40,6 @@ public class DHCPv6 extends Layer {
   public static final int    REQUEST                                           = 3;
   public static final int    REPLY                                             = 7;
   public static final int    RELEASE                                           = 8;
-  public static final int    OPTION_CLIENT_ID                                  = 1;
-  public static final int    OPTION_SERVER_ID                                  = 2;
-  public static final int    OPTION_REQUEST                                    = 6;
-  public static final int    OPTION_ELAPSED_TIME                               = 8;
-  public static final int    OPTION_STATUS_CODE                                = 13;
-  public static final int    OPTION_IDENTITY_ASSOCIATION_FOR_PREFIX_DELEGATION = 25;
   public static final int    LINK_LAYER_ADDRESS_PLUS_TIME                      = 1;
   private int                headerLength;
   private int                opcode;
@@ -65,6 +61,7 @@ public class DHCPv6 extends Layer {
     byte temp2 [] = new byte[2];
     byte temp4 [] = new byte[4];
     byte temp6 [] = new byte[6];
+    byte temp16 [] = new byte[16];
     String s = null;
     switch(getOpcode()) {
       case SOLICIT:
@@ -86,32 +83,13 @@ public class DHCPv6 extends Layer {
     lines.add("  Message type: " + s + " (" + getOpcode() + ")");
     lines.add("  Transaction id: 0x" + String.format("%06x", getID()));
     for(DHCPv6Option opt : options) {
-      if(opt.getCode() == OPTION_CLIENT_ID) {
-        lines.add(" -Client Identifier");
-        lines.add("    Option: Client Identifier (" + opt.getCode() + ")");
-      } else if(opt.getCode() == OPTION_REQUEST) {
-        lines.add(" -Option Request");
-        lines.add("    Option: Option Request (" + opt.getCode() + ")");
-      } else if(opt.getCode() == OPTION_ELAPSED_TIME) {
-        lines.add(" -Elapsed time");
-        lines.add("    Option: Elapsed time (" + opt.getCode() + ")");
-      } else if(opt.getCode() == OPTION_IDENTITY_ASSOCIATION_FOR_PREFIX_DELEGATION) {
-        lines.add(" -Identity Association for Prefix Delegation");
-        lines.add("    Option: Identity Association for Prefix Delegation (" + opt.getCode() + ")");
-      } else if(opt.getCode() == OPTION_SERVER_ID) {
-        lines.add(" -Server Identifier");
-        lines.add("    Option: Server Identifier (" + opt.getCode() + ")");
-      } else if(opt.getCode() == OPTION_STATUS_CODE) {
-        lines.add(" -Status code");
-        lines.add("    Option: Status code (" + opt.getCode() + ")");
-      } else {
-        lines.add(" -Unknown");
-        lines.add("    Option: Unknown (" + opt.getCode() + ")");
-      }
+      DHCPv6OptionLabel label = DHCPv6OptionLabel.findByNumber(opt.getCode());
       int offset = 0;
+      lines.add(" -" + label.getText());
+      lines.add("    Option: " + label.getText() + " (" + opt.getCode() + ")");
       lines.add("    Length: " + opt.getLength());
       lines.add("    Value: " + opt.getSDatas());
-      if(opt.getCode() == OPTION_CLIENT_ID || opt.getCode() == OPTION_SERVER_ID) {
+      if(label == DHCPv6OptionLabel.CLIENT_ID || label == DHCPv6OptionLabel.SERVER_ID) {
         lines.add("    DUID: " + opt.getSDatas());
         NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
         int type = NetworkHelper.ntohs2(temp2);
@@ -132,7 +110,7 @@ public class DHCPv6 extends Layer {
           lines.add("    Address: " + addr);
         } else
           lines.add("    DUID Type: " + type);
-      } else if(opt.getCode() == OPTION_REQUEST) {
+      } else if(label == DHCPv6OptionLabel.REQUEST) {
         NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
         int type = NetworkHelper.ntohs2(temp2);
         offset+=temp2.length;
@@ -141,11 +119,11 @@ public class DHCPv6 extends Layer {
         type = NetworkHelper.ntohs2(temp2);
         offset+=temp2.length;
         lines.add("    Requested Option code: " + type);
-      } else if(opt.getCode() == OPTION_ELAPSED_TIME) {
+      } else if(label == DHCPv6OptionLabel.ELAPSED_TIME) {
         NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
         int time = NetworkHelper.ntohs2(temp2);
         lines.add("    Elapsed time: " + time + " ms");
-      } else if(opt.getCode() == OPTION_STATUS_CODE) {
+      } else if(label == DHCPv6OptionLabel.STATUS_CODE) {
         NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
         offset+=temp2.length;
         int code = NetworkHelper.ntohs2(temp2);
@@ -154,6 +132,45 @@ public class DHCPv6 extends Layer {
         System.arraycopy(opt.getDatas(), offset, bytes, 0, bytes.length);
         offset+=bytes.length;
         lines.add("    Status message: " + new String(bytes));
+      } else if(label == DHCPv6OptionLabel.IDENTITY_ASSOCIATION_FOR_PREFIX_DELEGATION) {
+        NetworkHelper.zcopy(opt.getDatas(), offset, temp4, 0, temp4.length);
+        lines.add("    IAID: " + String.format("%04x", NetworkHelper.getInt(temp4, 0)));
+        offset+=temp4.length;
+        NetworkHelper.zcopy(opt.getDatas(), offset, temp4, 0, temp4.length);
+        lines.add("    T1: " + NetworkHelper.ntohl(temp4));
+        offset+=temp4.length;
+        NetworkHelper.zcopy(opt.getDatas(), offset, temp4, 0, temp4.length);
+        lines.add("    T2: " + NetworkHelper.ntohl(temp4));
+        offset+=temp4.length;
+        if(offset < opt.getDatas().length) {
+          NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
+          offset+=temp2.length;
+          int n = NetworkHelper.ntohs2(temp2);
+          if(n == DHCPv6OptionLabel.IA_PD_PREFIX.getNum()) {
+            lines.add("    -" + DHCPv6OptionLabel.IA_PD_PREFIX.getText());
+            lines.add("      Option: " + DHCPv6OptionLabel.IA_PD_PREFIX.getText() + " (" + DHCPv6OptionLabel.IA_PD_PREFIX.getNum() + ")");
+            NetworkHelper.zcopy(opt.getDatas(), offset, temp2, 0, temp2.length);
+            offset+=temp2.length;
+            n = NetworkHelper.ntohs2(temp2);
+            lines.add("      Length: " + n);
+            NetworkHelper.zcopy(opt.getDatas(), offset, temp4, 0, temp4.length);
+            lines.add("      Preferred lifetime: " + (NetworkHelper.getInt(temp4, 0)));
+            offset+=temp4.length;
+            NetworkHelper.zcopy(opt.getDatas(), offset, temp4, 0, temp4.length);
+            lines.add("      Valid lifetime: " + (NetworkHelper.getInt(temp4, 0)));
+            offset+=temp4.length;
+            lines.add("      Prefix length: " + opt.getDatas()[offset++]);
+            NetworkHelper.zcopy(opt.getDatas(), offset, temp16, 0, temp16.length);
+            offset+=temp16.length;
+            try {
+              InetAddress address = InetAddress.getByAddress(temp16);
+              lines.add("      Prefix address: " + address.getHostAddress());
+            } catch (UnknownHostException e) {
+              e.printStackTrace();
+              lines.add("      Prefix address: " + e.getMessage());
+            }
+          }
+        }
       }
     }
   }
@@ -217,7 +234,7 @@ public class DHCPv6 extends Layer {
       String sDatas = "";
       for(byte b : value) sDatas += String.format("%02x", b);
       opt.setSDatas(sDatas);
-      if(opt.getCode() == OPTION_CLIENT_ID)
+      if(DHCPv6OptionLabel.findByNumber(opt.getCode()) == DHCPv6OptionLabel.CLIENT_ID)
         cid = opt.getSDatas();
       options.add(opt);
     } while(offset < buffer.length);

@@ -22,22 +22,6 @@ import org.kei.android.phone.jni.net.NetworkHelper;
  *******************************************************************************
  */
 public abstract class Layer extends LayerUI {
-  public static final int TYPE_ETHERNET = 0x00;
-  public static final int TYPE_IPv4     = 0x01;
-  public static final int TYPE_IPv6     = 0x02;
-  public static final int TYPE_ICMPv4   = 0x03;
-  public static final int TYPE_ICMPv6   = 0x04;
-  public static final int TYPE_TCP      = 0x05;
-  public static final int TYPE_UDP      = 0x06;
-  public static final int TYPE_ARP      = 0x07;
-  public static final int TYPE_DHCPv4   = 0x08;
-  public static final int TYPE_DHCPv6   = 0x09;
-  public static final int TYPE_NDP      = 0x0A;
-  public static final int TYPE_DNS      = 0x0B;
-  public static final int TYPE_IGMP     = 0x0C;
-  public static final int TYPE_PAYLOAD  = -1;
-  private int             layerType     = TYPE_ETHERNET;
-  private int             llength       = 0;
   private Layer           next          = null;
   
   /**
@@ -58,33 +42,6 @@ public abstract class Layer extends LayerUI {
       return sub_buffer;
     }
     return null;
-  }
-  /**
-   * Get the packet type.
-   *
-   * @return int
-   */
-  public int getLayerType() {
-    return layerType;
-  }
-  
-  /**
-   * Get the data length.
-   * 
-   * @return int
-   */
-  public int getLayerLength() {
-    return llength;
-  }
-  
-  /**
-   * Set the data length.
-   * 
-   * @param llength
-   *          The length.
-   */
-  public void setLayerLength(final int llength) {
-    this.llength = llength;
   }
   
   /**
