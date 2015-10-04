@@ -8,6 +8,7 @@ import java.util.List;
 import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.internet.utils.IPv6Option;
 import org.kei.android.phone.jni.net.layer.transport.TCP;
 import org.kei.android.phone.jni.net.layer.transport.UDP;
 
@@ -47,7 +48,7 @@ public class IPv6 extends Layer {
   private String           destination;
   private int              headerLength;
   private int              hbhLength;
-  private List<IPv6Option> options        = new ArrayList<IPv6.IPv6Option>();
+  private List<IPv6Option> options        = new ArrayList<IPv6Option>();
   
   public IPv6() {
     super();
@@ -196,49 +197,6 @@ public class IPv6 extends Layer {
       Payload p = new Payload();
       p.decodeLayer(sub_buffer, this);
       setNext(p);
-    }
-  }
-  
-  public class IPv6Option {
-    private int type;
-    private int length;
-    private byte [] mld;
-    
-    /**
-     * @return the type
-     */
-    public int getType() {
-      return type;
-    }
-    /**
-     * @param type the type to set
-     */
-    public void setType(int type) {
-      this.type = type;
-    }
-    /**
-     * @return the length
-     */
-    public int getLength() {
-      return length;
-    }
-    /**
-     * @param length the length to set
-     */
-    public void setLength(int length) {
-      this.length = length;
-    }
-    /**
-     * @return the mld
-     */
-    public byte[] getMLD() {
-      return mld;
-    }
-    /**
-     * @param mld the mld to set
-     */
-    public void setMLD(byte[] mld) {
-      this.mld = mld;
     }
   }
   

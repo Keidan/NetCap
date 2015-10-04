@@ -76,7 +76,8 @@ public class DHCPv4 extends Layer {
     lines.add("  Client MAC address: " + getCHAddr());
     lines.add("  Padding: " + getCHAddrPadding());
     lines.add("  Server host name: " + getSName());
-    lines.add("  Boot file name: " + getFile());if(getOptionBytes() != null && getOptionBytes().length > 0) {
+    lines.add("  Boot file name: " + getFile());
+    if(getOptionBytes() != null && getOptionBytes().length > 0) {
       lines.add("  Options: " + getOptionBytes().length + " bytes");
       List<String> l = NetworkHelper.formatBuffer(getOptionBytes());
       for(String s : l) lines.add("    " + s);

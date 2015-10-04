@@ -1,6 +1,8 @@
 package org.kei.android.phone.netcap.listview;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -103,6 +105,22 @@ public class ListViewAdapter<T extends IListViewItem> extends
   
   public int getFilterId() {
     return filterId;
+  }
+  
+  public void removeItemSort(final T item, Comparator<T> comp) {
+    itemListBack.remove(item);
+    itemList.remove(item);
+    Collections.sort(itemList, comp);
+    Collections.sort(itemListBack, comp);
+    notifyDataSetChanged();
+  }
+  
+  public void addItemSort(final T item, Comparator<T> comp) {
+    itemListBack.add(item);
+    itemList.add(item);
+    Collections.sort(itemList, comp);
+    Collections.sort(itemListBack, comp);
+    notifyDataSetChanged();
   }
   
   public void setItemList(final List<T> itemList) {

@@ -10,6 +10,7 @@ import java.util.List;
 import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.application.utils.DNSEntry;
 
 
 /**

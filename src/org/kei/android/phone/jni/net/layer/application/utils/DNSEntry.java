@@ -1,4 +1,4 @@
-package org.kei.android.phone.jni.net.layer.application;
+package org.kei.android.phone.jni.net.layer.application.utils;
 
 /**
  *******************************************************************************
