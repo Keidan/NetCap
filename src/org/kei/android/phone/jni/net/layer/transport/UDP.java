@@ -6,6 +6,7 @@ import org.kei.android.phone.jni.net.NetworkHelper;
 import org.kei.android.phone.jni.net.Service;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.jni.net.layer.application.DHCPv4;
 import org.kei.android.phone.jni.net.layer.application.DNS;
 
 /**
@@ -96,6 +97,10 @@ public class UDP extends Layer {
         DNS dns = new DNS();
         dns.decodeLayer(sub_buffer, this);
         setNext(dns);
+      } else if(source == DHCPv4.PORT_CLI || destination == DHCPv4.PORT_CLI || source == DHCPv4.PORT_SRV || destination == DHCPv4.PORT_SRV) {
+        DHCPv4 dhcp = new DHCPv4();
+        dhcp.decodeLayer(sub_buffer, this);
+        setNext(dhcp);
       } else {
         Payload p = new Payload();
         p.decodeLayer(sub_buffer, this);
