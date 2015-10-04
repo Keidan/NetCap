@@ -28,6 +28,8 @@ import org.kei.android.phone.jni.net.layer.Payload;
  *******************************************************************************
  */
 public class DHCPv6 extends Layer {
+  public static final int PORT_SRV = 547;
+  public static final int PORT_CLI = 546;
 
   public DHCPv6() {
     super();
