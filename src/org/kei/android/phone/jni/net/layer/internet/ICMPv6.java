@@ -5,6 +5,8 @@ import java.util.List;
 import org.kei.android.phone.jni.net.layer.Layer;
 import org.kei.android.phone.jni.net.layer.Payload;
 
+import android.graphics.Color;
+
 /**
  *******************************************************************************
  * @file ICMPv6.java
@@ -51,6 +53,8 @@ public class ICMPv6 extends Layer {
 
   @Override
   public String getDescriptionText() {
+    background = Color.parseColor("#FCE0FF");
+    foreground = Color.parseColor("#000000");
     return null;
   }
   
