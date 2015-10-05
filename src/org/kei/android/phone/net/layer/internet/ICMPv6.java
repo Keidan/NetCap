@@ -64,7 +64,9 @@ public class ICMPv6 extends Layer {
   public void buildDetails(final List<String> lines) {
     final ICMPv6OptionLabel label = ICMPv6OptionLabel.findByNumber(getType());
     lines.add("  Type: " + label.getText() + " (" + getType() + ")");
-    lines.add("  Code: " + getCode());
+    String c = label.getCode(getCode());
+    if(c != null) lines.add("  Code: " + c + " (" + getCode() + ")");
+    else lines.add("  Code: " + getCode());
     lines.add("  Checksum: 0x" + String.format("%04x", getChecksum()));
     if (getOptionBytes() != null && getOptionBytes().length > 0) {
       lines.add("  Options: " + getOptionBytes().length + " bytes");
