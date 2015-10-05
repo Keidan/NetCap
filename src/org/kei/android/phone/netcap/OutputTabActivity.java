@@ -126,7 +126,7 @@ public class OutputTabActivity extends Activity {
       List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
       if(interfaces != null && interfaces.size() != 0)
         adapter.add(getResources().getText(R.string.any).toString());
-      for(NetworkInterface ni : interfaces) adapter.add(ni.getName());
+      for(NetworkInterface ni : interfaces) if(ni.isUp()) adapter.add(ni.getName());
     } catch (Throwable e) {
       e.printStackTrace();
       Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
