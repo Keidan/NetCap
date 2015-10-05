@@ -24,56 +24,6 @@
   #define __NET_H__
 
 
-  //DNS header structure
-  struct dns_header_s {
-      unsigned short                 id;         // identification number
-      unsigned char                  qr:1;       // query/response flag
-      unsigned char                  opcode:4;   // purpose of message
-      unsigned char                  aa:1;       // authoritive answer
-      unsigned char                  tc:1;       // truncated message
-      unsigned char                  rd:1;       // recursion desired
-      unsigned char                  ra:1;       // recursion availables
-      unsigned char                  zero:3;       // zero
-      unsigned char                  rcode:4;    // response code
-      unsigned short                 q_count;    // number of question entries
-      unsigned short                 ans_count;  // number of answer entries
-      unsigned short                 auth_count; // number of authority entries
-      unsigned short                 add_count;  // number of resource entries
-  };
-  //DNS entry
-  struct dns_query_entry_s {
-      unsigned short                 type;
-      unsigned short                 clazz;
-  };
-  struct dns_entry_s {
-      unsigned short                 name;
-      unsigned short                 type;
-      unsigned short                 clazz;
-      union {
-    	  unsigned int               ttl;
-    	  unsigned short             ttls[2];
-      } u;
-      unsigned short                 data_length;
-      unsigned int                   addr;
-  };
-
-  #define NET_IP4_LEN 16
-  #define NET_MAC_LEN 18
-
-  struct net_iface_s {
-      char name[32];
-      char ip4[NET_IP4_LEN];
-      char bcast[NET_IP4_LEN];
-      char mask[NET_IP4_LEN];
-      char mac[NET_MAC_LEN];
-      int family;
-      int metric;
-      int mtu;
-      short int flags;
-      int index;
-      struct net_iface_s *next;
-  };
-
   #define NET_ERRNO_LEN 1024
   extern char n_errno[NET_ERRNO_LEN];
 
@@ -143,43 +93,6 @@
    */
   #define PCAP_SNAPLEN           65535
 
-  #define pcap_magic_str(magic) (magic == PCAP_MAGIC_NATIVE ? "NATIVE" : ( magic == PCAP_MAGIC_SWAPPED ? "SWAPPED" : "UNKNOWN"))
-
-  /**
-   * List all network interfaces (only the name is filled).
-   * @param devices The devices list.
-   * @return -1 on error.
-   */
-  int net_list_ifaces(struct net_iface_s **devices);
-
-  /**
-   * Release the resources allocated by the list.
-   * @param devices The list to release.
-   */
-  void net_release_ifaces(struct net_iface_s *devices);
-
-  /**
-   * Read the iface.
-   * @param device The iface to read.
-   * @return -1 on error.
-   */
-  int net_read_iface(struct net_iface_s *device);
-
-  /**
-   * Test if the file is in PCAP format.
-   * @param filename The pcap file name.
-   * @return -1 on error, 0 false, 1 true.
-   */
-  int net_is_pcap(const char* filename);
-
-  /**
-   * Read PCAP header.
-   * @param filename The pcap file name.
-   * @param ghdr The pcap header.
-   * @return -1 on error, 0 else.
-   */
-  int net_read_pcap_header(const char* filename, pcap_hdr_t *ghdr);
-
   /**
    * Open The capture socket to the iface and bind-it
    * @param iface The iface name.
@@ -196,11 +109,5 @@
    * @return -1 on error.
    */
   int net_capture_process(int *fds, int len, void* ptr, void(*cb)(void* ptr, unsigned char* buffer, unsigned int length));
-
-  /**
-   * Normalize the DNS name.
-   * @param name The buffer is changed after a call.
-   */
-  void net_dns_normalize_name(unsigned char* name);
 
 #endif /* __NET_H__ */

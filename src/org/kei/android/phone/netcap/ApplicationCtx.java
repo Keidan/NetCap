@@ -1,6 +1,6 @@
 package org.kei.android.phone.netcap;
 
-import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.net.layer.Layer;
 import org.kei.android.phone.netcap.utils.Tools;
 
 import android.app.Activity;

@@ -3,12 +3,12 @@ package org.kei.android.phone.netcap.listview;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kei.android.phone.jni.net.NetworkHelper;
-import org.kei.android.phone.jni.net.capture.CaptureFile;
-import org.kei.android.phone.jni.net.capture.ICapture;
-import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
-import org.kei.android.phone.jni.net.layer.Layer;
-import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.net.NetworkHelper;
+import org.kei.android.phone.net.capture.CaptureFile;
+import org.kei.android.phone.net.capture.ICapture;
+import org.kei.android.phone.net.capture.PCAPPacketHeader;
+import org.kei.android.phone.net.layer.Layer;
+import org.kei.android.phone.net.layer.Payload;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.kei.android.phone.jni.net.layer.Layer;
+import org.kei.android.phone.net.layer.Layer;
 import org.kei.android.phone.netcap.listview.ExpandableListAdapter;
 import org.kei.android.phone.netcap.utils.fx.Fx;
 

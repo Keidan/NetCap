@@ -16,11 +16,11 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := netcap-jni
-LOCAL_SRC_FILES := net-jni.c net.c
+#LOCAL_MODULE    := netcap-jni
+#LOCAL_SRC_FILES := net.c
 LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog 
 
-include $(BUILD_SHARED_LIBRARY)
+#include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)

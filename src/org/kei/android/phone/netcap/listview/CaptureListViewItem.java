@@ -2,9 +2,9 @@ package org.kei.android.phone.netcap.listview;
 
 import java.util.Locale;
 
-import org.kei.android.phone.jni.net.capture.PCAPPacketHeader;
-import org.kei.android.phone.jni.net.layer.Layer;
-import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.net.capture.PCAPPacketHeader;
+import org.kei.android.phone.net.layer.Layer;
+import org.kei.android.phone.net.layer.Payload;
 import org.kei.android.phone.netcap.R;
 
 import android.graphics.Color;

@@ -1,12 +1,12 @@
 package org.kei.android.phone.netcap;
 
 import java.io.File;
+import java.net.NetworkInterface;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.kei.android.phone.jni.net.NetworkHelper;
-import org.kei.android.phone.jni.net.NetworkInterface;
 import org.kei.android.phone.netcap.R;
 import org.kei.android.phone.netcap.chooser.FileChooser;
 import org.kei.android.phone.netcap.chooser.FileChooserActivity;
@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -50,7 +49,7 @@ import android.widget.Toast;
 public class OutputTabActivity extends Activity {
   private Spinner                        devicesSp             = null;
   private TextView                       browseOutputCaptureTV = null;
-  private ArrayAdapter<NetworkInterface> adapter               = null;
+  private ArrayAdapter<String> adapter               = null;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -62,7 +61,7 @@ public class OutputTabActivity extends Activity {
     browseOutputCaptureTV = (TextView) findViewById(R.id.browseOutputCaptureTV);
     browseOutputCaptureTV.setText(Tools.DEFAULT_ROOT.getAbsolutePath());
     // Create an ArrayAdapter using the string array and a default spinner layout
-    adapter = new ArrayAdapter<NetworkInterface>(this, android.R.layout.simple_spinner_item);
+    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
     // Specify the layout to use when the list of choices appears
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     // Apply the adapter to the spinner
@@ -96,6 +95,7 @@ public class OutputTabActivity extends Activity {
       Tools.showAlertDialog(this, "Error", "'" + netcap.getAbsolutePath() + "' was not found!");
       return;
     }
+    /*
     String ifaces = "";
     NetworkInterface ni = (NetworkInterface)devicesSp.getSelectedItem();
     if(ni.isAny()) {
@@ -106,8 +106,8 @@ public class OutputTabActivity extends Activity {
         if(i < adapter.getCount() - 1) ifaces += ",";
       }
     } else
-      ifaces = ni.getName();
-    Log.i(getClass().getSimpleName(), "ifaces:"+ifaces);
+      ifaces = ni.getName();*/
+    //Log.i(getClass().getSimpleName(), "ifaces:"+ifaces);
   }
   
   public void actionBrowseOutputCapture(final View v) {
@@ -123,10 +123,10 @@ public class OutputTabActivity extends Activity {
   public void actionRefresh(final View v) {
     adapter.clear();
     try {
-      List<NetworkInterface> ifaces = NetworkHelper.getInterfaces();
-      if(ifaces != null && ifaces.size() != 0)
-        adapter.add(new NetworkInterface(getResources().getText(R.string.any).toString(), true));
-      for(NetworkInterface ni : ifaces) adapter.add(ni);
+      List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+      if(interfaces != null && interfaces.size() != 0)
+        adapter.add(getResources().getText(R.string.any).toString());
+      for(NetworkInterface ni : interfaces) adapter.add(ni.getName());
     } catch (Throwable e) {
       e.printStackTrace();
       Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();

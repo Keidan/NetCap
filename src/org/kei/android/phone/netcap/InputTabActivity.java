@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.kei.android.phone.jni.net.NetworkHelper;
+import org.kei.android.phone.net.capture.CaptureFile;
 import org.kei.android.phone.netcap.R;
 import org.kei.android.phone.netcap.chooser.FileChooser;
 import org.kei.android.phone.netcap.chooser.FileChooserActivity;
@@ -191,7 +191,7 @@ public class InputTabActivity extends Activity  implements OnItemClickListener, 
       return;
     }
     try {
-      if(!NetworkHelper.isPCAP(fsrc.getAbsolutePath())) {
+      if(!CaptureFile.isPCAP(fsrc.getAbsolutePath())) {
         Tools.showAlertDialog(this, "Error", "The selected file is not in a PCAP format.");
         return;
       }

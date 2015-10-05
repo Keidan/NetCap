@@ -1,7 +1,7 @@
 package org.kei.android.phone.netcap;
 
-import org.kei.android.phone.jni.net.NetworkHelper;
-import org.kei.android.phone.jni.net.layer.Payload;
+import org.kei.android.phone.net.NetworkHelper;
+import org.kei.android.phone.net.layer.Payload;
 import org.kei.android.phone.netcap.utils.fx.Fx;
 
 import android.app.Activity;
