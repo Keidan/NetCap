@@ -27,15 +27,15 @@ import java.util.Map;
 public enum ICMPv4OptionLabel {
   UNKNOWN(-1, "Unknown", null),
   ECHO_REPLY(0, "Echo Reply", null),
-  DESTINATION_UNREACHABLE(3, "Destination Unreachable", new ICMPv4CodeDestinationUnreachable()),
+  DESTINATION_UNREACHABLE(3, "Destination Unreachable", new ICMPCodeDestinationUnreachable(false)),
   SOURCE_QUENCH(4, "Source Quench", null),
-  REDIRECT(5, "Redirect", new ICMPv4CodeRedirect()),
-  ALTERNATE_HOST_ADDRESS(6, "Alternate Host Address", new ICMPv4CodeAlternateHostAddress()),
+  REDIRECT(5, "Redirect", new ICMPCodeRedirect(false)),
+  ALTERNATE_HOST_ADDRESS(6, "Alternate Host Address", new ICMPCodeAlternateHostAddress(false)),
   ECHO(8, "Echo", null),
   ROUTER_ADVERTISEMENT(9, "Router Advertisement", null),
   REOUTER_SELECTION(10, "Router Selection", null),
-  TIME_EXCEEDED(11, "Time Exceeded", new ICMPv4CodeTimeExceeded()),
-  PARAMETER_PROBLEM(12, "Parameter Problem", new ICMPv4CodeParameterProblem()),
+  TIME_EXCEEDED(11, "Time Exceeded", new ICMPCodeTimeExceeded(false)),
+  PARAMETER_PROBLEM(12, "Parameter Problem", new ICMPCodeParameterProblem(false)),
   TIMESTAMP(13, "Timestamp", null),
   TIMESTAMP_REPLY(14, "Timestamp Reply", null),
   INFORMATION_REQUEST(15, "Information Request", null),
@@ -52,7 +52,7 @@ public enum ICMPv4OptionLabel {
   DOMAIN_NAME_REQUEST(37, "Domain Name Request", null),
   DOMAIN_NAME_REPLY(38, "Domain Name Reply", null),
   SKIP(39, "SKIP", null),
-  PHOTURIS(40, "Photuris", new ICMPv4CodePhoturis());
+  PHOTURIS(40, "Photuris", new ICMPCodePhoturis(false));
  
   ICMPv4OptionLabel(int num, String text, IICMPCodes codes) {
     this.num = num;
