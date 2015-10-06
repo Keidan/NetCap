@@ -13,19 +13,11 @@
 # limitations under the License.
 #
 LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-#LOCAL_MODULE    := netcap-jni
-#LOCAL_SRC_FILES := net.c
-LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog 
-
-#include $(BUILD_SHARED_LIBRARY)
-
-
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES:= netcap.c net.c
 LOCAL_MODULE := netcap
-include $(BUILD_EXECUTABLE)
-include $(CLEAR_VARS)
 
+include $(BUILD_EXECUTABLE)
+#all:
+#	move ${NDK_APP_DST_DIR}/netcap ${NDK_APP_DST_DIR}/libnetcap.so
+	

@@ -61,16 +61,6 @@
             android:background="@drawable/back"
             android:text="@string/empty"
             android:textSize="18sp" />
-
-        <Button
-            android:id="@+id/browseOutputCaptureBT"
-            android:layout_marginTop="5sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/flat_selector"
-            android:onClick="actionBrowseOutputCapture"
-            android:text="@string/browseBT"
-            android:textColor="@android:color/white" />
         
         <!-- Promiscuous mode -->
         <CheckBox
@@ -87,7 +77,7 @@
             android:id="@+id/startCaptureBT"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30sp"
+            android:layout_marginTop="40sp"
             android:background="@drawable/flat_selector"
             android:onClick="actionStartCapture"
             android:text="@string/startCaptureBT"

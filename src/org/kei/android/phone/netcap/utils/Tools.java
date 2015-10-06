@@ -40,9 +40,12 @@ import android.widget.TextView;
  *******************************************************************************
  */
 public class Tools {
-  public static final String TAG          = Tools.class.getSimpleName();
-  public static final File   DEFAULT_ROOT = Environment
-                                              .getExternalStorageDirectory();
+  public static final String TAG              = Tools.class.getSimpleName();
+  public static final File   DEFAULT_ROOT     = Environment
+                                                  .getExternalStorageDirectory();
+  public static final File   DEFAULT_DOWNLOAD = Environment
+                                                  .getExternalStoragePublicDirectory(
+                                                      Environment.DIRECTORY_DOWNLOADS);
 
   public static void showAlertDialog(final Activity a, final String title,
       final String message) {

@@ -7,11 +7,10 @@
     <string name="app_name">NetCap</string>
     <string name="devicesTV">Device:</string>
     <string name="any">Any</string>
-    <string name="browseBT">Browse</string>
     <string name="refreshBT">Refresh</string>
     <string name="startCaptureBT">Start capture</string>
     <string name="loadCaptureBT">Load capture from file</string>
-	<string name="outputCaptureTV">Save capture into</string>
+	<string name="outputCaptureTV">Save capture into:</string>
 	<string name="promiscuousCB">Use promiscuous mode</string>
 	<string name="action_cancel">Cancel</string>
 	<string name="search">Search</string>

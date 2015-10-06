@@ -17,8 +17,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,7 +48,7 @@ import android.widget.Toast;
  *
  *******************************************************************************
  */
-public class OutputTabActivity extends Activity {
+public class OutputTabActivity extends Activity implements OnClickListener{
   private Spinner                        devicesSp             = null;
   private TextView                       browseOutputCaptureTV = null;
   private ArrayAdapter<String> adapter               = null;
@@ -59,7 +61,8 @@ public class OutputTabActivity extends Activity {
 
     devicesSp = (Spinner) findViewById(R.id.devicesSp);
     browseOutputCaptureTV = (TextView) findViewById(R.id.browseOutputCaptureTV);
-    browseOutputCaptureTV.setText(Tools.DEFAULT_ROOT.getAbsolutePath());
+    browseOutputCaptureTV.setText(Tools.DEFAULT_DOWNLOAD.getAbsolutePath());
+    browseOutputCaptureTV.setOnClickListener(this);
     // Create an ArrayAdapter using the string array and a default spinner layout
     adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
     // Specify the layout to use when the list of choices appears
@@ -92,7 +95,7 @@ public class OutputTabActivity extends Activity {
     }
     File netcap = new File(s, "netcap");
     if(!netcap.exists()) {
-      Tools.showAlertDialog(this, "Error", "'" + netcap.getAbsolutePath() + "' was not found!");
+      Tools.showAlertDialog(this, "Error", "'" + netcap.getAbsolutePath() + "' for '" + Build.SUPPORTED_ABIS[0] + "' was not found!");
       return;
     }
     /*
@@ -109,8 +112,10 @@ public class OutputTabActivity extends Activity {
       ifaces = ni.getName();*/
     //Log.i(getClass().getSimpleName(), "ifaces:"+ifaces);
   }
-  
-  public void actionBrowseOutputCapture(final View v) {
+
+
+  @Override
+  public void onClick(View v) {
     Map<String, String> extra = new HashMap<String, String>();
     extra.put(FileChooser.FILECHOOSER_TYPE_KEY, "" + FileChooser.FILECHOOSER_TYPE_DIRECTORY_ONLY);
     extra.put(FileChooser.FILECHOOSER_TITLE_KEY, "Save");    
