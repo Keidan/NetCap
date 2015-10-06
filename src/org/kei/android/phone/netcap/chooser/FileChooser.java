@@ -45,6 +45,7 @@ public class FileChooser extends ListActivity {
   public static final String            FILECHOOSER_MESSAGE_KEY              = "message";
   public static final String            FILECHOOSER_SHOW_KEY                 = "show";
   public static final String            FILECHOOSER_FILE_FILTER_KEY          = "file_filter";
+  public static final String            FILECHOOSER_DEFAULT_DIR              = "default_dir";
   public static final int               FILECHOOSER_TYPE_FILE_ONLY           = 0;
   public static final int               FILECHOOSER_TYPE_DIRECTORY_ONLY      = 1;
   public static final int               FILECHOOSER_TYPE_FILE_AND_DIRECTORY  = 2;
@@ -52,6 +53,7 @@ public class FileChooser extends ListActivity {
   public static final int               FILECHOOSER_SHOW_FILE_AND_DIRECTORY  = 2; 
   public static final String            FILECHOOSER_FILE_FILTER_ALL          = "*"; 
   protected File                        currentDir                           = null;
+  protected File                        defaultDir                           = null;
   private FileArrayAdapter              adapter                              = null;
   private String                        confirmMessage                       = null;
   private String                        confirmTitle                         = null;
@@ -115,10 +117,12 @@ public class FileChooser extends ListActivity {
       show = Integer.parseInt(b.getString(FILECHOOSER_SHOW_KEY));
     if (b != null && b.containsKey(FILECHOOSER_FILE_FILTER_KEY))
       fileFilter = b.getString(FILECHOOSER_FILE_FILTER_KEY);
-    
+    if (b != null && b.containsKey(FILECHOOSER_DEFAULT_DIR))
+      defaultDir = new File(b.getString(FILECHOOSER_DEFAULT_DIR));
+    if(defaultDir == null) defaultDir = Tools.DEFAULT_ROOT;
     if(confirmTitle == null) confirmTitle = "title";
     if(confirmMessage == null) confirmMessage = "message";
-    currentDir = Tools.DEFAULT_ROOT;
+    currentDir = defaultDir;
     getListView().setLongClickable(true);
     fill(currentDir);
     this.getListView().setOnItemLongClickListener(longClick);
