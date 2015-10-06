@@ -19,4 +19,5 @@
     <string name="search_time">Time</string>
     <string name="search_protocol">Protocol</string>
     <string name="search_info">Info</string>
+    <string name="recentlyOpenTV">Recently open:</string>
 </resources>

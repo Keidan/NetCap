@@ -4,8 +4,6 @@
 		android:orientation="vertical"
 		android:layout_margin="30dp">
 	    
-    
-
 	<Button
             android:id="@+id/loadCaptureBT"
             android:layout_width="match_parent"
@@ -15,6 +13,14 @@
             android:textColor="@android:color/white"
 		    android:onClick="actionBrowseInputCapture"/>
 		
+     <TextView
+         android:id="@+id/devicesTV"
+        android:layout_marginTop="20dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+         android:text="@string/recentlyOpenTV"
+         android:textColor="@color/blue_normal"
+         android:textSize="18sp" />
     <ListView
         android:id="@+id/recentLV"
         android:layout_marginTop="10dp"
