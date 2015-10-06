@@ -54,7 +54,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
   @Override
   protected void onPreExecute() {
     super.onPreExecute();
-    //dialog = ProgressDialog.show(activity, "", "Please wait");
+    dialog = ProgressDialog.show(activity, "", "Please wait");
     items.clear();
   }
   
@@ -65,7 +65,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
       @Override
       public void run() {
         adapter.setItemList(items);
-        //dialog.dismiss();
+        dialog.dismiss();
       }
     });
     //dialog.dismiss();
