@@ -15,7 +15,7 @@ import org.kei.android.phone.net.layer.application.utils.DNSEntry;
 
 /**
  *******************************************************************************
- * @file java
+ * @file DNS.java
  * @author Keidan
  * @date 07/09/2015
  * @par Project NetCap

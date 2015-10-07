@@ -8,6 +8,7 @@ import org.kei.android.phone.net.Service;
 import org.kei.android.phone.net.layer.Layer;
 import org.kei.android.phone.net.layer.Payload;
 import org.kei.android.phone.net.layer.application.DNS;
+import org.kei.android.phone.net.layer.application.HTTP;
 
 import android.graphics.Color;
 
@@ -85,9 +86,6 @@ public class TCP extends Layer {
       if (srv.getName().toLowerCase(Locale.US).contains("https")) {
         background = Color.parseColor("#A40000");
         foreground = Color.parseColor("#FFFC9C");
-      } else if (srv.getName().toLowerCase(Locale.US).contains("http")) {
-        background = Color.parseColor("#E4FFC7");
-        foreground = Color.BLACK;
       }
     }
     desc += " > ";
@@ -99,9 +97,6 @@ public class TCP extends Layer {
       if (srv.getName().toLowerCase(Locale.US).contains("https")) {
         background = Color.parseColor("#A40000");
         foreground = Color.parseColor("#FFFC9C");
-      } else if (srv.getName().toLowerCase(Locale.US).contains("http")) {
-        background = Color.parseColor("#E4FFC7");
-        foreground = Color.BLACK;
       }
     }
     desc += " [";
@@ -208,6 +203,10 @@ public class TCP extends Layer {
         DNS dns = new DNS();
         dns.decodeLayer(sub_buffer, this);
         setNext(dns);
+      } else if(source == HTTP.HTTP_PORT || source == HTTP.HTTP_ALT_PORT || destination == HTTP.HTTP_PORT || destination == HTTP.HTTP_ALT_PORT) {
+        HTTP http = new HTTP();
+        http.decodeLayer(sub_buffer, this);
+        setNext(http);
       } else {
         Payload p = new Payload();
         p.decodeLayer(sub_buffer, this);
