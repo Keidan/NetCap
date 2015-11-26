@@ -1,10 +1,9 @@
 package org.kei.android.phone.netcap;
 
+import org.kei.android.atk.view.EffectActivity;
 import org.kei.android.phone.net.NetworkHelper;
 import org.kei.android.phone.net.layer.Payload;
-import org.kei.android.phone.netcap.utils.fx.Fx;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -31,13 +30,12 @@ import android.widget.ListView;
  *
  *******************************************************************************
  */
-public class PayloadViewerActivity extends Activity {
+public class PayloadViewerActivity extends EffectActivity {
 
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_payloadviewer);
-    Fx.updateTransition(this, true);
     setTitle(getResources().getText(R.string.app_name) + " - " + ApplicationCtx.getAppId(this));
     ListView payloadLV = (ListView)findViewById(R.id.payloadLV);
     Payload p = (Payload)ApplicationCtx.getAppLayer(this);
@@ -50,7 +48,6 @@ public class PayloadViewerActivity extends Activity {
   @Override
   public void onBackPressed() {
     super.onBackPressed();
-    Fx.updateTransition(this, false);
     finish();
   }
 }

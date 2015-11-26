@@ -1,9 +1,9 @@
 package org.kei.android.phone.netcap;
 
-import org.kei.android.phone.netcap.utils.fx.Fx;
-import org.kei.android.phone.netcap.utils.fx.SlideTabHostListener;
+import org.kei.android.atk.view.EffectTabActivity;
+import org.kei.android.atk.utils.fx.Fx;
+import org.kei.android.atk.utils.fx.SlideTabHostListener;
 
-import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ import android.widget.TabHost.OnTabChangeListener;
  *******************************************************************************
  */
 @SuppressWarnings("deprecation")
-public class MainTabActivity extends TabActivity implements OnTabChangeListener {
+public class MainTabActivity extends EffectTabActivity implements OnTabChangeListener {
   private TabHost tabHost;
   
   @Override

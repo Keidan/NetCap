@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.kei.android.atk.view.EffectActivity;
 import org.kei.android.phone.net.layer.Layer;
 import org.kei.android.phone.netcap.listview.ExpandableListAdapter;
-import org.kei.android.phone.netcap.utils.fx.Fx;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ExpandableListView;
 
@@ -31,7 +30,7 @@ import android.widget.ExpandableListView;
  *
  *******************************************************************************
  */
-public class CaptureDetailsActivity extends Activity {
+public class CaptureDetailsActivity extends EffectActivity {
   
   private ExpandableListAdapter listAdapter;
   private ExpandableListView expListView;
@@ -39,11 +38,10 @@ public class CaptureDetailsActivity extends Activity {
   private HashMap<String, List<String>> listDataChild;
 
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     setContentView(R.layout.activity_capturedetails);
-    Fx.updateTransition(this, true);
     setTitle(getResources().getText(R.string.app_name) + " - " + ApplicationCtx.getAppId(this));
 
     // get the listview
@@ -67,7 +65,6 @@ public class CaptureDetailsActivity extends Activity {
   @Override
   public void onBackPressed() {
     super.onBackPressed();
-    Fx.updateTransition(this, false);
     finish();
   }
 

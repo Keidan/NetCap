@@ -1,13 +1,12 @@
 package org.kei.android.phone.netcap;
 
+import org.kei.android.atk.view.EffectActivity;
 import org.kei.android.phone.netcap.dialog.CustomDialog;
 import org.kei.android.phone.netcap.fab.FabHelper;
 import org.kei.android.phone.netcap.listview.ListViewAdapter;
 import org.kei.android.phone.netcap.listview.CaptureListViewItem;
 import org.kei.android.phone.netcap.listview.CaptureListViewLoader;
-import org.kei.android.phone.netcap.utils.fx.Fx;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,19 +38,18 @@ import android.widget.ListView;
  *
  *******************************************************************************
  */
-public class CaptureViewerActivity extends Activity implements OnItemClickListener, OnItemLongClickListener {
+public class CaptureViewerActivity extends EffectActivity implements OnItemClickListener, OnItemLongClickListener {
   public static final String                   KEY_FILE       = "capture_file";
   private String                               file           = null;
   private ListView                             captureLV      = null;
   private ListViewAdapter<CaptureListViewItem> adapter        = null;
 
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     setContentView(R.layout.activity_captureviewer);
     FabHelper.getInstance().install(this);
-    Fx.updateTransition(this, true);
     Bundle b = getIntent().getExtras();
     if(b != null) {
       if (b.containsKey(KEY_FILE))
@@ -76,7 +74,6 @@ public class CaptureViewerActivity extends Activity implements OnItemClickListen
   @Override
   public void onBackPressed() {
     super.onBackPressed();
-    Fx.updateTransition(this, false);
     finish();
   }
 

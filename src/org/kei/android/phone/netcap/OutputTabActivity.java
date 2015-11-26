@@ -7,13 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.kei.android.atk.utils.Tools;
+import org.kei.android.atk.view.EffectActivity;
+import org.kei.android.atk.view.chooser.FileChooser;
+import org.kei.android.atk.view.chooser.FileChooserActivity;
 import org.kei.android.phone.netcap.R;
-import org.kei.android.phone.netcap.chooser.FileChooser;
-import org.kei.android.phone.netcap.chooser.FileChooserActivity;
-import org.kei.android.phone.netcap.utils.Tools;
-import org.kei.android.phone.netcap.utils.fx.Fx;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -48,16 +47,15 @@ import android.widget.Toast;
  *
  *******************************************************************************
  */
-public class OutputTabActivity extends Activity implements OnClickListener{
+public class OutputTabActivity extends EffectActivity implements OnClickListener{
   private Spinner                        devicesSp             = null;
   private TextView                       browseOutputCaptureTV = null;
   private ArrayAdapter<String>           adapter               = null;
 
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_output);
-    Fx.updateTransition(this, true);
 
     devicesSp = (Spinner) findViewById(R.id.devicesSp);
     browseOutputCaptureTV = (TextView) findViewById(R.id.browseOutputCaptureTV);
@@ -156,7 +154,6 @@ public class OutputTabActivity extends Activity implements OnClickListener{
   public void onBackPressed() {
     super.onBackPressed();
     finish();
-    Fx.updateTransition(this, false);
   }
 }
 

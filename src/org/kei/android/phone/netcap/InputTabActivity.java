@@ -8,16 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.kei.android.atk.utils.Tools;
+import org.kei.android.atk.view.EffectActivity;
+import org.kei.android.atk.view.chooser.FileChooser;
+import org.kei.android.atk.view.chooser.FileChooserActivity;
 import org.kei.android.phone.net.capture.CaptureFile;
 import org.kei.android.phone.netcap.R;
-import org.kei.android.phone.netcap.chooser.FileChooser;
-import org.kei.android.phone.netcap.chooser.FileChooserActivity;
 import org.kei.android.phone.netcap.listview.ListViewAdapter;
 import org.kei.android.phone.netcap.listview.RecentFileListViewItem;
-import org.kei.android.phone.netcap.utils.Tools;
-import org.kei.android.phone.netcap.utils.fx.Fx;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,7 +49,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
  *
  *******************************************************************************
  */
-public class InputTabActivity extends Activity  implements OnItemClickListener, OnItemLongClickListener {
+public class InputTabActivity extends EffectActivity  implements OnItemClickListener, OnItemLongClickListener {
   private final static String                     KEY_RECENT  = "key.recent.";
   private SharedPreferences                       preferences = null;
   private SharedPreferences.Editor                editor      = null;
@@ -59,10 +58,9 @@ public class InputTabActivity extends Activity  implements OnItemClickListener, 
   private ListView                                recentLV    = null;
   
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  public void onCreate(final Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_input);
-    Fx.updateTransition(this, true);
     preferences = getPreferences(Context.MODE_PRIVATE);
     editor = preferences.edit();
 
@@ -211,6 +209,5 @@ public class InputTabActivity extends Activity  implements OnItemClickListener, 
   public void onBackPressed() {
     super.onBackPressed();
     finish();
-    Fx.updateTransition(this, false);
   }
 }
