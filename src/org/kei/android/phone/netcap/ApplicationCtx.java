@@ -1,6 +1,7 @@
 package org.kei.android.phone.netcap;
 
 import org.kei.android.atk.utils.Tools;
+import org.kei.android.atk.view.EffectActivity;
 import org.kei.android.phone.net.layer.Layer;
 
 import android.app.Activity;
@@ -51,7 +52,7 @@ public class ApplicationCtx extends Application {
     this.id = id;
   }
 
-  public static void startActivity(final Activity a, final Layer currentLayer, final String id, 
+  public static void startActivity(final EffectActivity a, final Layer currentLayer, final String id, 
       final Class<?> clazz) {
     final ApplicationCtx app = (ApplicationCtx) a.getApplicationContext();
     app.setLayer(currentLayer);
