@@ -80,7 +80,7 @@ public class InputTabActivity extends EffectActivity  implements OnItemClickList
     };
     
   }
-  
+
   public void onResume() {
     super.onResume();
     adapter.clear();
@@ -203,11 +203,8 @@ public class InputTabActivity extends EffectActivity  implements OnItemClickList
     extra.put(CaptureViewerActivity.KEY_FILE, fsrc.getAbsolutePath());
     Tools.switchTo(this, CaptureViewerActivity.class, extra);
   }
-
-
-  @Override
-  public void onBackPressed() {
-    super.onBackPressed();
-    finish();
+  
+  protected int getToastIconId() {
+    return R.drawable.ic_launcher;
   }
 }

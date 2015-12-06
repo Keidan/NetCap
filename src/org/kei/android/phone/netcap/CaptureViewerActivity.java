@@ -67,6 +67,11 @@ public class CaptureViewerActivity extends EffectActivity implements OnItemClick
   }
 
   @Override
+  protected boolean exitOnDoubleBack() {
+    return false;
+  }
+  
+  @Override
   public void onDestroy() {
     super.onDestroy();
   }

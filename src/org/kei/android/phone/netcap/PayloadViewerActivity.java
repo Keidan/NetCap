@@ -46,6 +46,11 @@ public class PayloadViewerActivity extends EffectActivity {
   }
 
   @Override
+  protected boolean exitOnDoubleBack() {
+    return false;
+  }
+  
+  @Override
   public void onBackPressed() {
     super.onBackPressed();
     finish();

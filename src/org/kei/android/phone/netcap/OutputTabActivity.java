@@ -149,11 +149,9 @@ public class OutputTabActivity extends EffectActivity implements OnClickListener
     }
   }
 
-
-  @Override
-  public void onBackPressed() {
-    super.onBackPressed();
-    finish();
+  protected int getToastIconId() {
+    return R.drawable.ic_launcher;
   }
+  
 }
 

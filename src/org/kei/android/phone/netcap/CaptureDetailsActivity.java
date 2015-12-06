@@ -58,6 +58,11 @@ public class CaptureDetailsActivity extends EffectActivity {
   }
 
   @Override
+  protected boolean exitOnDoubleBack() {
+    return false;
+  }
+  
+  @Override
   public void onDestroy() {
     super.onDestroy();
   }

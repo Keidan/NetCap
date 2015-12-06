@@ -1,7 +1,6 @@
 package org.kei.android.phone.netcap;
 
 import org.kei.android.atk.view.EffectTabActivity;
-import org.kei.android.atk.utils.fx.Fx;
 import org.kei.android.atk.utils.fx.SlideTabHostListener;
 
 import android.content.Context;
@@ -64,20 +63,7 @@ public class MainTabActivity extends EffectTabActivity implements OnTabChangeLis
     tabHost.getTabWidget().setCurrentTab(0);
     tabHost.setOnTabChangedListener(new SlideTabHostListener(tabHost, this));
   }
-  
-  @Override
-  public void onBackPressed() {
-    super.onBackPressed();
-    finish();
-    Fx.updateTransition(this, false);
-  }
-  
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    Fx.updateTransition(this, false);
-  }
-  
+
   @Override
   public void onTabChanged(final String tabId) {
     if (!tabId.equals("First")) {

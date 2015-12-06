@@ -29,7 +29,7 @@ import android.app.Application;
 public class ApplicationCtx extends Application {
   private Layer currentLayer;
   private String id;
-
+  
   public Layer getLayer() {
     return currentLayer;
   }
