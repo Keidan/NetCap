@@ -8,7 +8,6 @@
     <string name="devicesTV">Device:</string>
     <string name="any">Any</string>
     <string name="refreshBT">Refresh</string>
-    <string name="startCaptureBT">Start capture</string>
     <string name="loadCaptureBT">Load capture from file</string>
 	<string name="outputCaptureTV">Save capture into:</string>
 	<string name="promiscuousCB">Use promiscuous mode</string>
@@ -19,4 +18,9 @@
     <string name="search_protocol">Protocol</string>
     <string name="search_info">Info</string>
     <string name="recentlyOpenTV">Recently open:</string>
+    
+    <string name="toggleOn">Start capture</string>
+    <string name="toggleOff">Stop capture</string>
+    <string name="root_error">A rooted device is required for the capture feature.</string>
+    <string name="root_toast_error">Device not rooted.</string>
 </resources>

@@ -2,10 +2,13 @@ NetCap
 ===
 
 (GPL) Android network capture is a FREE software.
-This application allows to capture the network traffic on android devices.
+This application allows to:
+- Display the pcap files.
+- Capture the network traffic.
 
 
-A ROOTED DEVICE IS REQUIRED.
+A ROOTED DEVICE IS REQUIRED FOR THE CAPTURE FEATURE.
+
 
 Also I'm not responsible for any damage caused to your device(Though no damage will be cause, this is a warning).
 

@@ -2,4 +2,5 @@
     <color name="blue_pressed">#33b5e5</color>
     <color name="blue_normal">#0099cc</color>
     <color name="blue_transparent">#800099cc</color>
+    <color name="pagerTitleColorBlue">#FF0099CC</color>
 </resources>

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootLL"
     android:layout_width="300dp"
-    android:layout_height="200dp"
+    android:layout_height="210dp"
     android:elevation="24dp"
     android:gravity="center"
     android:orientation="vertical" >
@@ -18,7 +18,7 @@
         android:paddingRight="24dp"
         android:paddingTop="24dp"
         android:text="@string/empty"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="15sp"
         android:textStyle="bold" />
 

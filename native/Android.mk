@@ -18,6 +18,5 @@ LOCAL_SRC_FILES:= netcap.c net.c
 LOCAL_MODULE := netcap
 
 include $(BUILD_EXECUTABLE)
-#all:
-#	move ${NDK_APP_DST_DIR}/netcap ${NDK_APP_DST_DIR}/libnetcap.so
+
 	

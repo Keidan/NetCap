@@ -19,8 +19,9 @@
         android:theme="@style/AppTheme"
         android:name="org.kei.android.phone.netcap.ApplicationCtx" >
         <activity
-            android:name=".MainTabActivity"
-            android:label="@string/app_name" >
+            android:name=".MainPagerActivity"
+            android:label="@string/app_name" 
+            android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name="org.kei.android.atk.view.chooser.FileChooserActivity"/>
-        <activity android:name=".InputTabActivity"/>
+        <activity android:name=".InputFragment" android:configChanges="orientation|screenSize"/>
         <activity android:name=".CaptureViewerActivity" android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -39,7 +40,7 @@
         </activity>
         <activity android:name=".CaptureDetailsActivity"/>
         <activity android:name=".PayloadViewerActivity"/>
-        <activity android:name=".OutputTabActivity"/>
+        <activity android:name=".OutputFragment" android:configChanges="orientation|screenSize"/>
         
     </application>
 
