@@ -28,6 +28,8 @@
   #include <stdint.h>
   #include <string.h>
   #include <net/if.h>
+  #include <inttypes.h>
+
 
   #define NETCAP_ERROR_LEN     1024
   extern char netcap_error[NETCAP_ERROR_LEN];

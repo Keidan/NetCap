@@ -35,8 +35,6 @@
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
 #include <time.h>
-#include <inttypes.h>
-
 /**
  * @typedef pcap_hdr_t
  * @brief Global header
@@ -221,6 +219,7 @@ int netcap_process(net_list_t net_list, size_t length, FILE* capfile, _Bool *end
     if(!max_fd) break;
     //wait for an activity on one of the sockets , timeout is NULL , so wait indefinitely
     int activity = select(max_fd + 1, &rset, NULL, NULL, NULL);
+    if((*end) == true) break;
     if ((activity < 0) && (errno!=EINTR)) {
       sprintf(netcap_error, "select failed: (%d) %s", errno, strerror(errno));
       return -1;
@@ -230,7 +229,6 @@ int netcap_process(net_list_t net_list, size_t length, FILE* capfile, _Bool *end
       //socket descriptor
       fd = net_list[i].fd;
       if (FD_ISSET(fd, &rset)) {
-
         /* Get the available datas to read */
         unsigned int available;
         int ret = ioctl(fd, FIONREAD, &available);
@@ -265,6 +263,7 @@ int netcap_process(net_list_t net_list, size_t length, FILE* capfile, _Bool *end
         free(buffer);
         break;
       }
+      if((*end) == true) break;
     }
   }while((*end) == false);
   return 0;

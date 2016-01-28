@@ -139,9 +139,10 @@ int main(int argc, char** argv) {
 
   FILE* capfile = fopen(file, "w+");
   if(capfile == NULL) {
-    fprintf(stderr, "Unable to open the capture file: (%d) %s\n", errno, strerror(errno));
+    fprintf(stderr, "Unable to open the capture file '%s': (%d) %s\n", file, errno, strerror(errno));
     exit(EXIT_FAILURE);
   }
+  fprintf(stderr, "NetCap ready with PID %d\n", getpid());
   if(netcap_process(net_list, length, capfile, &end, display) == -1) {
     fprintf(stderr, "%s\n", netcap_error);
     exit(EXIT_FAILURE);
@@ -179,11 +180,16 @@ static void sig_catch(int sig) {
  */
 static void cleanup() {
   int i;
+  uint64_t tot = 0;
   end = true;
   if(capfile != NULL)
     fclose(capfile), capfile = NULL;
   for(i = 0; i < length; i++) {
-    if(net_list[i].fd > 0)
+    if(net_list[i].fd > 0) {
       close(net_list[i].fd), net_list[i].fd = 0;
+	  fprintf(stderr, "Captured packet %"PRIu64" for iface %s\n", net_list[i].count, net_list[i].name);
+      tot += net_list[i].count;
+    }
   }
+  fprintf(stderr, "Total packets %"PRIu64"\n", tot);
 }
