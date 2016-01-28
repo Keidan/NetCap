@@ -47,9 +47,9 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
   public CharSequence getPageTitle(final int position) {
     switch (position) {
       case 0:
-        return "Input";
+        return "Analyse";
       case 1:
-        return "Output";
+        return "Capture";
       default:
         return null;
     }
