@@ -77,7 +77,6 @@ public class OutputFragment extends Fragment implements
   private String               pname                 = null;
   private String               pid                   = null;
   
-  
   public OutputFragment(final MainPagerActivity owner) {
     this.owner = owner;
     //RootTools.debugMode = true; 
