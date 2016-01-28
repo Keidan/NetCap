@@ -114,7 +114,7 @@ public class MainPagerActivity extends FragmentActivity implements IThemeActivit
     super.onDestroy();
     for(Fragment f : fragments) {
       if(OutputFragment.class.isInstance(f))
-        ((OutputFragment)f).delete(false);
+        ((OutputFragment)f).delete();
     }
   }
   

@@ -1,11 +1,9 @@
 package org.kei.android.phone.netcap;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -19,6 +17,9 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.kei.android.atk.utils.Tools;
 import org.kei.android.atk.view.chooser.FileChooser;
 import org.kei.android.atk.view.chooser.FileChooserActivity;
+
+import com.stericson.RootShell.execution.Command;
+import com.stericson.RootTools.RootTools;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -69,12 +70,15 @@ public class OutputFragment extends Fragment implements
   private Button               refreshBT             = null;
   private TextView             showResult            = null;
   private CircularFifoBuffer   buffer                = null;
-  private Process              process               = null;
   private String               ifaces                = "";
   private MainPagerActivity    owner                 = null;
+  private Command              command               = null;
+  private String               pname                 = null;
+  
   
   public OutputFragment(final MainPagerActivity owner) {
     this.owner = owner;
+    //RootTools.debugMode = true; 
   }
   
   @Override
@@ -117,18 +121,32 @@ public class OutputFragment extends Fragment implements
     onClick(refreshBT);
   }
   
-  public void delete(boolean uncheck) {
-    if(process != null) {
-      process.destroy();
-      process = null;
+  private void logException(Throwable e) {
+    final String ex = "Exception: " + e.getMessage();
+    Log.e(getClass().getSimpleName(), ex, e);
+    owner.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Tools.toast(owner, R.drawable.ic_launcher, ex, Tools.TOAST_LENGTH_LONG);
+      }
+    });
+  }
+  
+  public void delete() {
+    if(command != null) {
+      command.resetCommand();
+      command.finish();
+      command = null;
     }
-    if(uncheck)
-      owner.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          captureBT.setChecked(false);
-        }
-      });
+    try {
+      RootTools.closeAllShells();
+    } catch (IOException e) {
+      logException(e);
+    }
+    if(pname != null) {
+      RootTools.killProcess(pname);
+      pname = null;
+    }
   }
 
   @Override
@@ -144,8 +162,7 @@ public class OutputFragment extends Fragment implements
           if (ni.isUp())
             adapter.add(ni.getName());
       } catch (final Throwable e) {
-        Log.e(OutputFragment.class.getSimpleName(), "Exception: " + e.getMessage(), e);
-        Tools.toast(owner, R.drawable.ic_launcher, "Exception: " + e.getMessage(), Tools.TOAST_LENGTH_LONG);
+        logException(e);
       }
     }
     else if(v.equals(browseOutputCaptureTV)) {
@@ -164,9 +181,11 @@ public class OutputFragment extends Fragment implements
       
     } else if(v.equals(captureBT)) {
       if(!captureBT.isChecked()) {
-        delete(false);
+        captureBT.setChecked(true);
+        delete();
       } else {
-        final String sdest = browseOutputCaptureTV.getText().toString();
+        String sdest = browseOutputCaptureTV.getText().toString();
+        sdest = sdest.replaceFirst("emulated/([0-9]+)/", "emulated/legacy/");
         if (sdest.isEmpty()) {
           Tools.showAlertDialog(owner, "Error", "Empty destination folder!");
           return;
@@ -181,6 +200,15 @@ public class OutputFragment extends Fragment implements
               "Unable to write into the destination folder!");
           return;
         }
+
+        if(!RootTools.isAccessGiven()) {
+          Resources r = getResources();
+          Tools.toast(owner, R.drawable.ic_launcher, r.getString(R.string.root_toast_error));
+          showResult.setText(" " + r.getString(R.string.root_error));
+          captureBT.setChecked(false);
+          return;
+        }
+        
         final PackageManager m = owner.getPackageManager();
         String s = owner.getPackageName();
         try {
@@ -196,6 +224,7 @@ public class OutputFragment extends Fragment implements
               + Build.SUPPORTED_ABIS[0] + "' was not found!");
           return;
         }
+        pname = netcap.getAbsolutePath();
         netcap.setExecutable(true);
   
         ifaces = "";
@@ -211,48 +240,50 @@ public class OutputFragment extends Fragment implements
           }
         } else
           ifaces = ni;
+
+        
         final File outputFile = new File(fdest, new SimpleDateFormat(
             "yyyyMMdd_hhmmssa'_netcap.pcap'", Locale.US).format(new Date()));
-        
-        Log.i(getClass().getSimpleName(), "ifaces:" + ifaces);
         buffer.clear();
-        if(!Tools.gainRoot()) {
-          Resources r = getResources();
-          Tools.toast(owner, R.drawable.ic_launcher, r.getString(R.string.root_toast_error));
-          showResult.setText(" " + r.getString(R.string.root_error));
-          captureBT.setChecked(false);
-          return;
-        }
         new Thread(new Runnable() {
           public void run() {
             try {
-              String cmd = "su -c '";
-              cmd += netcap.getAbsolutePath() + " -i " + ifaces + " -f " + outputFile.getAbsolutePath() + " -d";
+              String cmd = netcap.getAbsolutePath() + " -i " + ifaces + " -f " + outputFile.getAbsolutePath() + " -d";
               if(promiscuousCB.isChecked()) cmd += " -p";
-              cmd += "'";
-              Log.i(getClass().getSimpleName(), "cmd:" + cmd);
-              process = Runtime.getRuntime().exec(cmd);
-              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-              String line = null;
-              while((line = bufferedReader.readLine()) != null) {
-                buffer.add(line);
-                owner.runOnUiThread(new Runnable() {
-                  @SuppressWarnings("unchecked")
-                  @Override
-                  public void run() {
-                    final String[] lines = (String[]) buffer.toArray(new String[] {});
-                    final StringBuilder sb = new StringBuilder();
-                    for (final String s : lines)
-                      sb.append(" ").append(s).append("\n");
-                    showResult.setText(sb.toString());
-                  }
-                });
-              }
-              if(process.waitFor() != 0)
-                delete(true);
-            } catch(Exception e) {
-              Log.e(OutputFragment.class.getSimpleName(), "Exception: " + e.getMessage(), e);
-              Tools.toast(owner, R.drawable.ic_launcher, "Exception: " + e.getMessage(), Tools.TOAST_LENGTH_LONG);
+              cmd += " 2>&1";
+              command = new Command(0, cmd) { 
+                @Override
+                public void commandOutput(int id, String line) {
+                  super.commandOutput(id, line);
+                  buffer.add(line);
+                  owner.runOnUiThread(new Runnable() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public void run() {
+                      final String[] lines = (String[]) buffer.toArray(new String[] {});
+                      final StringBuilder sb = new StringBuilder();
+                      for (final String s : lines)
+                        sb.append(" ").append(s).append("\n");
+                      showResult.setText(sb.toString());
+                    }
+                  });
+                }
+                public void commandCompleted(int id, int exitcode) {
+                  super.commandCompleted(id, exitcode);
+                  owner.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                      captureBT.setChecked(false);
+                    }
+                  });
+                }
+                public void commandTerminated(int id, String reason) {
+                  super.commandTerminated(id, reason);
+                }
+              };
+              RootTools.getShell(true).add(command);
+            } catch(final Exception e) {
+              logException(e);
             }
           }
         }).start();

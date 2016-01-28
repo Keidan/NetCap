@@ -7,5 +7,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="lib" path="libs/support-v4-19.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/RootTools-4.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
