@@ -81,7 +81,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
     editor = preferences.edit();
 
     recentLV = (ListView)getView().findViewById(R.id.recentLV);
-    adapter = new ListViewAdapter<RecentFileListViewItem>(context, R.layout.listview_simple_row);
+    adapter = new ListViewAdapter<RecentFileListViewItem>(context, R.layout.list_last_file);
     recentLV.setAdapter(adapter);
     recentLV.setOnItemClickListener(this);
     recentLV.setOnItemLongClickListener(this);
@@ -91,7 +91,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
       @Override
       public int compare(RecentFileListViewItem lhs, RecentFileListViewItem rhs) {
         if(lhs.getTime() < rhs.getTime()) return 1;
-        if(lhs.getTime() > rhs.getTime()) return -1;
+        else if(lhs.getTime() > rhs.getTime()) return -1;
         return 0;
       }
     };
@@ -109,6 +109,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
         RecentFileListViewItem r = new RecentFileListViewItem();
         r.setTime(Long.parseLong(split[0]));
         r.setFile(split[1]);
+        r.setFilename(new File(r.getFile()).getName());
         r.setKey(KEY_RECENT + i);
         adapter.addItemSort(r, comparator);
       }
@@ -127,6 +128,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
         RecentFileListViewItem r = new RecentFileListViewItem();
         r.setTime(Long.parseLong(split[0]));
         r.setFile(split[1]);
+        r.setFilename(new File(r.getFile()).getName());
         if(file.equals(r.getFile())) {
           r.setTime(new Date().getTime());
           editor.remove(r.getKey());
@@ -143,6 +145,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
       RecentFileListViewItem r = new RecentFileListViewItem();
       r.setTime(new Date().getTime());
       r.setFile(file);
+      r.setFilename(new File(r.getFile()).getName());
       r.setKey(KEY_RECENT + i);
       editor.putString(r.getKey(), r.getTime() + "|" + r.getFile());
       editor.commit();
@@ -166,7 +169,7 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
         adapter.removeItemSort(item, comparator);
       }
     };
-    Tools.showConfirmDialog(owner, "Remove entry", "Remove entry:\n" + item.getFile(), yes, null);
+    Tools.showConfirmDialog(owner, "Remove entry", "Remove entry:\n" + item.getFilename(), yes, null);
     return true;
   }
   

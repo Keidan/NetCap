@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 
 /**
  *******************************************************************************
@@ -81,13 +80,11 @@ public class ListViewAdapter<T extends IListViewItem> extends
   @Override
   public View getView(final int position, final View convertView,
       final ViewGroup parent) {
-    
-    LinearLayout layoutItem;
-    if (convertView == null) {
-      layoutItem = (LinearLayout) inflater.inflate(lid, parent, false);
-    } else {
-      layoutItem = (LinearLayout) convertView;
-    }
+    View layoutItem =  null;
+    if (convertView == null)
+      layoutItem = inflater.inflate(lid, parent, false);
+    else
+      layoutItem = convertView;
     final T t = itemList.get(position);
     t.updateItem(layoutItem, t);
     

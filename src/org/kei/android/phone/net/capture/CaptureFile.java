@@ -32,7 +32,6 @@ public class CaptureFile {
   
   public CaptureFile() {
   }
-  
 
   /**
    * Open the capture engine.

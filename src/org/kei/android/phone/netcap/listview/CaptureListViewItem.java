@@ -8,7 +8,7 @@ import org.kei.android.phone.net.layer.Payload;
 import org.kei.android.phone.netcap.R;
 
 import android.graphics.Color;
-import android.widget.LinearLayout;
+import android.view.View;
 import android.widget.TextView;
 /**
  *******************************************************************************
@@ -47,7 +47,7 @@ public class CaptureListViewItem implements IListViewItem {
   private int              tcolor             = Color.BLACK;
   
   @Override
-  public void updateItem(final LinearLayout layoutItem, final Object object) {
+  public void updateItem(final View layoutItem, final Object object) {
     final CaptureListViewItem me = (CaptureListViewItem)object;
     TextView idTV = (TextView)layoutItem.findViewById(R.id.idTV);
     TextView timeTV = (TextView)layoutItem.findViewById(R.id.timeTV);

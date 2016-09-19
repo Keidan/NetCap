@@ -193,19 +193,25 @@ public class OutputFragment extends Fragment implements
         delete();
       } else {
         String sdest = browseOutputCaptureTV.getText().toString();
-        sdest = sdest.replaceFirst("emulated/([0-9]+)/", "emulated/legacy/");
         if (sdest.isEmpty()) {
           Tools.showAlertDialog(owner, "Error", "Empty destination folder!");
+          captureBT.setChecked(false);
           return;
         }
-        final File fdest = new File(sdest);
+
+        File legacy = new File(sdest.replaceFirst("emulated/([0-9]+)/", "emulated/legacy/"));
+        File fdest = new File(sdest);
+        Log.i(getClass().getSimpleName(), "Test directory '"  + legacy + "'");
+        if (legacy.isDirectory()) fdest = legacy;
         if (!fdest.isDirectory()) {
           Tools.showAlertDialog(owner, "Error",
               "The destination folder is not a valid directory!");
+          captureBT.setChecked(false);
           return;
         } else if (!fdest.canWrite()) {
           Tools.showAlertDialog(owner, "Error",
               "Unable to write into the destination folder!");
+          captureBT.setChecked(false);
           return;
         }
 

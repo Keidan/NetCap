@@ -40,7 +40,7 @@ public class PayloadViewerActivity extends EffectActivity {
     ListView payloadLV = (ListView)findViewById(R.id.payloadLV);
     Payload p = (Payload)ApplicationCtx.getAppLayer(this);
     ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-        R.layout.listview_simple_row, R.id.label1, 
+        R.layout.list_payload, R.id.label1, 
         NetworkHelper.formatBuffer(p.getDatas()));
     payloadLV.setAdapter(adapter); 
   }
