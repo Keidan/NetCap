@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -107,14 +106,6 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
       i++;
     }
     adapter.sort(comparator);
-    i = 0;
-    while(preferences.contains(KEY_RECENT + i)) {
-      String c = preferences.getString(KEY_RECENT + i, null);
-      RecentFileListViewItem r = new RecentFileListViewItem(KEY_RECENT + i, c);
-        Log.e("TAG", "key: " + r.getKey() + ", date: " + r.getDate() + ", name: " + r.getFile());
-        i++;
-    }
-    
   }
   
   private void searchAndAdd(String file) {
