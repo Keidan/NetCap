@@ -1,8 +1,11 @@
 package org.kei.android.phone.netcap.listview;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
+import org.kei.android.phone.net.capture.PCAPPacketHeader;
 import org.kei.android.phone.netcap.R;
 
 import android.view.View;
@@ -36,6 +39,14 @@ public class RecentFileListViewItem implements IListViewItem {
   private String           file     = null;
   private String           filename = null;
   private String           key      = null;
+  
+  public RecentFileListViewItem(final String key, final String data) {
+    this.key = key;
+    String [] split = data.split(Pattern.quote("|"));
+    this.time = Long.parseLong(split[0]);
+    this.file = split[1];
+    this.filename = new File(this.file).getName();
+  }
 
   @Override
   public void updateItem(final View layoutItem, final Object object) {
@@ -45,12 +56,17 @@ public class RecentFileListViewItem implements IListViewItem {
     // text1.setTextSize(15);
     final File f = new File(me.getFile());
     text1.setText(f.getName());
-    text2.setText(convertToHuman(f.length()));
+    final String last = PCAPPacketHeader.SDF.format(new Date(me.getTime()));
+    text2.setText(convertToHuman(f.length()) + " - Last: " + last);
   }
 
   @Override
   public boolean isFilterable(final Object o, final int filterId, final String text) {
     return true;
+  }
+  
+  public String getDate() {
+    return PCAPPacketHeader.SDF.format(getTime());
   }
 
   /**
@@ -103,14 +119,6 @@ public class RecentFileListViewItem implements IListViewItem {
    */
   public String getKey() {
     return key;
-  }
-
-  /**
-   * @param key
-   *          the key to set
-   */
-  public void setKey(String key) {
-    this.key = key;
   }
 
   private static String convertToHuman(long l) {

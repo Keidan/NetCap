@@ -104,17 +104,19 @@ public class ListViewAdapter<T extends IListViewItem> extends
     return filterId;
   }
   
-  public void removeItemSort(final T item, Comparator<T> comp) {
+  public void removeItem(final T item) {
     itemListBack.remove(item);
     itemList.remove(item);
-    Collections.sort(itemList, comp);
-    Collections.sort(itemListBack, comp);
     notifyDataSetChanged();
   }
   
-  public void addItemSort(final T item, Comparator<T> comp) {
+  public void addItem(final T item) {
     itemListBack.add(item);
     itemList.add(item);
+    notifyDataSetChanged();
+  }
+  
+  public void sort(Comparator<T> comp) {
     Collections.sort(itemList, comp);
     Collections.sort(itemListBack, comp);
     notifyDataSetChanged();

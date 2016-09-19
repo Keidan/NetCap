@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.kei.android.atk.utils.Tools;
 import org.kei.android.atk.view.chooser.FileChooser;
 import org.kei.android.atk.view.chooser.FileChooserActivity;
@@ -18,8 +16,10 @@ import org.kei.android.phone.netcap.listview.RecentFileListViewItem;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -52,12 +52,11 @@ import android.widget.AdapterView.OnItemLongClickListener;
  */
 public class InputFragment extends Fragment  implements OnClickListener, OnItemClickListener, OnItemLongClickListener {
   private final static String                     KEY_RECENT  = "key.recent.";
-  private SharedPreferences                       preferences = null;
-  private SharedPreferences.Editor                editor      = null;
   private ListViewAdapter<RecentFileListViewItem> adapter     = null;
   private Comparator<RecentFileListViewItem>      comparator  = null;
   private ListView                                recentLV    = null;
   private MainPagerActivity                       owner       = null;
+  private SharedPreferences                       preferences = null;
   
   public InputFragment(final MainPagerActivity owner) {
     this.owner = owner;
@@ -76,10 +75,8 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
   public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     Context context = owner.getApplicationContext();
-    
-    preferences = owner.getPreferences(Context.MODE_PRIVATE);
-    editor = preferences.edit();
 
+    preferences = owner.getPreferences(Context.MODE_PRIVATE);
     recentLV = (ListView)getView().findViewById(R.id.recentLV);
     adapter = new ListViewAdapter<RecentFileListViewItem>(context, R.layout.list_last_file);
     recentLV.setAdapter(adapter);
@@ -105,54 +102,49 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
     while(preferences.contains(KEY_RECENT + i)) {
       String c = preferences.getString(KEY_RECENT + i, null);
       if(c != null && !c.isEmpty()) {
-        String [] split = c.split(Pattern.quote("|"));
-        RecentFileListViewItem r = new RecentFileListViewItem();
-        r.setTime(Long.parseLong(split[0]));
-        r.setFile(split[1]);
-        r.setFilename(new File(r.getFile()).getName());
-        r.setKey(KEY_RECENT + i);
-        adapter.addItemSort(r, comparator);
+        adapter.addItem(new RecentFileListViewItem(KEY_RECENT + i, c));
       }
       i++;
     }
+    adapter.sort(comparator);
+    i = 0;
+    while(preferences.contains(KEY_RECENT + i)) {
+      String c = preferences.getString(KEY_RECENT + i, null);
+      RecentFileListViewItem r = new RecentFileListViewItem(KEY_RECENT + i, c);
+        Log.e("TAG", "key: " + r.getKey() + ", date: " + r.getDate() + ", name: " + r.getFile());
+        i++;
+    }
+    
   }
   
   private void searchAndAdd(String file) {
     adapter.clear();
     int i = 0;
     boolean found = false;
+    Editor edit = preferences.edit();
     while(preferences.contains(KEY_RECENT + i)) {
       String c = preferences.getString(KEY_RECENT + i, null);
       if(c != null && !c.isEmpty()) {
-        String [] split = c.split(Pattern.quote("|"));
-        RecentFileListViewItem r = new RecentFileListViewItem();
-        r.setTime(Long.parseLong(split[0]));
-        r.setFile(split[1]);
-        r.setFilename(new File(r.getFile()).getName());
+        RecentFileListViewItem r = new RecentFileListViewItem(KEY_RECENT + i, c);
         if(file.equals(r.getFile())) {
           r.setTime(new Date().getTime());
-          editor.remove(r.getKey());
-          editor.commit();
-          editor.putString(r.getKey(), r.getTime() + "|" + r.getFile());
-          editor.commit();
           found = true;
         }
-        adapter.addItemSort(r, comparator);
+        adapter.addItem(r);
+        edit.putString(r.getKey(), r.getTime() + "|" + r.getFile());
+        edit.apply();
       }
       i++;
     }
     if(!found) {
-      RecentFileListViewItem r = new RecentFileListViewItem();
-      r.setTime(new Date().getTime());
-      r.setFile(file);
-      r.setFilename(new File(r.getFile()).getName());
-      r.setKey(KEY_RECENT + i);
-      editor.putString(r.getKey(), r.getTime() + "|" + r.getFile());
-      editor.commit();
-      adapter.addItemSort(r, comparator);
+      RecentFileListViewItem r = new RecentFileListViewItem(KEY_RECENT + i, new Date().getTime() + "|" + file);
+      adapter.addItem(r);
+      edit.putString(r.getKey(), r.getTime() + "|" + r.getFile());
+      edit.apply();
     }
+    adapter.sort(comparator);
   }
-
+  
   public void onItemClick(AdapterView<?> adapter, View v, int pos, long id) {
     final RecentFileListViewItem item = (RecentFileListViewItem)recentLV.getItemAtPosition(pos);
     validateAndOpen(item.getFile());
@@ -164,9 +156,11 @@ public class InputFragment extends Fragment  implements OnClickListener, OnItemC
     final android.view.View.OnClickListener yes = new android.view.View.OnClickListener() {
       @Override
       public void onClick(android.view.View view) {
-        editor.remove(item.getKey());
-        editor.commit();
-        adapter.removeItemSort(item, comparator);
+        Editor edit = preferences.edit();
+        edit.remove(item.getKey());
+        edit.apply();
+        adapter.removeItem(item);
+        adapter.sort(comparator);
       }
     };
     Tools.showConfirmDialog(owner, "Remove entry", "Remove entry:\n" + item.getFilename(), yes, null);

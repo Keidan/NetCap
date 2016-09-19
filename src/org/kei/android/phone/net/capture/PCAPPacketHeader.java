@@ -28,7 +28,7 @@ import java.util.Date;
  */
 public class PCAPPacketHeader {
   @SuppressLint("SimpleDateFormat")
-  private static final SimpleDateFormat SDF     = new SimpleDateFormat(
+  public static final SimpleDateFormat  SDF     = new SimpleDateFormat(
                                                     "yyyy.MM.dd HH:mm:ss");
   private long                          tsSec   = 0;
   private long                          tsUsec  = 0;
