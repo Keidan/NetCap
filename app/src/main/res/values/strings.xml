@@ -1,0 +1,45 @@
+<resources>
+  <string name="app_name">NetCap</string>
+  <string name="on_double_back_exit_text">Press once again to exit.</string>
+  <string name="permissions">The application requires permissions.</string>
+  <string name="ok">OK</string>
+  <string name="cancel">Cancel</string>
+  <string name="empty" />
+  <string name="output_folder">Save the capture in: </string>
+  <string name="log">Capture result:</string>
+  <string name="devices">Device:</string>
+  <string name="any">Any</string>
+  <string name="refresh">Refresh devices</string>
+  <string name="load_capture">Load capture from file</string>
+  <string name="promiscuous">Use promiscuous mode</string>
+  <string name="search">Search</string>
+  <string name="search_id">ID</string>
+  <string name="search_time">Time</string>
+  <string name="search_protocol">Protocol</string>
+  <string name="search_info">Info</string>
+  <string name="recently_open">Recently open:</string>
+  <string name="error">Error</string>
+  <string name="empty_source_file">Empty source file!</string>
+  <string name="source_file_is_not_a_valid_file">The source file is not a valid file!</string>
+  <string name="unable_to_read_the_capture_file">Unable to read the capture file!</string>
+  <string name="selected_file_is_not_in_a_pcap_format">The selected file is not in a PCAP format.</string>
+  <string name="exception_occurred">Exception occurred</string>
+  <string name="empty_source_folder">Empty destination folder!</string>
+  <string name="source_file_is_not_a_valid_folder">The source file is not a valid folder!</string>
+  <string name="unable_to_write_into_the_destination_folder">Unable to write into the destination folder!</string>
+  <string name="toggle_on">Start capture</string>
+  <string name="toggle_off">Stop capture</string>
+  <string name="root_error">A rooted device is required for the capture feature.</string>
+  <string name="root_toast_error">Device not rooted.</string>
+  <string name="loading">Loading &#8230;</string>
+  <string name="chooser_load_title">Load</string>
+  <string name="chooser_save_title">Save</string>
+  <string name="chooser_use_file">Use this file</string>
+  <string name="chooser_use_folder">Use this folder</string>
+  <string name="chooser_cancel">Cancel</string>
+  <string name="chooser_long_press_message">Long press to select.</string>
+  <string name="chooser_parent_directory">Parent Directory</string>
+  <string name="chooser_folder">Folder</string>
+  <string name="chooser_file_size">File size</string>
+
+</resources>

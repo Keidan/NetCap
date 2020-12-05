@@ -1,0 +1,24 @@
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    
+    <dimen name="corner_radius">3dp</dimen>
+    <dimen name="layer_padding">2dp</dimen>
+    
+    <dimen name="fab_elevation">5dp</dimen>
+    <dimen name="fab_rise">3dp</dimen>
+    <integer name="fab_duration">100</integer>
+
+    <!-- file_view.xml -->
+    <dimen name="file_view_padding">10dp</dimen>
+    <dimen name="file_view_icon_paddingEnd">10dp</dimen>
+    <dimen name="file_view_icon_paddingStart">0dp</dimen>
+
+    <!-- progress_dialog -->
+    <dimen name="progress_dialog_textSize">18sp</dimen>
+    <dimen name="progress_dialog_layout_marginTop">20dp</dimen>
+    <dimen name="progress_dialog_text_layout_marginTop">15dp</dimen>
+    <dimen name="progress_dialog_layout_marginStart">10dp</dimen>
+    <dimen name="progress_dialog_layout_marginEnd">10dp</dimen>
+    <dimen name="progress_dialog_layout_marginBottom">10dp</dimen>
+</resources>

@@ -1,34 +1,30 @@
-NetCap
-===
+# NetCap
 
-(GPL) Android network capture is a FREE software.
-This application allows to:
-- Display the pcap files.
-- Capture the network traffic.
+(GPL) Android network capture is FREE software.
 
-
-A ROOTED DEVICE IS REQUIRED FOR THE CAPTURE FEATURE.
+This application allows you to :
+- Display pcap files.
+- Capture network traffic.
 
 
-Also I'm not responsible for any damage caused to your device(Though no damage will be cause, this is a warning).
+A ROOTED DEVICE IS REQUIRED FOR THE CAPTURE FUNCTION.
 
 
-Instructions
-============
+## Instructions
 
-
-download the software :
+Download the software :
 
 	mkdir devel
 	cd devel
-	
-	git clone git://github.com/Keidan/ATK.git
-	git clone git://github.com/Keidan/NetCap.git
+	git clone git@github.com:Keidan/NetCap
 	cd NetCap
- 	Use with eclipse 
- 	The Android NDK is required.
- 	Note: You need to create a variable named NDK_BUILD,
- 	that points to the Android Ndk builder file (ndk-build).
+ 	Use with android studio
 
-License (like GPL)
-==================
+	
+:warning: To compile this project, you must also install the CMAKE, LLDB (debug only) and the NDK packages.
+
+See [android studio cmake](https://codelabs.developers.google.com/codelabs/android-studio-cmake)
+
+## License
+
+[GPLv3](https://github.com/Keidan/NetCap/blob/master/license.txt)

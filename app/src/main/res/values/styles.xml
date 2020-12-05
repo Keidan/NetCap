@@ -1,0 +1,84 @@
+<resources>
+
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Customize your theme here. -->
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:textColorPrimary">@color/textColorPrimary</item>
+    <item name="android:actionMenuTextColor">@color/actionMenuTextColor</item>
+    <item name="android:navigationBarColor">@color/navigationBarColor</item>
+    <item name="actionMenuTextColor">@color/actionMenuTextColor</item>
+    <item name="android:windowBackground">@color/windowBackground</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorSecondary">@color/textColorSecondary</item>
+    <item name="android:textColorHint">@color/textColor</item>
+    <item name="android:colorButtonNormal">@color/colorButtonNormal</item>
+    <item name="colorControlNormal">@color/colorControlNormal</item>
+    <item name="android:itemBackground">@color/windowBackground</item>
+    <item name="android:colorBackground">@color/colorBackground</item>
+    <item name="alertDialogTheme">@style/AppTheme.DialogTheme</item>
+    <item name="android:alertDialogTheme">@style/AppTheme.DialogTheme</item>
+    <item name="android:spinnerDropDownItemStyle">@style/SpinnerItemStyle</item>
+    <item name="android:checkboxStyle">@style/CheckBoxStyle</item>
+    <item name="android:radioButtonStyle">@style/RadioButtonStyle</item>
+  </style>
+
+  <style name="AppTheme.NoActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+  </style>
+
+  <style name="AppTheme.AppBarOverlay" parent="Theme.AppCompat.Light.NoActionBar" />
+
+  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+  <style name="AppTheme.DialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:background">@color/colorBackground</item>
+    <item name="android:colorAccent">@color/colorAccent</item>
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:textColorPrimary">@color/textColorPrimary</item>
+    <item name="android:textColorSecondary">@color/textColorSecondary</item>
+    <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+    <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+    <item name="textColorAlertDialogListItem">@color/textColor</item>
+    <item name="android:textColorAlertDialogListItem">@color/textColor</item>
+  </style>
+
+  <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">@color/colorAccent</item>
+  </style>
+
+  <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">@color/colorAccent</item>
+  </style>
+
+  <style name="SpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+    <item name="android:textColor">@color/textColor</item>
+    <item name="android:background">@color/windowBackground</item>
+  </style>
+
+  <style name="CheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+    <item name="android:textColor">@color/textColor</item>
+    <item name="buttonTint">@color/colorAccent</item>
+  </style>
+
+  <style name="RadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+    <item name="android:textColor">@color/textColor</item>
+    <item name="buttonTint">@color/colorAccent</item>
+  </style>
+
+  <style name="FloatingActionButton" parent="android:Widget.Material.Button">
+    <item name="android:background">@drawable/fab_background</item>
+    <item name="android:stateListAnimator">@anim/fab_state_list_animator</item>
+    <item name="android:layout_width">56dp</item>
+    <item name="android:layout_height">56dp</item>
+  </style>
+  <style name="FloatingActionButton.Mini">
+    <item name="android:layout_width">40dp</item>
+    <item name="android:layout_height">40dp</item>
+    <item name="android:layout_margin">8dp</item>
+  </style>
+</resources>
