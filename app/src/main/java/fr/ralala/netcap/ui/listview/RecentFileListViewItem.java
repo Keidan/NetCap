@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import fr.ralala.netcap.R;
 import fr.ralala.netcap.net.capture.PCAPPacketHeader;
 
@@ -41,11 +43,21 @@ public class RecentFileListViewItem implements IListViewItem {
     final RecentFileListViewItem me = (RecentFileListViewItem) object;
     final TextView text1 = layoutItem.findViewById(R.id.firstLine);
     final TextView text2 = layoutItem.findViewById(R.id.secondLine);
-    // text1.setTextSize(15);
     final File f = new File(me.getFile());
+    long length;
+    @ColorRes int color;
+    if(f.exists()) {
+      length = f.length();
+      color = R.color.textColor;
+    } else {
+      length = 0;
+      color = R.color.colorRed;
+    }
+    text1.setTextColor(ContextCompat.getColor(text1.getContext(), color));
+    text2.setTextColor(ContextCompat.getColor(text1.getContext(), color));
     text1.setText(f.getName());
     final String last = PCAPPacketHeader.SDF.format(new Date(me.getTime()));
-    text2.setText((convertToHuman(f.length()) + " - Last: " + last));
+    text2.setText((convertToHuman(length) + " - Last: " + last));
   }
 
   @Override

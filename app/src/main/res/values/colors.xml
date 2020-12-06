@@ -12,5 +12,6 @@
   <color name="colorButtonNormal">#FF424242</color>
   <color name="colorBackground">#FF424242</color>
   <color name="colorControlNormal">#FF424242</color>
+  <color name="colorRed">#FFBD2727</color>
   <color name="transparent">@android:color/transparent</color>
 </resources>
