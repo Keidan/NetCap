@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public class InputFragment extends Fragment implements OnClickListener, OnItemCl
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    return (ViewGroup) inflater.inflate(
+    return inflater.inflate(
         R.layout.fragment_input, container, false);
   }
 
@@ -65,13 +64,17 @@ public class InputFragment extends Fragment implements OnClickListener, OnItemCl
     super.onViewCreated(view, savedInstanceState);
     Context context = mOwner.getApplicationContext();
 
+    View v = getView();
+    if(v == null)
+      return;
+
     mPreferences = mOwner.getPreferences(Context.MODE_PRIVATE);
-    mLvRecent = (ListView) getView().findViewById(R.id.lvRecent);
+    mLvRecent = v.findViewById(R.id.lvRecent);
     mAdapter = new ListViewAdapter<>(context, R.layout.list_last_file);
     mLvRecent.setAdapter(mAdapter);
     mLvRecent.setOnItemClickListener(this);
     mLvRecent.setOnItemLongClickListener(this);
-    ((Button) getView().findViewById(R.id.btLoadCapture)).setOnClickListener(this);
+    v.findViewById(R.id.btLoadCapture).setOnClickListener(this);
     mComparator = (lhs, rhs) -> {
       if (lhs.getTime() < rhs.getTime()) return 1;
       else if (lhs.getTime() > rhs.getTime()) return -1;
@@ -159,8 +162,9 @@ public class InputFragment extends Fragment implements OnClickListener, OnItemCl
   public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
     if (requestCode == FileChooserActivity.FILECHOOSER_SELECTION_TYPE_FILE) {
       if (resultCode == AppCompatActivity.RESULT_OK) {
-          final String file = data.getStringExtra(FileChooserActivity.FILECHOOSER_SELECTION_KEY);
-          validateAndOpen(file);
+        final String file = data.getStringExtra(FileChooserActivity.FILECHOOSER_SELECTION_KEY);
+        assert file != null;
+        validateAndOpen(file);
       }
     }
   }

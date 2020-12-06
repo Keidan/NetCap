@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import fr.ralala.netcap.ApplicationCtx;
 import fr.ralala.netcap.R;
@@ -34,7 +35,9 @@ public class CaptureDetailsActivity extends AppCompatActivity {
     mApp = (ApplicationCtx)getApplicationContext();
     setTitle(getResources().getText(R.string.app_name) + " - " + mApp.getId());
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    ActionBar ab = getSupportActionBar();
+    if(ab != null)
+      ab.setDisplayHomeAsUpEnabled(true);
     // get the listview
     ExpandableListView expListView = findViewById(R.id.elvDetails);
 
@@ -78,6 +81,8 @@ public class CaptureDetailsActivity extends AppCompatActivity {
         mListDataHeader.add(layer.getProtocolUI().fullName);
         mListDataChild.put(layer.getProtocolUI().fullName, lines);
       }
+      else
+        break;
     } while ((layers = layers.getNext()) != null);
   }
 }

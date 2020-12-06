@@ -55,11 +55,6 @@ public class UI {
     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, c.getResources().getString(R.string.ok), (dialog, which) -> dialog.dismiss());
     alertDialog.show();
   }
-  public static void showConfirmDialog(final Context c, final int title,
-                                       int message, final android.view.View.OnClickListener yes,
-                                       final android.view.View.OnClickListener no) {
-    showConfirmDialog(c, c.getString(title), c.getString(message), yes, no);
-  }
 
   public static void showConfirmDialog(final Context c, final String title,
                                        String message, final android.view.View.OnClickListener yes,
@@ -115,10 +110,6 @@ public class UI {
 
   public static void toastLong(final Context c, final int message) {
     toast(c, c.getResources().getString(message), Toast.LENGTH_LONG);
-  }
-
-  public static void toastLong(final Context c, final String message) {
-    toast(c, message, Toast.LENGTH_LONG);
   }
 
   public static void toast(final Context c, final String message) {

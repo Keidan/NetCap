@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import fr.ralala.netcap.R;
 
@@ -35,8 +36,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
   @Override
   public Object getChild(int groupPosition, int childPosititon) {
-    return mListDataChild.get(mListDataHeader.get(groupPosition))
-        .get(childPosititon);
+    return Objects.requireNonNull(mListDataChild.get(mListDataHeader.get(groupPosition))).get(childPosititon);
   }
 
   @Override
@@ -57,7 +57,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
       convertView = infalInflater.inflate(R.layout.list_item_details, root);
     }
 
-    TextView txtListChild = (TextView) convertView
+    TextView txtListChild = convertView
         .findViewById(R.id.tvLblListItem);
 
     txtListChild.setText(childText);
@@ -66,7 +66,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
   @Override
   public int getChildrenCount(int groupPosition) {
-    return mListDataChild.get(mListDataHeader.get(groupPosition)).size();
+    return Objects.requireNonNull(mListDataChild.get(mListDataHeader.get(groupPosition))).size();
   }
 
   @Override
@@ -95,7 +95,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
       convertView = infalInflater.inflate(R.layout.list_group_details, root);
     }
 
-    TextView lblListHeader = (TextView) convertView
+    TextView lblListHeader = convertView
         .findViewById(R.id.tvLblListHeader);
     lblListHeader.setText(headerTitle);
 

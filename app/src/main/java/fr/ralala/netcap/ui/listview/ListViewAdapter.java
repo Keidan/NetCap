@@ -28,8 +28,8 @@ public class ListViewAdapter<T extends IListViewItem> extends BaseAdapter {
 
 
   public ListViewAdapter(final Context ctx, final int lid) {
-    mItemList = new ArrayList<T>();
-    mItemListBack = new ArrayList<T>();
+    mItemList = new ArrayList<>();
+    mItemListBack = new ArrayList<>();
     mLid = lid;
     mInflater = LayoutInflater.from(ctx);
   }
@@ -78,16 +78,8 @@ public class ListViewAdapter<T extends IListViewItem> extends BaseAdapter {
 
   }
 
-  public List<T> getItemList() {
-    return mItemList;
-  }
-
   public void setFilterId(final int filterId) {
     mFilterId = filterId;
-  }
-
-  public int getFilterId() {
-    return mFilterId;
   }
 
   public void removeItem(final T item) {

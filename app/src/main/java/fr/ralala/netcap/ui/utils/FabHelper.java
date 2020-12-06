@@ -37,8 +37,8 @@ public class FabHelper {
 
   public void install(final AppCompatActivity activity) {
     mActivity = activity;
-    final ViewGroup fabContainer = (ViewGroup) activity.findViewById(R.id.fab_container);
-    mFab = (ImageButton) activity.findViewById(R.id.fab);
+    final ViewGroup fabContainer =  activity.findViewById(R.id.fab_container);
+    mFab = activity.findViewById(R.id.fab);
     mFabAction1 = activity.findViewById(R.id.fab_action_1);
     mFabAction2 = activity.findViewById(R.id.fab_action_2);
     mFabAction3 = activity.findViewById(R.id.fab_action_3);

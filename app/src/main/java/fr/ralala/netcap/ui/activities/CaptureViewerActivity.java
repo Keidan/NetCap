@@ -12,6 +12,9 @@ import android.widget.ListView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import fr.ralala.netcap.ApplicationCtx;
@@ -50,9 +53,11 @@ public class CaptureViewerActivity extends AppCompatActivity implements AdapterV
     }
     if(mFile == null) mFile = getIntent().getData().getEncodedPath();
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    ActionBar ab = getSupportActionBar();
+    if(ab != null)
+      ab.setDisplayHomeAsUpEnabled(true);
 
-    mLvCapture = (ListView)findViewById(R.id.lvCapture);
+    mLvCapture = findViewById(R.id.lvCapture);
     mAdapter = new ListViewAdapter<>(this, R.layout.rowlayout_capture);
     mAdapter.setFilterId(CaptureListViewItem.FILTER_BY_ALL);
     CaptureListViewLoader loader = new CaptureListViewLoader(this, mAdapter, mFile);
@@ -132,7 +137,7 @@ public class CaptureViewerActivity extends AppCompatActivity implements AdapterV
         mPreviousSearch.info = cbInfo.isChecked();
         mPreviousSearch.protocol = cbProtocol.isChecked();
         mPreviousSearch.time = cbTime.isChecked();
-        mPreviousSearch.text = tieSearch.getText().toString();
+        mPreviousSearch.text = Objects.requireNonNull(tieSearch.getText()).toString();
 
         int flags = 0;
         if(mPreviousSearch.id) flags |= CaptureListViewItem.FILTER_BY_ID;

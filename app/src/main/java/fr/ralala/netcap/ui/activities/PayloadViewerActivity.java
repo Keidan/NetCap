@@ -5,6 +5,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import fr.ralala.netcap.ApplicationCtx;
 import fr.ralala.netcap.R;
@@ -25,11 +26,13 @@ public class PayloadViewerActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_payloadviewer);
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    ActionBar ab = getSupportActionBar();
+    if(ab != null)
+      ab.setDisplayHomeAsUpEnabled(true);
 
     final ApplicationCtx app = (ApplicationCtx) getApplicationContext();
     setTitle(getResources().getText(R.string.app_name) + " - " + app.getId());
-    ListView payloadLV = (ListView)findViewById(R.id.lbPayload);
+    ListView payloadLV = findViewById(R.id.lbPayload);
     Payload p = (Payload)app.getLayer();
     ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
         R.layout.list_payload, R.id.label1,

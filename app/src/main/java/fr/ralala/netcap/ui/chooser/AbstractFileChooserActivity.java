@@ -106,23 +106,25 @@ public abstract class AbstractFileChooserActivity extends AppCompatActivity impl
     this.setTitle(f.getAbsolutePath());
     final List<FileChooserItem> dir = new ArrayList<>();
     final List<FileChooserItem> fls = new ArrayList<>();
-    try {
-      for (final File ff : dirs) {
-        if (ff.isDirectory())
-          dir.add(new FileChooserItem(ff.getName(), getString(R.string.chooser_folder), ff.getAbsolutePath(), ContextCompat.getDrawable(this, R.mipmap.ic_folder)));
-        else if(mShow != FILECHOOSER_SHOW_DIRECTORY_ONLY) {
-          if(isFiltered(ff))
-            fls.add(new FileChooserItem(ff.getName(), getString(R.string.chooser_file_size) + ": " + ff.length(), ff
-                .getAbsolutePath(), ContextCompat.getDrawable(this, R.mipmap.ic_file)));
+    if(dirs != null) {
+      try {
+        for (final File ff : dirs) {
+          if (ff.isDirectory())
+            dir.add(new FileChooserItem(ff.getName(), getString(R.string.chooser_folder), ff.getAbsolutePath(), ContextCompat.getDrawable(this, R.mipmap.ic_folder)));
+          else if (mShow != FILECHOOSER_SHOW_DIRECTORY_ONLY) {
+            if (isFiltered(ff))
+              fls.add(new FileChooserItem(ff.getName(), getString(R.string.chooser_file_size) + ": " + ff.length(), ff
+                  .getAbsolutePath(), ContextCompat.getDrawable(this, R.mipmap.ic_file)));
+          }
         }
+      } catch (final Exception e) {
+        Log.e(getClass().getSimpleName(), "Exception : " + e.getMessage(), e);
       }
-    } catch (final Exception e) {
-      Log.e(getClass().getSimpleName(), "Exception : " + e.getMessage(), e);
-    }
-    Collections.sort(dir);
-    if(!fls.isEmpty()){
-      Collections.sort(fls);
-      dir.addAll(fls);
+      Collections.sort(dir);
+      if (!fls.isEmpty()) {
+        Collections.sort(fls);
+        dir.addAll(fls);
+      }
     }
     dir.add(
         0,

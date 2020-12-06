@@ -2,6 +2,7 @@ package fr.ralala.netcap.ui.pager;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -17,10 +18,11 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
   private final List<Fragment> mFragments;
 
   public ScreenSlidePagerAdapter(final FragmentManager fm, List<Fragment> fragments) {
-    super(fm);
+    super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     mFragments = fragments;
   }
 
+  @NonNull
   @Override
   public Fragment getItem(int position) {
     return mFragments.get(position);

@@ -73,7 +73,7 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    return (ViewGroup) inflater.inflate(
+    return inflater.inflate(
         R.layout.fragment_output, container, false);
   }
 
@@ -82,14 +82,18 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
     super.onViewCreated(view, savedInstanceState);
     Context context = mOwner.getApplicationContext();
 
-    mBtRefresh = (Button) getView().findViewById(R.id.btRefresh);
-    mCbPromiscuous = (CheckBox) getView().findViewById(R.id.cbPromiscuous);
-    mSpDevices = (Spinner) getView().findViewById(R.id.spDevices);
-    mTvShowResult = (TextView) getView().findViewById(R.id.tvShowResult);
-    mTvBrowseOutputCapture = (TextView) getView().findViewById(R.id.tvBrowseOutputCapture);
+    View v = getView();
+    if(v == null)
+      return;
+
+    mBtRefresh = v.findViewById(R.id.btRefresh);
+    mCbPromiscuous = v.findViewById(R.id.cbPromiscuous);
+    mSpDevices = v.findViewById(R.id.spDevices);
+    mTvShowResult = v.findViewById(R.id.tvShowResult);
+    mTvBrowseOutputCapture = v.findViewById(R.id.tvBrowseOutputCapture);
     mTvBrowseOutputCapture.setText(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
     mTvBrowseOutputCapture.setOnClickListener(this);
-    mBtCapture = (ToggleButton) getView().findViewById(R.id.btCapture);
+    mBtCapture = v.findViewById(R.id.btCapture);
     mBtCapture.setOnClickListener(this);
     mBtRefresh.setOnClickListener(this);
 
@@ -167,7 +171,7 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
       mAdapter.clear();
       try {
         final List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        if (interfaces != null && interfaces.size() != 0)
+        if (interfaces.size() != 0)
           mAdapter.add(getResources().getText(R.string.any).toString());
         for (final NetworkInterface ni : interfaces)
           if (ni.isUp())

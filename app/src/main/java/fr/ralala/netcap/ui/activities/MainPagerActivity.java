@@ -56,8 +56,8 @@ public class MainPagerActivity extends FragmentActivity implements ViewPager.OnP
     fragments.add(new InputFragment(this));
     fragments.add(new OutputFragment(this));
 
-    ViewPager pager = (ViewPager) findViewById(R.id.pager);
-    PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.pagerTabStrip);
+    ViewPager pager = findViewById(R.id.pager);
+    PagerTabStrip pagerTabStrip = findViewById(R.id.pagerTabStrip);
     pagerTabStrip.setDrawFullUnderline(false);
     pager.setPageTransformer(true, new DepthPageTransformer());
     PagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);

@@ -65,7 +65,7 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
       while (mCapture.process(CaptureListViewLoader.this)) ;
     } catch (Throwable e) {
       e.printStackTrace();
-      captureEnd(null);
+      captureEnd(mCapture);
     }
     return null;
   }
@@ -113,7 +113,8 @@ public class CaptureListViewLoader extends AsyncTask<Void, Void, Void> implement
   @Override
   public void captureEnd(final CaptureFile capture) {
     mCaptureCount = 0;
-    capture.close();
+    if(capture != null)
+      capture.close();
   }
 
 }
