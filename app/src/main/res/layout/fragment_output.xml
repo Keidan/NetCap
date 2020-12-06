@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:fillViewport="true"
@@ -65,26 +66,44 @@
       android:textOn="@string/toggle_off" />
 
     <!-- Log -->
-    <TextView
-      android:id="@+id/tvResult"
-      android:layout_marginTop="20sp"
+    <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/log"
-      android:textSize="18sp" />
+      android:layout_marginTop="20sp">
 
-    <TextView
-      android:id="@+id/tvShowResult"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="5sp"
-      android:background="@drawable/back"
-      android:lines="20"
-      android:maxLines="50"
-      android:scrollbars="vertical"
-      android:text="@string/empty"
-      android:textSize="12sp"
-      android:padding="3dp"/>
+      <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/log"
+        android:textSize="18sp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        tools:ignore="RelativeOverlap" />
+      <ImageView
+        android:id="@+id/ivClearLog"
+        android:src="@mipmap/ic_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@null"/>
+
+    </RelativeLayout>
+
+
+      <TextView
+        android:id="@+id/tvShowResult"
+        android:layout_marginTop="5sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/back"
+        android:lines="20"
+        android:maxLines="50"
+        android:scrollbars="vertical"
+        android:text="@string/empty"
+        android:textSize="12sp"
+        android:padding="3dp"/>
 
   </LinearLayout>
 

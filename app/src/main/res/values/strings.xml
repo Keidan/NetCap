@@ -30,7 +30,6 @@
   <string name="toggle_on">Start capture</string>
   <string name="toggle_off">Stop capture</string>
   <string name="root_error">A rooted device is required for the capture feature.</string>
-  <string name="root_toast_error">Device not rooted.</string>
   <string name="loading">Loading &#8230;</string>
   <string name="chooser_load_title">Load</string>
   <string name="chooser_save_title">Save</string>

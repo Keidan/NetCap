@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -59,6 +60,7 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
   private ArrayAdapter<String> mAdapter = null;
   private ToggleButton mBtCapture = null;
   private Button mBtRefresh = null;
+  private ImageView mIvClearLog = null;
   private TextView mTvShowResult = null;
   private final StringBuilder mIfaces = new StringBuilder();
   private final CircularArray<String> mBuffer = new CircularArray<>(25);
@@ -96,6 +98,8 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
     mBtCapture = v.findViewById(R.id.btCapture);
     mBtCapture.setOnClickListener(this);
     mBtRefresh.setOnClickListener(this);
+    mIvClearLog = v.findViewById(R.id.ivClearLog);
+    mIvClearLog.setOnClickListener(this);
 
     mTvShowResult.setMovementMethod(new ScrollingMovementMethod());
 
@@ -180,6 +184,10 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
         logException(e);
       }
     }
+    else if(v.equals(mIvClearLog)) {
+      mBuffer.clear();
+      mTvShowResult.setText("");
+    }
     else if(v.equals(mTvBrowseOutputCapture)) {
       Intent i = new Intent(mOwner, FileChooserActivity.class);
       i.putExtra(AbstractFileChooserActivity.FILECHOOSER_TYPE_KEY, "" + AbstractFileChooserActivity.FILECHOOSER_TYPE_DIRECTORY_ONLY);
@@ -217,7 +225,6 @@ public class OutputFragment extends Fragment implements View.OnClickListener {
         }
 
         if(!RootTools.isAccessGiven()) {
-          UI.toast(mOwner, R.string.root_toast_error);
           mBuffer.addLast(getString(R.string.root_error));
           displayBuffer();
           mBtCapture.setChecked(false);
