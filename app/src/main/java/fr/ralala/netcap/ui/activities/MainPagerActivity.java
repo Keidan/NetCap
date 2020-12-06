@@ -28,7 +28,6 @@ import androidx.viewpager.widget.ViewPager;
 import fr.ralala.netcap.R;
 import fr.ralala.netcap.ui.fragments.InputFragment;
 import fr.ralala.netcap.ui.fragments.OutputFragment;
-import fr.ralala.netcap.ui.pager.DepthPageTransformer;
 import fr.ralala.netcap.ui.pager.ScreenSlidePagerAdapter;
 import fr.ralala.netcap.ui.utils.UI;
 
@@ -59,7 +58,6 @@ public class MainPagerActivity extends FragmentActivity implements ViewPager.OnP
     ViewPager pager = findViewById(R.id.pager);
     PagerTabStrip pagerTabStrip = findViewById(R.id.pagerTabStrip);
     pagerTabStrip.setDrawFullUnderline(false);
-    pager.setPageTransformer(true, new DepthPageTransformer());
     PagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
     pager.setAdapter(pagerAdapter);
     pager.setCurrentItem(mPrefs.getInt(CURRENT_PAGER_TAB_KEY, 0));
